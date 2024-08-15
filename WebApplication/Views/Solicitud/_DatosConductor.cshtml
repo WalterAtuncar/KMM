@@ -1,0 +1,32 @@
+﻿@model WebApplication.Models.SolicitudViewModel
+
+<table id="tbl-sol-det-cond" class="table table-bordered table-condensed table-hover">
+    <tbody>
+        <tr>
+            <td>Nombre Conductor</td>
+            <td>@Model.Solicitud.Conductor.NombreCompleto</td>
+        </tr>
+        <tr>
+            <td>Documento Conductor</td>
+            <td>@Model.Solicitud.Conductor.Documento</td>
+        </tr>
+        <tr>
+            <td>Placa automóvil</td>
+            <td>@Model.Solicitud.Automovil.Placa</td>
+        </tr>
+        <tr>
+            <td>Color automóvil</td>
+            <td>@Model.Solicitud.Automovil.Color </td>
+        </tr>
+        <tr>
+            <td>Modelo automóvil</td>
+            <td>@Model.Solicitud.Automovil.Modelo</td>
+        </tr>
+    </tbody>
+</table>
+<div class="row">
+    <div class="col-sm-12 text-center">
+        <img style="border: 1px solid #23419b; width:120px; height: 120px;" src="data:image/jpg;base64,@Convert.ToBase64String(Model.Solicitud.Conductor.Foto)"/>
+        @*<img style="border: 1px solid #23419b; width:120px; height: 120px;" src="@image" />*@
+    </div>
+</div>

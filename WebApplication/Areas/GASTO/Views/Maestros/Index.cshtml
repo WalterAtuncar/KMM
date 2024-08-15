@@ -1,0 +1,446 @@
+﻿
+@*@model WebApplication.Areas.GASTO.Models.SolicitudViewModel*@
+@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+    .datepicker {
+        z-index: 3000 !important;
+    }
+
+    [class="select2"] {
+        width: 100%;
+    }
+
+    /*.select2-container {
+        display: inline;
+    }*/
+
+</style>
+<h3 class="text-left text-primary">
+    <i class="fa fa-file-text-o" style="color:red;"></i>
+    <i class="fa fa-chevron-right" style="font-size:15px;color:#ee3224;"></i>
+    MANTENIMIENTO DE MAESTROS
+</h3>
+<br />
+<div class="row">
+    <div id="filtros">
+        <div class="col-sm-4">
+            <button id="btnBuscar_Maestros" class="btn btn-danger btn-sm"><i class="fa fa-search"></i> Buscar</button>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+
+<div class="row">
+    <div class="col-sm-12">
+        <div id="div-tbl-maestro" class="table-responsive">
+            <table id="jqGrid" class="table-gys-kom"></table>
+            <div id="jqControls">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-UsuarioSucursal" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:420px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-SociedadSucursal" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:420px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-Configuraciones" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:420px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-UsuarioAprobador" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:520px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+<script src="~/Content/plugins/starrr/starrr.js"></script>
+
+<script>
+
+    var idUserSucursal = 0;
+    var ListaCentroCostoAsignados = [];
+    var cargadogrilla = 0;
+    var idUserAprobador = 0;
+
+    var url = {
+        GetListMaestros: '@Url.Action("GetListMaestros", "Maestros", new { area = "GASTO" })',
+        GetDetalleMaestroLista: '@Url.Action("GetDetalleMaestroLista_PV", "Maestros", new { area = "GASTO" })',
+        RegistrarUsuarioSucursal: '@Url.Action("RegistrarUsuarioSucursal", "Maestros", new { area = "GASTO" })',
+        RegistrarUsuarioAprobador: '@Url.Action("RegistrarUsuarioAprobador", "Maestros", new { area = "GASTO" })',
+        RegistrarUsuarioSucursalPost: '@Url.Action("RegistrarUsuarioSucursalPost", "Maestros", new { area = "GASTO" })',
+        ActualizarUsuarioSucursalPost: '@Url.Action("ActualizarUsuarioSucursalPost", "Maestros", new { area = "GASTO" })',
+        EliminarUsuarioSucursalPost: '@Url.Action("EliminarUsuarioSucursalPost", "Maestros", new { area = "GASTO" })',
+        EliminarUsuarioAprobadorPost: '@Url.Action("EliminarUsuarioAprobadorPost", "Maestros", new { area = "GASTO" })',
+        RegistrarSociedadSucursal: '@Url.Action("RegistrarSociedadSucursal", "Maestros", new { area = "GASTO" })',
+        RegistrarSociedadSucursalPost: '@Url.Action("RegistrarSociedadSucursalPost", "Maestros", new { area = "GASTO" })',
+        ActualizarSociedadSucursalPost: '@Url.Action("ActualizarSociedadSucursalPost", "Maestros", new { area = "GASTO" })',
+        EliminarSociedadSucursalPost: '@Url.Action("EliminarSociedadSucursalPost", "Maestros", new { area = "GASTO" })',
+        RegistrarConfiguraciones: '@Url.Action("RegistrarConfiguraciones", "Maestros", new { area = "GASTO" })',
+        RegistrarConfiguracionesPost: '@Url.Action("RegistrarConfiguracionesPost", "Maestros", new { area = "GASTO" })',
+        ActualizarConfiguracionesPost: '@Url.Action("ActualizarConfiguracionesPost", "Maestros", new { area = "GASTO" })',
+        EliminarConfiguracionesPost: '@Url.Action("EliminarConfiguracionesPost", "Maestros", new { area = "GASTO" })',
+        RegistrarUsuarioAprobadorPost: '@Url.Action("RegistrarUsuarioAprobadorPost", "Maestros", new { area = "GASTO" })',
+        ActualizarUsuarioAprobadorPost: '@Url.Action("ActualizarUsuarioAprobadorPost", "Maestros", new { area = "GASTO" })',
+    }
+    $(document).ready(function () {
+    });
+
+    var GuardarUsuarioSucursal = function (isValid) {
+        var urlAccion = '';
+        var ID = $('#hdfID_FormularioTabla10').val();
+        var idsociedad = $('#dllSociedad_10').val();
+        var idsucursal = $('#dllSucursal_10_pv').val();
+        var idusuario = $('#dllUsuarioCaja').val();
+        if (ID  == "0") {
+            urlAccion = url.RegistrarUsuarioSucursalPost;
+        } else {
+            urlAccion = url.ActualizarUsuarioSucursalPost;
+        }
+        if (isValid) {
+            var element = {
+                ID: ID,
+                IdSucursal: idsucursal,
+                IdUsuario: idusuario,
+                CodigoSociedadFI: idsociedad,
+            };
+            $.ajax({
+               url: urlAccion,
+               type: 'POST',
+               data: { element: element },
+               dataType: 'JSON',
+               async: true,
+               beforeSend: function () {
+                  fn_BloquearPantalla();
+               },
+               success: function (data) {
+                  if (data.Success) {
+                     window.location = '@Url.Action("Index", "Maestros", new { area = "GASTO" })';
+                  } else {
+                     toastr["error"](data.Message);
+                     document.getElementById("GuardarTabla10").disabled = false
+                  }
+               },
+               complete: function () {
+                 fn_DesbloquearPantalla();
+                 document.getElementById("GuardarTabla10").disabled = false
+               }
+            });
+        }
+    }
+
+     var GuardarUsuarioAprobador = function (isValid) {
+         var urlAccion = '';
+        var ID = $('#hdfID_FormularioTabla22').val();
+        var idsociedad = $('#dllSociedad_22').val();
+        //var idsucursal = $('#dllSucursal_10_pv').val();
+         var idusuario = $('#dllUsuario22').val();
+         var CentroCostoMultiSelect = $('#ddlCentroCostoMultiSelect').val() === null ? [] : $('#ddlCentroCostoMultiSelect').val()
+         var listaCentroCosto=CentroCostoMultiSelect.join(',');
+
+
+        if (ID  == "0") {
+            urlAccion = url.RegistrarUsuarioAprobadorPost;
+        } else {
+            urlAccion = url.ActualizarUsuarioAprobadorPost;
+        }
+        if (isValid) {
+            var element = {
+                ID: ID,
+                IdUsuario: idusuario,
+                CodigoSociedadFI: idsociedad,
+                listaUsuarioAprobadorCentroCostoByUsuario: listaCentroCosto
+            };
+            $.ajax({
+               url: urlAccion,
+               type: 'POST',
+               data: { element: element },
+               dataType: 'JSON',
+               async: true,
+               beforeSend: function () {
+                  fn_BloquearPantalla();
+               },
+               success: function (data) {
+                  if (data.Success) {
+                     window.location = '@Url.Action("Index", "Maestros", new { area = "GASTO" })';
+                  } else {
+                     toastr["error"](data.Message);
+                     document.getElementById("GuardarTabla22").disabled = false
+                  }
+               },
+               complete: function () {
+                 fn_DesbloquearPantalla();
+                 document.getElementById("GuardarTabla22").disabled = false
+               }
+            });
+        }
+    }
+
+    var EliminarUsuarioSucursal = function (id) {
+        var resp = confirm("Está seguro de eliminar el Registro UsuarioSucursal ID="+id);
+        if (resp == true) {
+            var urlAccion = url.EliminarUsuarioSucursalPost;
+            $.ajax({
+                url: urlAccion,
+                type: 'POST',
+                data: { Id: id },
+                dataType: 'JSON',
+                async: true,
+                beforeSend: function () {
+                    fn_BloquearPantalla();
+                },
+                success: function (data) {
+                    if (data.Success) {
+                        window.location = '@Url.Action("Index", "Maestros", new { area = "GASTO" })';
+                    }
+                    else {
+                        toastr["error"](data.Message);
+                        document.getElementById("GuardarTabla10").disabled = false
+                    }
+                },
+                complete: function () {
+                    fn_DesbloquearPantalla();
+                    document.getElementById("GuardarTabla10").disabled = false
+                }
+            });
+        }
+    }
+    var EliminarUsuarioAprobador = function (id) {
+        var resp = confirm("Está seguro de eliminar el Registro UsuarioAprobador ID="+id);
+        if (resp == true) {
+            var urlAccion = url.EliminarUsuarioAprobadorPost;
+            $.ajax({
+                url: urlAccion,
+                type: 'POST',
+                data: { Id: id },
+                dataType: 'JSON',
+                async: true,
+                beforeSend: function () {
+                    fn_BloquearPantalla();
+                },
+                success: function (data) {
+                    if (data.Success) {
+                        window.location = '@Url.Action("Index", "Maestros", new { area = "GASTO" })';
+                    }
+                    else {
+                        toastr["error"](data.Message);
+                        document.getElementById("GuardarTabla22").disabled = false
+                    }
+                },
+                complete: function () {
+                    fn_DesbloquearPantalla();
+                    document.getElementById("GuardarTabla22").disabled = false
+                }
+            });
+        }
+    }
+
+    var GuardarSociedadSucursal = function (isValid) {
+        var urlAccion = '';
+        var ID = $('#hdfID_FormularioTabla21').val();
+        var idsociedad = $('#dllSociedad_21').val();
+        var idsucursal = $('#dllSucursal_21').val();
+     
+        if (ID  == "0") {
+            urlAccion = url.RegistrarSociedadSucursalPost;
+        } else {
+            urlAccion = url.ActualizarSociedadSucursalPost;
+        }
+        if (isValid) {
+            var element = {
+                ID: ID,
+                IdSucursal: idsucursal,
+                CodigoSociedadFI: idsociedad,
+            };
+            $.ajax({
+               url: urlAccion,
+               type: 'POST',
+               data: { element: element },
+               dataType: 'JSON',
+               async: true,
+               beforeSend: function () {
+                  fn_BloquearPantalla();
+               },
+               success: function (data) {
+                  if (data.Success) {
+                     window.location = '@Url.Action("Index", "Maestros", new { area = "GASTO" })';
+                  } else {
+                     toastr["error"](data.Message);
+                     document.getElementById("GuardarTabla21").disabled = false
+                  }
+               },
+               complete: function () {
+                 fn_DesbloquearPantalla();
+                 document.getElementById("GuardarTabla21").disabled = false
+               }
+            });
+        }
+    }
+
+    var EliminarSociedadSucursal = function (id) {
+        var resp = confirm("Está seguro de eliminar el Registro SociedadSucursal ID="+id);
+        if (resp == true) {
+            var urlAccion = url.EliminarSociedadSucursalPost;
+            $.ajax({
+                url: urlAccion,
+                type: 'POST',
+                data: { Id: id },
+                dataType: 'JSON',
+                async: true,
+                beforeSend: function () {
+                    fn_BloquearPantalla();
+                },
+                success: function (data) {
+                    if (data.Success) {
+                        window.location = '@Url.Action("Index", "Maestros", new { area = "GASTO" })';
+                    }
+                    else {
+                        toastr["error"](data.Message);
+                    }
+                },
+                complete: function () {
+                    fn_DesbloquearPantalla();
+                }
+            });
+        }
+    }
+
+    var GuardarConfiguraciones = function (isValid) {
+        var urlAccion = '';
+        var ID = $('#hdfID_FormularioTabla20').val();
+        var Clave = $('#txtClave').val();
+        var Valor1 = $('#txtValor1').val();
+        var Valor2 = $('#txtValor2').val();
+     
+        if (ID  == "0") {
+            urlAccion = url.RegistrarConfiguracionesPost;
+        } else {
+            urlAccion = url.ActualizarConfiguracionesPost;
+        }
+        if (isValid) {
+            var element = {
+                Id: ID,
+                Clave: Clave,
+                Valor1: Valor1,
+                Valor2: Valor2,
+            };
+            $.ajax({
+               url: urlAccion,
+               type: 'POST',
+               data: { element: element },
+               dataType: 'JSON',
+               async: true,
+               beforeSend: function () {
+                  fn_BloquearPantalla();
+               },
+               success: function (data) {
+                  if (data.Success) {
+                     window.location = '@Url.Action("Index", "Maestros", new { area = "GASTO" })';
+                  } else {
+                     toastr["error"](data.Message);
+                     document.getElementById("GuardarTabla20").disabled = false
+                  }
+               },
+               complete: function () {
+                 fn_DesbloquearPantalla();
+                 document.getElementById("GuardarTabla20").disabled = false
+               }
+            });
+        }
+    }
+
+    var EliminarConfiguraciones = function (id) {
+        var resp = confirm("Está seguro de eliminar el Registro Configuraciones ID="+id);
+        if (resp == true) {
+            var urlAccion = url.EliminarConfiguracionesPost;
+            $.ajax({
+                url: urlAccion,
+                type: 'POST',
+                data: { Id: id },
+                dataType: 'JSON',
+                async: true,
+                beforeSend: function () {
+                    fn_BloquearPantalla();
+                },
+                success: function (data) {
+                    if (data.Success) {
+                        window.location = '@Url.Action("Index", "Maestros", new { area = "GASTO" })';
+                    }
+                    else {
+                        toastr["error"](data.Message);
+                    }
+                },
+                complete: function () {
+                    fn_DesbloquearPantalla();
+                }
+            });
+        }
+    }
+     var getSucursalBySociedad = function (_idsociedad) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaSucursalesBySociedad_PV", "Maestros", new { area = "GASTO" })',
+            type: 'POST',
+            data: { idsociedad: _idsociedad },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaSucursales").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+    var getAprobadorBySociedad = function (_idsociedad) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaAprobadoresbySociedad_PV", "Maestros", new { area = "GASTO" })',
+            type: 'POST',
+            data: { idsociedad: _idsociedad },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaAprobadorM").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+    var getCentroCostoBySociedad = function (_idsociedad) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaCentroCostobySociedad_PV", "Maestros", new { area = "GASTO" })',
+            type: 'POST',
+            data: { idsociedad: _idsociedad },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaCentroCostoM").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+</script>
+<script src="~/Areas/GASTO/Scripts/Maestros/Index.js"></script>
+<script src="~/Content/plugins/starrr/starrr.js"></script>

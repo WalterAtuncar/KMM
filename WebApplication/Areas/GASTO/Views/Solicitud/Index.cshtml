@@ -1,0 +1,733 @@
+﻿@model WebApplication.Areas.GASTO.Models.SolicitudViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+    .datepicker {
+        z-index: 3000 !important;
+    }
+
+    [class="select2"] {
+        /*width: 100%;*/
+    }
+</style>
+<style type="text/css">
+    /*.ui-jqgrid tr.jqgrow td*/
+    #jqGrid3 tr.jqgrow td {
+        white-space: normal !important;
+        height: auto;
+        vertical-align: text-top;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        word-wrap: break-word; /* IE 5.5+ and CSS3 */
+        white-space: pre-wrap; /* CSS3 */
+        white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+        white-space: -pre-wrap; /* Opera 4-6 */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        overflow: hidden;
+    }
+
+    /*.ui-jqgrid .ui-jqgrid-htable th div*/
+    #jqGrid3 th div {
+        height: auto;
+        overflow: hidden;
+        padding-right: 2px;
+        padding-top: 2px;
+        position: relative;
+        /*vertical-align: text-top;*/
+        white-space: normal !important;
+        word-wrap: break-word; /* IE 5.5+ and CSS3 */
+        white-space: pre-wrap; /* CSS3 */
+        white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+        white-space: -pre-wrap; /* Opera 4-6 */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        vertical-align: middle;
+        padding-bottom: 2px;
+    }
+    #modalRendicionGastos {
+        height:428px;
+        overflow-y: scroll;
+    }
+    #modalSolicitudesDelegadas {
+        height: 480px;
+        overflow-y: scroll;
+    }
+   
+</style>
+
+
+
+<h3 class="text-left text-primary">
+    <input type="hidden" id="configuracionAdjunto" name="configuracionAdjunto" value="@ViewBag.listaConfiguracionAdjunto" />
+    <i class="fa fa-file-text-o" style="color:red;"></i>
+    <i class="fa fa-chevron-right" style="font-size:15px;color:#ee3224;"></i>
+    SOLICITUDES DE GASTOS
+</h3>
+
+<br />
+
+<div class="row">
+    <div id="filtros">
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">DNI - Nombre:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkDni" />
+                            </span>
+                            @Html.DropDownList("listaBeneficiado", new SelectList(ViewBag.ListaBeneficiado, "ID", "Nombres"), new { @id = "txtDni", @class = "form-control select2" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Desde:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon filtro">
+                                <input type="checkbox" id="chkFechaDesde" />
+                            </span>
+                            <div id="FechaInicioSolicitudDatePicker" style="width: 100%;" class="input-group input-group-sm date filtro" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                <input class="form-control filtro" id="fechaDesde" />
+                                <div class="input-group-addon filtro close-button">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Tipo Solicitud:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkTipo" />
+                            </span>
+                            @Html.DropDownListFor(m => m.IdTipo, new SelectList(ViewBag.listaTipoSolicitud, "IdTipo", "Tipo"), new { @class = "form-control select2", @id = "txtTipo" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Centro de Costo: </label>
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <input id="chkCentroCosto" type="checkbox" />
+                            </span>
+                            @{Html.RenderAction("GetDropDown", "CentroCosto", new { @class = "form-control input-sm filtro select2", id = string.Empty, nombre = "dllCentroCosto", @default = "-SELECCIONE-" }); }
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Hasta:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkFechaHasta" />
+                            </span>
+                            <div id="FechaFinSolicitudDatePicker" style="width: 100%;" class="input-group input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                <input type="text" class="form-control filtro" id="fechaHasta" />
+                                <div class="input-group-addon close-button">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Estado: </label>
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <input id="chkEstadoPorTipo" type="checkbox" />
+                            </span>
+                            <div id="content-ListaEstdosPorTipo">
+                                @Html.Partial("_ListaEstadosPorTipo")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <button id="btnRegistrarSolicitud" class="btn btn-primary btn-sm" style="width:150px;margin-bottom:5px;"><i class="fa fa-plus-circle"></i> Nuevo</button>
+            <br />
+            <button id="btnBuscarSolicitud" class="btn btn-danger btn-sm" style="width:150px;margin-bottom:5px;"><i class="fa fa-search"></i> Buscar</button>
+            <br />
+            <button id="btnSolicitudesDelegadas" class="btn btn-warning btn-sm" style="width:150px;"><i class="fa fa-external-link-square"></i> Sol. Delegadas</button>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+
+<div class="row">
+    <div class="col-sm-12">
+        <div id="div-tbl-solicitud" class="table-responsive">
+            <table id="jqGrid" class="table-gys-kom"></table>
+            <div id="jqControls">
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<div class="modal fade" id="modal-sol-detalle" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-solicitud" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:890px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-solicitud-detalle" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:890px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-solicitud-terminos" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:550px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-solicitud-detalle-gasto" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:90%;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-solicitud-detalle-gasto-registro" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:60%;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-solicitud-detalle-gasto-eliminar" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:300px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-solicitud-eliminar-anular" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:300px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-solicitudes-delegadas" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:95%;" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-solicitudes-delegadas-aprobacion" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:320px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-solicitud-detalleSD" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:890px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-sol-detalleSD" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-solicitud-detalle-gastoSD" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:90%;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-solicitud-rechazo" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:320px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+<script src="~/Content/plugins/starrr/starrr.js"></script>
+
+<script>
+    var cargado = 0;
+    var idUserAprobador = 0;
+    var idUserAprobadorCaja = 0;
+    var idUserCentroCostoSolicitud = 0;
+    var idUserCentroCostoSolicitudR = 0;
+    var idUserSociedad = 0;
+    var idEstadoPorTipo = 0;
+    var idUserImpuesto = 0;
+    var idUserPais = 1;
+    var idUserCuentaBancaria = "0";
+    var idmoneda_ = 2;
+    var idUserSucursal_pv = 0;
+    var idSucursalBySociedad = 0;
+    var url = {
+        GetListSolicitud: '@Url.Action("GetListSolicitud", "Solicitud", new { area = "GASTO" })',
+        GetListDetalleRendirGasto: '@Url.Action("GetListDetalleRendirGasto", "Solicitud", new { area = "GASTO" })',
+        GetHistorialSolicitud: '@Url.Action("GetHistorialByIdSolicitud", "Solicitud", new { area = "GASTO" })',
+        ValidarOrdenServicio: '@Url.Action("ValidarOrdenServicio", "Solicitud", new { area = "GASTO" })',
+        Registrar: '@Url.Action("Registrar", "Solicitud", new { area = "GASTO" })',
+        DetalleSolicitud: '@Url.Action("GetSolicitudDetalleByIdSolicitud", "Solicitud", new { area = "GASTO" })',
+        DetalleRendirGastos: '@Url.Action("GetDetalleRendirGastoByIdSolicitud", "Solicitud", new { area = "GASTO" })',
+        DetalleRendirGastosSD: '@Url.Action("GetDetalleRendirGastoByIdSolicitud", "AprobacionJefes", new { area = "GASTO" })',
+        Terminos: '@Url.Action("Terminos", "Solicitud", new { area = "GASTO" })',
+        RegistrarPost: '@Url.Action("RegistrarPost", "Solicitud", new { area = "GASTO" })',
+        ActualizarPost: '@Url.Action("ActualizarPost", "Solicitud", new { area = "GASTO" })',
+        RegistrarDetRendicionSolicitudPost: '@Url.Action("RegistrarDetRendicionSolicitudPost", "Solicitud", new { area = "GASTO" })',
+        ActualizarDetRendicionSolicitudPost: '@Url.Action("ActualizarDetRendicionSolicitudPost", "Solicitud", new { area = "GASTO" })',
+        ValidarCentroCosto: '@Url.Action("ValidarCentroCosto", "Solicitud")',
+        UploadUrl: '@Url.Action("UploadFile", "Solicitud", new { area = "GASTO" })',
+        RegistroDetalleGastoSolicitud: '@Url.Action("RegistroDetalleGastoSolicitud", "Solicitud", new { area = "GASTO" })',
+        ValidarDatosProveedor: '@Url.Action("ValidarDatosProveedor", "Solicitud", new { area = "GASTO" })',
+        ConfirmarEliminarDetalleGastoSolicitud: '@Url.Action("ConfirmacionEliminarDetalleGasto", "Solicitud", new { area = "GASTO" })',
+        ConfirmarAnularSolicitud: '@Url.Action("ConfirmarAnularSolicitud", "Solicitud", new { area = "GASTO" })',
+        EliminarDetalleGastoPost: '@Url.Action("EliminarDetalleGastoPost", "Solicitud", new { area = "GASTO" })',
+        PagarRendicionPost: '@Url.Action("PagarRendicionPost", "Solicitud", new { area = "GASTO" })',
+        EliminarSolicitudPost: '@Url.Action("EliminarSolicitudPost", "Solicitud", new { area = "GASTO" })',
+        ObtenerTipoCambioRFC: '@Url.Action("ObtenerTipoCambioRFC", "Solicitud", new { area = "GASTO" })',
+        ValidarNumeroComprobanteDuplicado : '@Url.Action("ValidarNumeroComprobanteDuplicado", "Solicitud", new { area = "GASTO" })',
+        ValidarDatosProveedorExterno: '@Url.Action("ValidarDatosProveedorExterno", "Solicitud", new { area = "GASTO" })',
+
+        GetListSolicitudDelegadasAprobacion: '@Url.Action("GetListSolicitudDelegadasAprobacion", "Solicitud", new { area = "GASTO" })',
+        ConfirmarAprobarSolicitudDelegada: '@Url.Action("ConfirmarAprobarSolicitudDelegada", "Solicitud", new { area = "GASTO" })',
+        SolicitudesDelegadas: '@Url.Action("SolicitudesDelegadas", "Solicitud", new { area = "GASTO" })',
+       
+        ConfirmaRechazo: '@Url.Action("ConfirmacionRechazo", "AprobacionJefes", new { area = "GASTO" })',
+        RechazarPost: '@Url.Action("RechazarPost", "AprobacionJefes", new { area = "GASTO" })',
+        AprobarPost: '@Url.Action("AprobarPost", "AprobacionJefes", new { area = "GASTO" })',
+    }
+    $(document).ready(function () {
+
+
+        $("#dllSociedad").attr("disabled", false);
+
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            //width: '100%',
+        });
+        $('#FechaInicioSolicitudDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+
+        $('#FechaFinSolicitudDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+
+        var Fecha = new Date();
+        Fecha.setDate(Fecha.getDate());
+
+        $('.close-button').unbind();
+
+        $('.close-button').click(function () {
+            if ($('.datepicker').is(":visible")) {
+                $(this).parent().datepicker('hide');
+            } else {
+                $(this).parent().datepicker('show');
+            }
+        });
+
+        $('select[name="dllCentroCostoAfectoCodigoSap"], select[name="listaAprobadores"], select[name="listaEstados"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+
+        //getListaEstadosPorTipo(0);
+        $('#txtTipo').change(function () {
+            var _idtipo = $("#txtTipo").val();
+            getListaEstadosPorTipo(_idtipo);
+        })
+    });
+
+
+
+
+    var getListaEstadosPorTipo = function (_idtipo) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaEstadosPorTipo_PV", "Solicitud")',
+            type: 'POST',
+            data: { idtipo: _idtipo },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaEstdosPorTipo").html(data);
+                if (!$("#chkEstadoPorTipo").is(':checked')) {
+                    $('select#dll_EstadosPorTipo').prop('disabled', true);
+                }
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+
+    function EliminarSolicitud(id) {
+        $.ajax({
+            url: url.EliminarSolicitudPost,
+            type: 'POST',
+            data: { id: id },
+            dataType: 'JSON',
+            async: true,
+            beforeSend: function () {
+                fn_BloquearPantalla();
+            },
+            success: function (data) {
+                if (data.Success) {
+                    window.location = '@Url.Action("Index", "Solicitud")';
+                 } else {
+                   toastr["error"](data.Message);
+                   document.getElementById("btnEliminarSol").disabled = false
+                 }
+            },
+            complete: function () {
+                fn_DesbloquearPantalla();
+                //document.getElementById("RechazarSolicitudButton").disabled = false
+            }
+        });
+    }
+
+    function EliminarDetalleGasto(id) {
+        $.ajax({
+              url: url.EliminarDetalleGastoPost,
+              type: 'POST',
+              data: { id: id },
+              dataType: 'JSON',
+              async: true,
+              beforeSend: function () {
+              fn_BloquearPantalla();
+              },
+              success: function (data) {
+                 if (data.Success) {
+                     $('#modal-solicitud-detalle-gasto-eliminar').modal('hide');
+                     fn_BloquearPantalla();
+                     var idsolicitud = $('#hdfIdSolicitud').val();
+                     $('#modal-solicitud-detalle-gasto .modal-content').empty();
+                     $('#modal-solicitud-detalle-gasto .modal-content').load(url.DetalleRendirGastos, { IdSolicitud: idsolicitud }, function () {
+                        fn_DesbloquearPantalla();
+                     });
+                 } else {
+                   toastr["error"](data.Message);
+                     //document.getElementById("RechazarSolicitudButton").disabled = false
+                 }
+              },
+              complete: function () {
+                 fn_DesbloquearPantalla();
+                 //document.getElementById("RechazarSolicitudButton").disabled = false
+              }
+        });
+    }
+
+    @*var getUsuarioCentroCosto = function (_ceco) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaAprobadores_PV", "Solicitud")',
+            type: 'POST',
+            data: { ceco: _ceco },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaUsuarioCentroCosto").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }*@
+
+     var getUsuarioSucursal = function (_idsociedad,_idsucursal) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaAprobadoresCaja_PV", "Solicitud")',
+            type: 'POST',
+            data: { idsociedad: _idsociedad, idsucursal: _idsucursal },
+            cache: false,
+            async: true,
+            success: function (data) {
+                //console.log(data);
+                $("#content-ListaUsuarioSucursal").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+    var getBeneficiariosBySociedad = function (_idsociedad, _idtipo) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaBeneficiarios_PV", "Solicitud")',
+            type: 'POST',
+            data: { idsociedad: _idsociedad, idtipo: _idtipo },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaBeneficiarios").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+    var getSucursalesBySociedad = function (_idsociedad) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaSucursalesBySociedad_PV", "Solicitud")',
+            type: 'POST',
+            data: { idsociedad: _idsociedad},
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaSucursalBySociedad").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+
+
+    var GuardarSolicitud = function (isValid) {
+        debugger;
+            validacionCentroCosto = true;
+            var centroCosto = '';
+            var ordenServicio = '';
+            var idAprobador = 0;
+            var tipsolicitud = $('#dllTipoSolicitud').val();
+            if (tipsolicitud == "1" || tipsolicitud == "2" || tipsolicitud == "4") {
+                centroCosto = document.getElementById('dllCentroCostoAfectoCodigoSap').value;
+                idAprobador = $('#dllListaAprobadores').val();
+            }
+            //var ordenServicio = document.getElementById('txtOrdenServicio').value;
+            //ordenServicio = '';
+            //if (centroCosto == "") {
+            //    toastr["error"]("El centro de costo no se encuentra registrado en el Sistema de Komatsu");
+            //    document.getElementById("btn-save").disabled = true;
+            //}
+            //else
+            //{
+            //if (idAprobador == null || idAprobador == "") {
+            //    toastr["error"]("No se ha seleccionado un Aprobador");
+            //}
+            var idtipo = parseInt($('#dllTipoSolicitud').val());
+            var idsituacionservicio = 1;
+            if (idtipo == 1) {
+                idsituacionservicio = 2;
+            }
+            var urlAccion = '';
+            if ($('#hdfIdSolicitud_Formulario').val() == "0") {
+                urlAccion = url.RegistrarPost;
+            } else {
+                urlAccion = url.ActualizarPost;
+            }
+
+           $.ajax({
+            url: url.ValidarCentroCosto,
+            type: 'POST',
+            data: { codigoCentroCosto: centroCosto },
+            dataType: 'JSON',
+            beforeSend: function () {
+                fn_BloquearPantalla();
+            },
+            cache: false,
+            async: true,
+            success: function (data) {
+                if (data.Success) {
+                    document.getElementById("dllCentroCostoAfectoCodigoSap").disabled = true
+                    //if (ordenServicio == "") {
+                    //    validacionCentroCosto = true;
+                    //    $('#idDesbloquear').prop('checked', true);
+                    //    toastr["info"]("Debe ingresar una OS");
+                    //    $('#div-validate-os-status').html('<i class="fa fa-info-circle fa-lg text-primary"></i> <label style="font-size: 11px;" class = "text-primary">Debe ingresar una OS</label>');
+                    //    setTimeout(function () {
+                    //    }, 100);
+                    //} else {
+                        validacionCentroCosto = true;
+                    //}
+                } else {
+                    document.getElementById("dllCentroCostoAfectoCodigoSap").disabled = false
+                    document.getElementById("GuardarSolicitudButton").disabled = false
+                    validacionCentroCosto = false;
+                }
+
+                var cta_ = $('#dllCuentasBancarias').val();
+                idmoneda_ = cta_.substr(0, 3) == "USD" ? 1 : 2 ;
+
+                // Continuación del flujo principal
+                if (isValid && validacionCentroCosto) {
+                    validacionOrdenServicio = true;
+                    if (validacionOrdenServicio) {
+                        fn_BloquearPantalla();
+                        var element = {
+                            IdSolicitud: 0,
+                            AsientoContable :'',
+                            CentroCostoAfectoCodigoSap: $('#dllCentroCostoAfectoCodigoSap').val(),
+                            CentroCostoAfectoDescripcion: $('#dllCentroCostoAfectoCodigoSap option:selected').html(),
+                            Comentario: $('#txtComentario').val(),
+                            Compentencia: '',
+                            CtaBancaria: '',
+                            EstadoLogico: 1,
+                            FechaAccion: null,
+                            FechaRegistroStr: $('#hdfFechaRegistro_Formulario').val(),
+                            FechaDesde: $('#FechaInicioStr').val(),
+                            FechaHasta: $('#FechaFinStr').val(),
+                            IdAprobador: idtipo == 3 ? $('#dllListaAprobadoresCaja').val() : $('#dllListaAprobadores').val() ,
+                            IdTipoReembolso: $('#dllTipoReembolso').val(),
+                            IdDestino: $('#dllAmbito').val(),
+                            IdMoneda: idmoneda_,
+                            CtaBancaria: $('#dllCuentasBancarias').val(),
+                            IdSociedad: $('#dllSociedad').val(),
+                            IdSucursal: $('#dllSucursalUsuario').val(),
+                            IdTipo: idtipo,
+                            IdUsuario: $('#dllBeneficiado-0').val(),
+                            IdUsuarioAprobador: $('#dllUsuarioAprobador').val(),
+                            IdSituacionServicio: idsituacionservicio,
+                            IdSituacionServicio2: $('#dllAmbito').val()=="1" ? null : 1,
+
+                            ImporteSolicitud: $('#txtImporte').val() == '' ? 0 : $('#txtImporte').val(),
+                            Motivo: $('#txtMotivoCreacionSolicitud').val(),
+                            Observaciones: $('#txtMotivoCreacionSolicitud').val(),
+                            };
+                            $.ajax({
+                                url: urlAccion,
+                                type: 'POST',
+                                data: { element: element, idAprobador: idAprobador },
+                                dataType: 'JSON',
+                                async: true,
+                                beforeSend: function () {
+                                    fn_BloquearPantalla();
+                                },
+                                success: function (data) {
+                                    if (data.Success) {
+                                        window.location = '@Url.Action("Index", "Solicitud")?upd=true';
+                                        toastr["success"]('Procesado correctamente.');
+                                    } else {
+                                        toastr["error"](data.Message);
+                                        document.getElementById("GuardarSolicitudButton").disabled = false
+                                    }
+                                },
+                                complete: function () {
+                                    fn_DesbloquearPantalla();
+                                    document.getElementById("GuardarSolicitudButton").disabled = false
+                                }
+                            });
+
+                    } else {
+                        document.getElementById("GuardarSolicitudButton").disabled = false
+                    }
+                }
+                else {
+                    if (isValid) {
+
+                        var element = {
+
+                            IdSolicitud: $('#hdfIdSolicitud_Formulario').val(),
+                            AsientoContable : '',
+                            CentroCostoAfectoCodigoSap: $('#dllCentroCostoAfectoCodigoSap').val(),
+                            CentroCostoAfectoDescripcion: $('#dllCentroCostoAfectoCodigoSap option:selected').html(),
+                            Comentario: $('#txtComentario').val(),
+                            Compentencia: '',
+                            CtaBancaria: '',
+                            EstadoLogico: 1,
+                            FechaAccion: null,
+                            FechaRegistroStr: $('#hdfFechaRegistro_Formulario').val(),
+                            FechaDesde: $('#FechaInicioStr').val(),
+                            FechaHasta: $('#FechaFinStr').val(),
+                            IdAprobador: idtipo == 3 ? $('#dllListaAprobadoresCaja').val() : $('#dllListaAprobadores').val(),
+                            IdTipoReembolso: $('#dllTipoReembolso').val(),
+                            IdDestino: $('#dllAmbito').val(),
+                            IdMoneda: idmoneda_,
+                            CtaBancaria: $('#dllCuentasBancarias').val(),
+                            IdSociedad: $('#dllSociedad').val(),
+                            IdSucursal: $('#dllSucursalUsuario').val(),
+                            IdTipo: idtipo,
+                            IdUsuario: $('#dllBeneficiado-0').val(),
+                            IdUsuarioAprobador: $('#dllUsuarioAprobador').val(),
+                            IdSituacionServicio: idsituacionservicio,
+                            IdSituacionServicio2: $('#dllAmbito').val() == "1" ? null : 1,
+                            ImporteSolicitud: $('#txtImporte').val() == '' ? 0 : $('#txtImporte').val(),
+                            Motivo: $('#txtMotivoCreacionSolicitud').val(),
+                            Observaciones: $('#txtMotivoCreacionSolicitud').val(),
+                        };
+
+
+                            $.ajax({
+                                @*url: '@Url.Action("RegistrarPost", "Solicitud")',*@
+                                url: urlAccion,
+                                type: 'POST',
+                                data: { element: element, idAprobador: idAprobador },
+                                cache: false,
+                                dataType: 'JSON',
+                                beforeSend: function () {
+                                    fn_BloquearPantalla();
+                                },
+                                async: true,
+                                success: function (data) {
+                                    if (data.Success) {
+                                        window.location = '@Url.Action("Index", "Solicitud")?upd=true';
+                                        toastr["success"]('Procesado correctamente.');
+                                    } else {
+                                        toastr["error"](data.Message);
+                                        document.getElementById("GuardarSolicitudButton").disabled = false
+                                    }
+                                },
+                                complete: function () {
+                                    fn_DesbloquearPantalla();
+                                    document.getElementById("GuardarSolicitudButton").disabled = false
+                                }
+                            });
+                    } else {
+                        document.getElementById("GuardarSolicitudButton").disabled = false
+                    }
+                }
+            }
+        });
+    }
+
+</script>
+<script src="~/Areas/GASTO/Scripts/Solicitud/Index.js?v=1.0"></script>
+<script src="~/Content/plugins/starrr/starrr.js"></script>

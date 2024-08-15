@@ -1,0 +1,23 @@
+﻿<div>
+    @Html.DropDownList("ListaImpuesto",
+                       new SelectList(ViewBag.listaImpuesto, "IdImpuesto", "DescripcionImpuesto"),
+                       new { @id = "dllImpuesto",
+                           @class = "form-control select2" }
+                      )
+</div>
+<script>
+    $(function () {
+        @{int count = new SelectList(ViewBag.listaImpuesto).Count();}
+        __countImpuestosDisponibles = @count;
+        $('select[name="ListaImpuesto"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+
+        idUserImpuesto = '@ViewBag.IdImpuestoFirst';
+
+        $("#dllImpuesto").val(idUserImpuesto)
+        $("#dllImpuesto").trigger('change')
+        $('#txtNroIzquierda').val('@ViewBag.IdClase');
+    })
+</script>

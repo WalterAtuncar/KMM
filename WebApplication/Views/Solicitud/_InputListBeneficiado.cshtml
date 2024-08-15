@@ -1,0 +1,3 @@
+﻿@model List<Data.Common.Usuario>
+
+@Html.DropDownList("ddlPlanCuenta",new SelectList(Model, "ID", "Nombres"),new { @class = "form-control select2", @id = "[ID]"})

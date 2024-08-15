@@ -1,0 +1,353 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+    .accordion-link{
+        display: none;
+    }
+
+    .data-point-label{
+        font-weight: bold;
+    }
+
+    .container-flot {
+        box-sizing: border-box;
+        width: 850px;
+        height: 450px;
+        padding: 20px 15px 15px 15px;
+        margin: 15px auto 30px auto;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid #ddd;
+        background: #fff;
+        background: linear-gradient(#f6f6f6 0, #fff 50px);
+        background: -o-linear-gradient(#f6f6f6 0, #fff 50px);
+        background: -ms-linear-gradient(#f6f6f6 0, #fff 50px);
+        background: -moz-linear-gradient(#f6f6f6 0, #fff 50px);
+        background: -webkit-linear-gradient(#f6f6f6 0, #fff 50px);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        -o-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        -ms-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        -moz-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        -webkit-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .placeholder-flot {
+        width: 100%;
+        height: 100%;
+        font-size: 12px;
+    }
+</style>
+
+
+<h2 class="title" style="margin-bottom: 0">
+    <i class="fa fa-angle-right"></i>&nbsp;Reporte
+</h2>
+<br />
+<div class="row">
+    <div id="filtros" style="margin-top: 15px;">
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Sociedad:</label>
+                    <div class="col-sm-8 input-group-sm">
+                        @{Html.RenderAction("GetDropDown", "Sociedad", new { @default = "--SELECCIONE SOCIEDAD--" }); }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Fecha reporte desde:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                            <input type="text" id="FechaReporteInicioTextBox" class="form-control" />
+                            <div class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Responsable:</label>
+                    <div id="responsable" class="col-sm-8 input-group-sm">
+                        <select name="ResponsableDropDown" class="form-control">
+                            <option value="">--SELECCIONE RESPONSABLE--</option>
+                        </select>
+                        @*@{Html.RenderAction("GetDropDown", "Reporte", new { id = string.Empty }); }*@
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Fecha reporte hasta:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                            <input type="text" id="FechaReporteFinTextBox" class="form-control" />
+                            <div class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-4">
+                        <button id="BuscarReporte" class="btn btn-sm btn-danger" style="width: 120px;">Buscar <i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+                @*<div class="form-group">
+                    <div class="col-sm-4">
+                        <button id="btnExportar" class="btn btn-sm btn-primary" style="width: 120px;" disabled>Exportar <i class="glyphicon glyphicon-export"></i></button>
+                    </div>
+                </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-sm-12">
+        <ul class="nav nav-tabs responsive-tabs">
+            <li class="active"><a id="btnGeneral" href="#general" data-toggle="tab">General</a></li>
+            <li><a id="btnGastoTotal" href="#gastoTotal" data-toggle="tab">Gasto Total</a></li>
+            <li><a id="btnDetalleGastoTotal" href="#detalleGastoTotal" data-toggle="tab">Detalle Gasto</a></li>
+            <li><a id="btnPenalidad" href="#penalidad" data-toggle="tab">Penalidad</a></li>
+            <li><a id="btnComparacionMensual" href="#comparacionMensual" data-toggle="tab">Comparación</a></li>
+        </ul>
+    </div>
+</div>
+
+<div id="gastoTotal">
+    @Html.Partial("GastoTotal")
+</div>
+
+<div id="detalleGastoTotal">
+    @Html.Partial("DetalleGastoTotal")
+</div>
+
+<div id="penalidad">
+    @Html.Partial("Penalidad")
+</div>
+
+<div id="comparacionMensual">
+    @Html.Partial("ComparacionMensual")
+</div>
+
+<script type="text/javascript">
+    $('.responsive-tabs').responsiveTabs({
+        accordionOn: ['xs', 'sm'] // xs, sm, md, lg
+    });
+    $(document).ready(function () {
+        var ResponsableID = 0;
+        var SociedadID = 0;
+        var FechaInicioTxt = null;
+        var FechaFinTxt = null;
+
+        $("#btnGastoTotal").css("display", "none");
+        $("#btnDetalleGastoTotal").css("display", "none");
+        $("#btnPenalidad").css("display", "none");
+        $("#btnComparacionMensual").css("display", "none");
+        
+        $("#btnExportarGastoTotal").css("display", "none");
+        $("#btnExportarDetalleGastoTotal").css("display", "none");
+        $("#btnExportarComparacionMensual").css("display", "none");
+        $("#btnExportarPenalidad").css("display", "none");
+
+        $("#btnExportarGeneralGT").css("display", "block");
+        $("#btnExportarGeneralDGT").css("display", "block");
+        $("#btnExportarGeneralP").css("display", "block");
+        $("#btnExportarGeneralCM").css("display", "block");
+
+        $("#gastoTotal").css("display", "block");
+        $("#detalleGastoTotal").css("display", "block");
+        $("#penalidad").css("display", "block");
+        $("#comparacionMensual").css("display", "block");
+
+        $("#btnGeneral").click(function () {
+            $("#btnExportarGeneralGT").css("display", "block");
+            $("#btnExportarGeneralDGT").css("display", "block");
+            $("#btnExportarGeneralP").css("display", "block");
+            $("#btnExportarGeneralCM").css("display", "block");
+
+            $("#btnExportarGastoTotal").css("display", "none");
+            $("#btnExportarDetalleGastoTotal").css("display", "none");
+            $("#btnExportarComparacionMensual").css("display", "none");
+            $("#btnExportarPenalidad").css("display", "none");
+            $("#btnExportarGeneral").css("display", "block");
+
+            $("#gastoTotal").css("display", "block");
+            $("#detalleGastoTotal").css("display", "block");
+            $("#penalidad").css("display", "block");
+            $("#comparacionMensual").css("display", "block");
+        });
+
+        $("#btnGastoTotal").click(function () {
+            $("#btnExportarGastoTotal").css("display", "block");
+            $("#btnExportarGeneralGT").css("display", "none");
+
+            $("#gastoTotal").css("display", "block");
+            $("#detalleGastoTotal").css("display", "none");
+            $("#penalidad").css("display", "none");
+            $("#comparacionMensual").css("display", "none");
+        });
+
+        $("#btnDetalleGastoTotal").click(function () {
+            $("#btnExportarDetalleGastoTotal").css("display", "block");
+            $("#btnExportarGeneralDGT").css("display", "none");
+
+            $("#gastoTotal").css("display", "none");
+            $("#detalleGastoTotal").css("display", "block");
+            $("#penalidad").css("display", "none");
+            $("#comparacionMensual").css("display", "none");
+        });
+
+        $("#btnPenalidad").click(function () {
+            $("#btnExportarPenalidad").css("display", "block");
+            $("#btnExportarGeneralP").css("display", "none");
+
+            $("#gastoTotal").css("display", "none");
+            $("#detalleGastoTotal").css("display", "none");
+            $("#penalidad").css("display", "block");
+            $("#comparacionMensual").css("display", "none");
+        });
+
+        $("#btnComparacionMensual").click(function () {
+            $("#btnExportarComparacionMensual").css("display", "block");
+            $("#btnExportarGeneralCM").css("display", "none");
+
+            $("#gastoTotal").css("display", "none");
+            $("#detalleGastoTotal").css("display", "none");
+            $("#penalidad").css("display", "none");
+            $("#comparacionMensual").css("display", "block");
+        });
+
+        $('select[name="SociedadDropDown"], select[name="ResponsableDropDown"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%',
+        });
+        $('#FechaReporteInicioTextBox').datepicker({
+            dateFormat: 'dd/mm/yyyy',
+            autoclose: true
+        });
+        $('#FechaReporteInicioTextBox').datepicker({
+            dateFormat: 'dd/mm/yyyy',
+            autoclose: true
+        });
+        $('select[name="SociedadDropDown"]').change(function () {
+            var $id = $('select[name="SociedadDropDown"]').val();
+            $.post('@Url.Action("GetDropDown", "Reporte")', { id: $id },
+                function (data) {
+                    $('select[name="ResponsableDropDown"]').empty();
+                    var option = new Option("--SELECCIONE RESPONSABLE--", 0, true, true);
+                    $('select[name="ResponsableDropDown"]').append(option).trigger('change');
+                    data.forEach(function (item) {
+                        option = new Option(item.Apellidos + ", " + item.Nombres, item.ID, true, true);
+                        $('select[name="ResponsableDropDown"]').append(option).trigger('change');
+                    });
+                    $('select[name="ResponsableDropDown"]').val(0).trigger('change');
+            });
+        });
+        $('#BuscarReporte').click(function () {
+            fn_BloquearPantalla();
+            ResponsableID = $("select[name='ResponsableDropDown'").val();
+            SociedadID = $('select[name="SociedadDropDown"]').val();
+            FechaInicioTxt = $('#FechaReporteInicioTextBox').val();
+            FechaFinTxt = $('#FechaReporteFinTextBox').val();
+            if (ResponsableID > 0) {
+                BusquedaGastoTotal(ResponsableID, SociedadID, FechaInicioTxt, FechaFinTxt);
+                BusquedaDetalleGastoTotal(ResponsableID, SociedadID, FechaInicioTxt, FechaFinTxt);
+                BusquedaTiempoEspera(ResponsableID, SociedadID, FechaInicioTxt, FechaFinTxt);
+                BusquedaComparacionMensual(ResponsableID, SociedadID, FechaInicioTxt, FechaFinTxt);
+                $("#btnExportarGeneralGT").prop("disabled", false);
+                $("#btnExportarGeneralDGT").prop("disabled", false);
+                $("#btnExportarGeneralP").prop("disabled", false);
+                $("#btnExportarGeneralCM").prop("disabled", false);
+
+                $("#btnGastoTotal").css("display", "block");
+                $("#btnDetalleGastoTotal").css("display", "block");
+                $("#btnPenalidad").css("display", "block");
+                $("#btnComparacionMensual").css("display", "block");
+                fn_DesbloquearPantalla();
+            }
+            else {
+                fn_DesbloquearPantalla();
+                toastr["warning"]('Debe seleccionar un responsable');
+                ResponsableID = 0;
+            }
+        });
+
+        $("#btnExportarGeneralGT").click(function () {
+            html2canvas($("#placeGastoTotal").get(0), {
+                onrendered: function (canvas) {
+                    document.body.appendChild(canvas);
+                    var imgDataG = canvas.toDataURL('image/png');
+                    //console.log(imgDataG);
+                    var doc = new jsPDF();
+                    doc.text(10, 10, 'Distribución de Gasto Total por B.U.', { align: 'center' });
+                    doc.addFont('Arial', 'Arial', 'normal');
+                    doc.line(10, 15, 100, 15);
+                    doc.addImage(imgDataG, 'PNG', 10, 20, 190, 95);
+                    doc.save('ReporteGastoTotal.pdf');
+                    document.body.removeChild(canvas); //  newly added line
+                }
+            });
+        });
+
+        $("#btnExportarGeneralDGT").click(function () {
+            html2canvas($("#placeDetalleGastoTotal").get(0), {
+                onrendered: function (canvas) {
+                    document.body.appendChild(canvas);
+                    var imgDataG = canvas.toDataURL('image/png');
+                    //console.log(imgDataG);
+                    var doc = new jsPDF();
+                    doc.text(10, 10, 'Porcentaje del Detalle de Gasto Total por B.U.', { align: 'center' });
+                    doc.addFont('Arial', 'Arial', 'normal');
+                    doc.line(10, 15, 130, 15);
+                    doc.addImage(imgDataG, 'PNG', 10, 20, 190, 95);
+                    doc.save('ReporteDetalleGastoTotal.pdf');
+                    document.body.removeChild(canvas); //  newly added line
+                }
+            });
+        });
+
+        $("#btnExportarGeneralP").click(function () {
+            html2canvas($("#placeTiempoEspera").get(0), {
+                onrendered: function (canvas) {
+                    document.body.appendChild(canvas);
+                    var imgDataG = canvas.toDataURL('image/png');
+                    //console.log(imgDataG);
+                    var doc = new jsPDF();
+                    doc.text(10, 10, 'Penalidad de Tiempo de Espera por B.U.', { align: 'center' });
+                    doc.addFont('Arial', 'Arial', 'normal');
+                    doc.line(10, 15, 115, 15);
+                    doc.addImage(imgDataG, 'PNG', 10, 20, 190, 95);
+                    doc.save('ReporteTiempoEspera.pdf');
+                    document.body.removeChild(canvas); //  newly added line
+                }
+            });
+        });
+
+        $("#btnExportarGeneralCM").click(function () {
+            html2canvas($("#placeComportamientoMensual").get(0), {
+                onrendered: function (canvas) {
+                    document.body.appendChild(canvas);
+                    var imgDataG = canvas.toDataURL('image/png');
+                    //console.log(imgDataG);
+                    var doc = new jsPDF();
+                    doc.text(10, 10, 'Comparacion Mensual por B.U.', { align: 'center' });
+                    doc.addFont('Arial', 'Arial', 'normal');
+                    doc.line(10, 15, 90, 15);
+                    doc.addImage(imgDataG, 'PNG', 10, 20, 190, 95);
+                    doc.save('ReporteComparacionMensual.pdf');
+                    document.body.removeChild(canvas); //  newly added line
+                }
+            });
+        });
+    });
+</script>
+<script src="~/scripts/Reporte/Index.js"></script>
+

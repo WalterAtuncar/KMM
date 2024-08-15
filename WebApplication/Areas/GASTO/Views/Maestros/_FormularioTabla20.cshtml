@@ -1,0 +1,143 @@
+﻿@model WebApplication.Areas.GASTO.Models.ConfiguracionesViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+    @if (Model.Id == default(int))
+    {
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>NUEVA CONFIGURACION</h3>
+    }
+    else
+    {
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>MODIFICAR CONFIGURACION</h3>
+    }
+
+</div>
+<input type="hidden" id="hdfID_FormularioTabla20" value="@Model.Id" />
+
+
+<div class="modal-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <ul id="detalleLiquidacion" class="nav nav-tabs responsive-tabs">
+                <li class="nav-item active">
+                    <a class="nav-link nav-link-tab active" data-toggle="tab" href="#info" role="tab" data-index="0">Datos</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <br />
+
+
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+
+            @using (Html.BeginForm("RegistrarSociedadSucursal", "Maestros", FormMethod.Post, new { @id = "frm-guardar-configuraciones" }))
+            {
+                <div class="row">
+                    <div id="filtros">
+
+                        <div class="col-sm-12">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal  rowUser">
+
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Clave: </label>
+                                        <div class="col-sm-8">
+                                            @Html.TextBoxFor(m => m.Clave, new { @class = "form-control input-sm", @id = "txtClave", maxlength = 20 })
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div id="filtros">
+                        <div class="col-sm-12">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal  rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Valor1: </label>
+                                        <div class="col-sm-8">
+                                            @Html.TextBoxFor(m => m.Valor1, new { @class = "form-control input-sm", @id = "txtValor1", maxlength = 20, @onkeypress = "return filterFloat(event,this);", @placeholder="0" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="filtros">
+                        <div class="col-sm-12">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal  rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Valor2: </label>
+                                        <div class="col-sm-8">
+                                            @Html.TextBoxFor(m => m.Valor2, new { @class = "form-control input-sm", @id = "txtValor2", maxlength = 20, @onkeypress = "return validarSoloNumeros(event);", @placeholder = "0" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="GuardarTabla20" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cancelar</button>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#GuardarTabla20').click(function (e) {
+            e.preventDefault();
+            var Clave = $('#txtClave').val();
+            var Valor1 = $('#txtValor1').val();
+            var Valor2 = $('#txtValor2').val();
+            document.getElementById("GuardarTabla20").disabled = true;
+            var $frm = $('#frm-guardar-configuraciones');
+            var formParsley = $frm.parsley(__defaultParsleyForm());
+            var isValid = formParsley.validate();
+            var indicador = true;
+            if (isValid && Clave == "") {
+                toastr["warning"]('Ingrese Clave');
+                document.getElementById("GuardarTabla20").disabled = false;
+                indicador = false;
+                return;
+            }
+            var indicador = true;
+            if (isValid && Valor1=="") {
+                toastr["warning"]('Ingrese Valor1');
+                document.getElementById("GuardarTabla20").disabled = false;
+                indicador = false;
+                return;
+            }
+            var indicador = true;
+            if (isValid && Valor2 == "") {
+                toastr["warning"]('Ingrese Valor2');
+                document.getElementById("GuardarTabla20").disabled = false;
+                indicador = false;
+                return;
+            }
+            if (indicador) {
+               GuardarConfiguraciones(isValid);
+            }
+        });
+    });
+</script>
+
+

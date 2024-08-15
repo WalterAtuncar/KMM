@@ -1,0 +1,89 @@
+﻿@model WebApplication.Models.PaginaViewModel
+
+<style>
+    .select2.select2-container {
+        width: 100% !important;
+    }
+    #tblPagina > tbody > tr > td{
+        border: 1px solid #d8d9db;
+    }
+</style>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel">
+        <i class="glyphicon glyphicon-list-alt"></i>
+        <i class="fa fa-chevron-right"></i>
+        ASIGNACIÓN DE PAGINAS
+    </h3>
+</div>
+
+<input  id="IdPerfilSeleccionado" hidden/>
+
+<div class="modal-body">
+    <div class="form-group form-md-line-input">
+            <label class="col-lg-3 col-md-2 col-xs-12 col-sm-12 control-label">Página</label>
+            <div class="col-sm-6 col-md-6">
+                @Html.DropDownList("listaPagina",
+                        new SelectList(Model.ListaPagina, "ID", "Nombre"),
+                            new
+                            {
+                                @id = "ddlPagina",
+                                @class = "form-control"
+                            })
+            </div>
+            <div class="col-md-1 col-lg-1">
+                <button id="btn-add-pagina" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Agregar</button>
+            </div>
+    </div>
+</div> 
+
+<br />
+<br />
+<div class="modal-body">
+  @if (Model.ListaPaginaPerfil.Count() > 0)
+  {
+      <table id="tblPagina" class="table-gys-kom pre-scrollable" style="width:100%;">
+          <thead>
+              <tr role="row">
+                  <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 20px;"></th>
+                  <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;"> Nombre</th>
+                  <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;"> Descripción</th>
+                  <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 20px;"></th>
+              </tr>
+          </thead>
+          <tbody>
+              @{int cont = 0;}
+
+              @foreach (var pagina in Model.ListaPaginaPerfil)
+              {
+                  cont += 1;
+                  <tr class="gradeX odd" role="row">
+                      <td class="text-center" style="width: 20px;">@cont</td>
+                      <td>@pagina.Nombre</td>
+                      <td>@pagina.Nombre</td>
+                      <td class="text-center" style="width: 20px;">
+                          <a title="Eliminar" href="javascript(0);"><i class="fa fa-times-circle" id="btn-delete-pagina" data-pid="@pagina.ID"></i></a>
+                          @*<button type="button" id="btn-delete-pagina" data-pid="@pagina.ID" href="javascript:void(0);" data-toggle="modal" data-target="#myModal"><i class="fa fa-times-circle"></i></button>*@
+                      </td>
+                  </tr>
+              }
+          </tbody>
+      </table>
+  }
+  else
+  {
+    <div class="alert alert-info">
+        <p>NO EXISTEN PAGINAS REGISTRADAS PARA ESTE PERFIL.</p>
+    </div>
+  }
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#ddlPagina').select2();
+    });
+</script>

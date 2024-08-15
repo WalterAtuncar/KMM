@@ -1,0 +1,51 @@
+﻿
+<div>
+    @Html.DropDownList("ListaBeneficiado",
+                       new SelectList(ViewBag.ListaBeneficiado, "ID", "NombreCompleto"),
+                       new { @id = "dllBeneficiado-0",
+                           @class = "form-control select2" }
+                      )
+</div>
+
+<script>
+    $(function () {
+       
+        @{int count = new SelectList(ViewBag.ListaBeneficiado).Count();}
+        __countBeneficiadosDisponibles = @count;
+        $('select[name="ListaBeneficiado"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+        $("#dllBeneficiado-0").val(idUserSociedad)
+        $("#dllBeneficiado-0").trigger('change')
+
+
+        $('#dllBeneficiado-0').change(function () {
+          
+            var cod_usuario = $("#dllBeneficiado-0").val() == "0" ? $('#hdfIdUsuario_Formulario').val() : $("#dllBeneficiado-0").val();;
+            var cod_sociedad = $('#dllSociedad').val();
+            var idtipo_solicitud = $('#dllTipoSolicitud').val();
+            $("#divCuentaBancaria").css("display", "block");
+            if (cargado == 1) {
+                ObtenerCuentaBancaria(cod_sociedad, cod_usuario, idtipo_solicitud);
+            }
+        });
+
+    })
+
+     @*function ObtenerCuentaBancaria(codsociedad, codusuario) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ObtenerCuentasBancariasByUser_PV", "Solicitud")',
+            type: 'POST',
+            data: { sociedad: codsociedad, codigo: codusuario },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaCuentasBancarias").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }*@ 
+
+</script>

@@ -1,0 +1,21 @@
+﻿
+<div>
+    @Html.DropDownList("listaAprobadoresCaja",
+                       new SelectList(ViewBag.ListaAprobadoresCaja, "IdUsuario", "NombresApellido"),
+                       new { @id = "dllListaAprobadoresCaja",
+                           @class = "form-control select2" }
+                      )
+</div>
+
+<script>
+    $(function () {
+        @{int count = new SelectList(ViewBag.ListaAprobadoresCaja).Count();}
+        __countAprobadoresCajaDisponibles = @count;
+        $('select[name="listaAprobadoresCaja"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+        $("#dllListaAprobadoresCaja").val(idUserAprobadorCaja)
+        $("#dllListaAprobadoresCaja").trigger('change')
+    })
+</script>

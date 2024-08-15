@@ -1,0 +1,234 @@
+﻿@model WebApplication.Models.LiquidacionViewModel
+<style>
+    #detalleLiquidacion li a::after {
+        z-index: 0 !important;
+    }
+
+    [class="select2"] {
+        width: 100%;
+    }
+
+	.select2-container{
+        display: inline;
+    }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>LIQUIDAR</h3>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <ul id="detalleLiquidacion" class="nav nav-tabs responsive-tabs">
+                <li class="nav-item active">
+                    <a class="nav-link nav-link-tab active" data-toggle="tab" href="#info" role="tab" data-index="0">Información</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-tab" data-toggle="tab" href="#detalle" role="tab" data-index="1">Detalle</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <br />
+    @Html.Hidden("Proveedor", new JavaScriptSerializer().Serialize(Model.ProveedorTaxi ?? new Data.Common.ProveedorTaxi()), new { @id = "ProveedorTaxiResult" })
+
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+            @using (Html.BeginForm("Liquidar", "Liquidacion", FormMethod.Post, new { @id = "frm-liquidar", @class = "form-horizontal" }))
+            {
+                @Html.HiddenFor(m => m.Liquidacion.ID, new { @id = "LiquidacionID" })
+                <div class="row">
+                    <div class="filtro">
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-sm-4" for="CLASE_DOC">Documento:</label>
+                                    <div class="col-sm-8">
+                                        @Html.DropDownListFor(m => m.Liquidacion.CodigoDocumento, new SelectList(Model.ListaDocumentoLiquidacion, "Codigo", "Nombre"), new { @class = "form-control input-sm filtro", @id = "ddlDocumento" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4" for="SOCIEDAD">Sociedad:</label>
+                                    <div class="col-sm-8">
+                                        @Html.DropDownListFor(m => m.Liquidacion.CodigoSociedad, new SelectList(Model.ListaSociedad, "CodigoSociedadFI", "NombreFI"), new { @class = "form-control input-sm filtro", @disabled = "disabled" })
+                                        @Html.HiddenFor(m => m.Liquidacion.CodigoSociedad, new { @id = "CodigoSociedad" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4" for="Fecha_Factura">Fecha Factura:</label>
+                                    <div class="col-sm-8">
+                                        <div id="txtFechaFactura" class="input-group input-group-sm date FechaDatePicker" data-provide="datepicker">
+                                            @Html.TextBoxFor(m => m.Liquidacion.FechaFacturaStr, new { @id = "IdFechaFactura", @class = "form-control input-sm", Value = Model.Liquidacion.FechaFactura == DateTime.MinValue ? DateTime.Now.ToString("dd/MM/yyyy") : Model.Liquidacion.FechaFacturaStr })
+                                            <div class="input-group-addon close-button"><span class="fa fa-calendar"></span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4">Nro. Factura:</label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.Liquidacion.NumeroFactura, new { @id = "txtNumeroFactura", @class = "form-control input-sm" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4" for="Moneda">Moneda:</label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.Liquidacion.Moneda, new { @id = "txtMoneda", @class = "form-control input-sm", @disabled = "disabled" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4" for="CTA_MAYOR">Cuenta Mayor:</label>
+                                    <div class="col-sm-8">
+                                        @Html.DropDownListFor(m => m.Liquidacion.CuentaMayor, new SelectList(Model.ListaCuentaMayor, "Codigo", "NombreCompleto"), new { @class = "form-control input-sm filtro", @id = "ddlCuentaMayor" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4" for="INDICADOR_IGV">Indicador IGV:</label>
+                                    <div class="col-sm-8">
+                                        @Html.DropDownListFor(m => m.Liquidacion.IndicadorIGV, new SelectList(Model.ListaIndicadorIGV, "Codigo", "NombreCompleto"), new { @class = "form-control input-sm filtro", @id = "ddlIndicadorIGV", @disabled = "disabled" })
+                                        @Html.HiddenFor(m => m.Liquidacion.IndicadorIGV, new { @id = "IndicadorIGV"})
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4" for="TEXTO">Texto:</label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.Liquidacion.Texto, new { @id = "txtTexto", @class = "form-control input-sm" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4" for="PROVEEDOR">Proveedor:</label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.Liquidacion.CodigoSapProveedor, new { @id = "txtCodigoSapProveedor", @class = "form-control input-sm", @disabled = "disabled" })
+                                        @Html.HiddenFor(m => m.Liquidacion.CodigoSapProveedor, new { @id = "CodigoSapProveedor" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4" for="Fecha_Contable">Fecha Contable:</label>
+                                    <div class="col-sm-8">
+                                        <div id="txtFechaContable" class="input-group input-group-sm date FechaDatePicker" data-provide="datepicker">
+                                            @Html.TextBoxFor(m => m.Liquidacion.FechaContableStr, new { @id = "IdFechaFactura", @class = "form-control input-sm", Value = Model.Liquidacion.FechaContable == DateTime.MinValue ? DateTime.Now.ToString("dd/MM/yyyy") : Model.Liquidacion.FechaContableStr })
+                                            <div class="input-group-addon close-button"><span class="fa fa-calendar"></span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4" for="IMPORTE">Importe:</label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.Liquidacion.ImporteTotal, "{0:0,0.000}", new { @id = "txtImporteTotal", @class = "form-control input-sm" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4" for="INDICADOR_D_H">Indicador:</label>
+                                    <div class="col-sm-8">
+                                        @Html.DropDownListFor(m => m.Liquidacion.CodigoIndicador, new SelectList(Model.ListaIndicadorLiquidacion, "Codigo", "Nombre"), new { @class = "form-control input-sm filtro", @disabled = "disabled" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4" for="LUGAR_COMER">Lugar Comercial:</label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.Liquidacion.LugarComercial, new { @id = "txtLugarComercial", @class = "form-control input-sm", @disabled = "disabled" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-4">Archivo:</label>
+                                    <div class="col-md-8">
+                                        <input id="archivo-adjunto" name="File" type="file" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,text/plain" multiple class="file-loading form-control input-sm">
+                                        <div id="errorBlock-producto" class="help-block"></div>
+                                        <div style="margin-top: 5px;" id="content-attachment">
+                                            @if (Model.Liquidacion.ID != Decimal.Zero)
+                                            {
+                                                @Html.Partial("_Attachment", Model)
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="tab-pane" id="detalle" role="tabpanel">
+            <div class="row">
+                <div class="col-sm-12">
+                    @Html.HiddenFor(m => m.InputList, new { @id = "inputList" })
+                    <div class="table-responsive">
+                        <table id="tblDetalleLiquidacion" class="table table-bordered table-responsive table-gys-kom" role="grid">
+                            <thead>
+                                <tr role="row">
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 20px;">N°</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="min-width: 100px; max-width:100px;">Código Servicio</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 50px;">FechaServicio</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="min-width: 90px; max-width:100px;">Hora</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="min-width: 340px; max-width:360px;">Beneficiado</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 346px;">Documento</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="min-width:50px; max-width:60px;">O/S</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="min-width: 200px; max-width:300px;">Centro Costo</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="min-width: 340px; max-width:360px;">Aprobador</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">Tarifa</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">T.Espera</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">T.DesvRuta</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">T.Peaje</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">T.Estacionamiento</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">T.Desplazamiento</th>
+                                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">T.General</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div id="div-tbl-solicitudes" class="table-responsive"></div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="GuardarLiquidacionButton" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Liquidar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+    </div>
+</div>
+
+<script>
+    (function () {
+        $(document).ready(function () {
+            $('.FechaDatePicker').datepicker('destroy');
+            $('.FechaDatePicker').datepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true
+            });
+            $('.close-button').unbind();
+            $('#ddlDocumento').change(function (e) {
+                changeIndicadorIGV();
+            });
+            changeIndicadorIGV();
+            $('#GuardarLiquidacionButton').prop('disabled', true);
+        });
+        function changeIndicadorIGV() {
+            var idDocumento = $('#ddlDocumento').val();
+            var proveedor = JSON.parse($('#ProveedorTaxiResult').val());
+            if (idDocumento == '01') {
+                $('#ddlIndicadorIGV').val(proveedor.CodigoIndicadorFactura);
+                $('#IndicadorIGV').val(proveedor.CodigoIndicadorFactura);
+                
+            } else {
+                $('#ddlIndicadorIGV').val(proveedor.CodigoIndicadorProvision);
+                $('#IndicadorIGV').val(proveedor.CodigoIndicadorProvision);
+            }
+        }
+    })();
+</script>
+
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+<script src="~/Scripts/Liquidacion/_Liquidar.js?version=1.5"></script>

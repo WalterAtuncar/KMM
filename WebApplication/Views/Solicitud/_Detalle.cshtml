@@ -1,0 +1,52 @@
+﻿@model WebApplication.Models.SolicitudViewModel
+@using Data.Common
+
+<style>
+    #tbl-sol-det tr td:first-child,
+    #tbl-sol-det-cond tr td:first-child{
+        background-color:#EEEEEE;
+        /*color:#fff;*/
+    }
+    #detalleServicio li a::after{
+        z-index: 0 !important;
+    }
+</style>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel">
+        <i class="fa fa-info"></i>
+        <i class="fa fa-chevron-right"></i>
+        DETALLE
+    </h3>
+</div>
+<div class="modal-body">
+    @if (Model.Solicitud != null)
+    {
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="col-sm-12">
+                    <ul id="detalleServicio" class="nav nav-tabs responsive-tabs">
+                        <li class="active"><a id="btnDatoServicio" href="#servicio" data-toggle="tab">Servicio</a></li>
+                        <li><a id="btnDatoConductor" href="#conductor" data-toggle="tab">Conductor</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-12">
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane active" id="servicio" role="tabpanel">
+                            @Html.Partial("_DatosServicio", Model)
+                        </div>
+                        <div class="tab-pane" id="conductor" role="tabpanel">
+                            @Html.Partial("_DatosConductor", Model)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+    </div>
+</div>

@@ -1,0 +1,89 @@
+﻿@model WebApplication.Models.PerfilViewModel
+
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    @if (Model.Perfil.ID == default(int))
+    {
+        <h3 class="modal-title" id="myModalLabel">
+            <i class="fa fa-plus-circle"></i>
+            <i class="fa fa-chevron-right"></i> 
+            REGISTRO DE PERFIL
+        </h3>
+    }
+    else
+    {
+        <h3 class="modal-title" id="myModalLabel">
+            <i class="fa fa-pencil-square-o"></i> 
+            <i class="fa fa-chevron-right"></i> 
+            MODIFICAR PERFIL
+        </h3>
+    }
+</div>
+
+@using (Html.BeginForm("Registrar", "Perfil", FormMethod.Post, new { @id = "frm-add-perfil", @class = "form-horizontal", @style = "padding-left: 50px;" }))
+{
+    <div class="modal-body">
+        @Html.HiddenFor(m =>m.Perfil.ID , new { @id = "IdPerfil"})
+        <div class="form-group">
+            <label class="col-lg-3 col-md-2">Nombre</label>
+            <div class="col-sm-6 col-md-6">
+                @Html.TextBoxFor(m => m.Perfil.Nombre,
+                    new
+                    {
+                        @id = "txtNombre",
+                        @class = "form-control",
+                        @autofocus = "autofocus",
+                        @required = "required"
+                    })
+            </div>
+        </div>
+
+        <br />
+
+        <div class="form-group">
+            <label class="col-lg-3 col-md-2">Descripción</label>
+            <div class="col-sm-6 col-md-6">
+                @Html.TextBoxFor(m => m.Perfil.Descripcion,
+                    new
+                    {
+                        @id = "txtDescripcion",
+                        @class = "form-control",
+                        @required = "required"
+                    })
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <label class="col-lg-3 col-md-2">Estado</label>
+            <div class="col-sm-6 col-md-6">
+                @Html.DropDownListFor(m => m.Perfil.IdEstado,
+                                         new SelectList(Model.ListaEstadoProveedor, "ID", "Nombre"),
+                                         new
+                                         {
+                                             @id = "ddlEstado",
+                                             @class = "form-control select2",
+                                             @style = "width:100%;"
+                                         })
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <div style="float: right">
+            <button id="btn-save" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+            <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+        </div>
+    </div>
+
+}
+
+<script>
+    $(document).ready(function () {
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+    });
+</script>
+

@@ -1,0 +1,23 @@
+﻿@model WebApplication.Areas.GASTO.Models.UsuarioAprobadorViewModel
+<div>
+    @Html.ListBoxFor(m => m.listaCentroCostoByUsuario, new MultiSelectList(Model.listaCentroCosto, "Codigo", "Descripcion"),
+                                                        new
+                                                        {
+                                                            @class = "form-control select2",
+                                                            @id = "ddlCentroCostoMultiSelect",
+                                                            @multiple = "multiple"
+                                                        })
+
+</div>
+<script>
+    $(function () {
+      
+        $('select#ddlCentroCostoMultiSelect').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+        $("#ddlCentroCostoMultiSelect").val(ListaCentroCostoAsignados)
+        $("#ddlCentroCostoMultiSelect").trigger('change')
+
+    })
+</script>

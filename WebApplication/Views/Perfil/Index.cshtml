@@ -1,0 +1,56 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<h3 class="text-left text-primary">
+    <i class="fa fa-file-text-o" style="color:red;"></i>
+    <i class="fa fa-chevron-right" style="font-size:15px;color:#ee3224;"></i>
+    PERFILES
+</h3>
+
+<div class="row">
+    <div class="col-sm-4">
+        <br />
+        <a id="btn-create" class="btn btn-primary btn-sm gs-btn-block-page"><i class="fa fa-plus-circle"></i> Nuevo
+        </a>
+    </div>
+</div>
+<br />
+
+<div class="row">
+    <div class="col-sm-12">
+        <div id="div-tbl-perfil" class="table-responsive">
+            <table id="jqGrid" class="table-gys-kom"></table>
+            <div id="jqControls"></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modal-perfil" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var validar;
+    var url = {
+        GetListPerfil: '@Url.Action("GetListPerfil", "Perfil")',
+        Registrar: '@Url.Action("Registrar", "Perfil")',
+        RegistrarPost: '@Url.Action("RegistrarPost", "Perfil")',
+        GetListPagina: '@Url.Action("GetListPagina", "Perfil")',
+        AgregarPaginaPerfil: '@Url.Action("AgregarPaginaPerfil", "Perfil")',
+        DeletePaginaPerfil: '@Url.Action("DeletePaginaPerfil", "Perfil")',
+        ValidarPost: '@Url.Action("ValidarPost", "Perfil")'
+    }
+</script>
+
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+
+<script src="~/Scripts/Perfil/Index.js"></script>

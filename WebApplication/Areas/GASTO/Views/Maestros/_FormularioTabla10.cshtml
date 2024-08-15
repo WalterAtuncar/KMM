@@ -1,0 +1,176 @@
+﻿@model WebApplication.Areas.GASTO.Models.UsuarioSucursalViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+    @if (Model.ID == default(int))
+    {
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>REGISTRAR USUARIO CAJA</h3>
+    }
+    else
+    {
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>MODIFICAR USUARIO CAJA</h3>
+    }
+
+</div>
+<input type="hidden" id="hdfID_FormularioTabla10" value="@Model.ID" />
+<input type="hidden" id="hdfIdSucursal_FormularioTabla10" value="@Model.IdSucursal" />
+
+
+<div class="modal-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <ul id="detalleLiquidacion" class="nav nav-tabs responsive-tabs">
+                <li class="nav-item active">
+                    <a class="nav-link nav-link-tab active" data-toggle="tab" href="#info" role="tab" data-index="0">Datos</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <br />
+
+
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+
+            @using (Html.BeginForm("RegistrarUsuarioSucursal", "Maestros", FormMethod.Post, new { @id = "frm-guardar-usuariosucursal" }))
+            {
+                <div class="row">
+                    <div id="filtros">
+
+                        <div class="col-sm-12">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal  rowUser">
+
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Sociedad: </label>
+                                        <div class="col-sm-8">
+                                            @Html.DropDownListFor(m => m.CodigoSociedadFI, new SelectList(ViewBag.ListaSociedades, "CodigoSociedadFI", "NombreCO"), new { @class = "form-control select2", @id = "dllSociedad_10" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="filtros">
+
+                        <div class="col-sm-12">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal  rowUser">
+
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Sucursal: </label>
+                                        <div class="col-sm-8">
+                                            @*@Html.DropDownListFor(m => m.IdSucursal, new SelectList(ViewBag.ListaSucursales, "IdSucursal", "Nombre"), new { @class = "form-control select2", @id = "dllSucursalUsuario_10" })*@
+                                            <div id="content-ListaSucursales">
+                                                @Html.Partial("_ListaSucursales")
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div id="filtros">
+                        <div class="col-sm-12">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal   rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Usuario Caja:</label>
+                                        <div class="col-sm-8">
+                                            @Html.DropDownListFor(m => m.IdUsuario, new SelectList(ViewBag.ListaUsuariosCaja, "ID", "ApellidosNombres"), new { @class = "form-control select2", @id = "dllUsuarioCaja" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="GuardarTabla10" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cancelar</button>
+    </div>
+</div>
+
+
+<script>
+    
+    $(document).ready(function () {
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            width: '100%',
+        });
+
+        $('#dllSociedad_10').change(function () {
+            var idsociedad = $("#dllSociedad_10").val();
+            getSucursalBySociedad(idsociedad);
+            $('#dllSucursal_10').val('0');
+            $('#dllSucursal_10').change();
+        })
+
+
+        $('#GuardarTabla10').click(function (e) {
+          
+            e.preventDefault();
+            var idsociedad = $('#dllSociedad_10').val();
+            var idsucursal = $('#dllSucursal_10_pv').val();
+            var idusuario = $('#dllUsuarioCaja').val();
+
+            document.getElementById("GuardarTabla10").disabled = true;
+
+            var $frm = $('#frm-guardar-usuariosucursal');
+            var formParsley = $frm.parsley(__defaultParsleyForm());
+            var isValid = formParsley.validate();
+
+            var indicador = true;
+            if (isValid && idsociedad == "0") {
+                toastr["warning"]('Debe seleccionar una Sociedad.');
+                document.getElementById("GuardarTabla10").disabled = false;
+                indicador = false;
+                return;
+            }
+
+
+            var indicador = true;
+            if (isValid && idsucursal=="0") {
+                toastr["warning"]('Debe seleccionar un Sucursal.');
+                document.getElementById("GuardarTabla10").disabled = false;
+                indicador = false;
+                return;
+            }
+              
+            var indicador = true;
+            if (isValid && idusuario == "0") {
+                toastr["warning"]('Debe seleccionar un Usuario.');
+                document.getElementById("GuardarTabla10").disabled = false;
+                indicador = false;
+                return;
+            }
+            if (indicador) {
+               GuardarUsuarioSucursal(isValid);
+             }
+            
+        });
+        var ID = parseInt($('#hdfID_FormularioTabla10').val());
+        if (ID > 0) {
+            idUserSucursal = parseInt($('#hdfIdSucursal_FormularioTabla10').val());
+            $("#dllSucursal_10_pv").val(idUserSucursal)
+            $("#dllSucursal_10_pv").change();
+        }
+    });
+</script>
+
+

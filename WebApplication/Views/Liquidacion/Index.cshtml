@@ -1,0 +1,145 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h3 class="text-left text-primary" style="margin-bottom: 0">
+    <i class="fa fa-table" style="color: #ee3224;"></i>
+    <i class="fa fa-chevron-right" style="color: #ee3224;"></i> MIS LIQUIDACIONES
+</h3>
+<br />
+<div class="row">
+    <div id="filtros">
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Proveedor: </label>
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <input id="ProveedorCheckbox" type="checkbox" />
+                            </span>
+                            @{Html.RenderAction("GetDropDown", "Proveedor", new { id = string.Empty }); }
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Estado: </label>
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <input id="EstadoCheckbox" type="checkbox" />
+                            </span>
+                            @{Html.RenderAction("GetDropDown", "LiquidacionEstado", new { id = string.Empty }); }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Fecha R. Desde:</label>
+                    <div class="col-sm-8">
+                        <div id="FechaInicioDatePicker" class="input-group input-group-sm date" data-provide="datepicker">
+                            <input id="FechaInicioTextBox" type="text" class="form-control" />
+                            <div class="input-group-addon close-button">
+                                <span class="fa fa-calendar"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Fecha R. Hasta:</label>
+                    <div class="col-sm-8">
+                        <div id="FechaFinDatePicker" class="input-group input-group-sm date" data-provide="datepicker">
+                            <input id="FechaFinTextBox" type="text" class="form-control" />
+                            <div class="input-group-addon close-button">
+                                <span class="fa fa-calendar"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <a href="@Url.Action("Registrar", "Liquidacion")" class="btn btn-primary btn-sm"><i class="fa fa-plus-circle"></i> Nuevo</a>
+            <br /><br />
+            <button id="BuscarLiqButton" class="btn btn-danger btn-sm"><i class="fa fa-search"></i> Buscar</button>
+        </div>
+    </div>
+</div>
+<hr />
+
+<div class="row">
+    <div class="col-sm-12" style="z-index: 9">
+        <div id="div-tbl-liquidaciones">
+            <table id="jqGrid" class="table-gys-kom"></table>
+            <div id="jqControls"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-liquidar" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<script>
+    var url = {
+        @*GetListLiquidacionPaginado: '@Url.Action("GetListLiquidacionPaginado", "Liquidacion")',*@
+        GetListLiquidacionPaginado: '@Url.Action("GetListLiquidacionPaginado", "Paginado")',
+        GetLiquidarModal: '@Url.Action("LiquidarModal", "Liquidacion")',
+        GetPartialCorreo: '@Url.Action("GetPartialCorreo", "Liquidacion")',
+        PostLiquidar: '@Url.Action("Liquidar", "Liquidacion")',
+        PostCancelar: '@Url.Action("Cancelar", "Liquidacion")',
+        GetSolicitudByLiquidacionID: '@Url.Action("GetSolicitudByLiquidacionID", "Solicitud")',
+        GetListCentroCostoCombo: '@Url.Action("GetListCentroCostoCombo", "CentroCosto")',
+        PostSaveRowSolicitud: '@Url.Action("UpdateCentroCosto", "Solicitud")',
+        EnviarCorreoDocumentoPostJson: '@Url.Action("EnviarCorreoDocumentoPostJson", "Liquidacion")',
+        GetLiquidacionDetalle: '@Url.Action("GetLiquidacionDetalle", "Liquidacion")',
+        GetNegociablePartial:'@Url.Action("GetNegociablePartial", "Liquidacion")',
+    }
+
+    $(document).ready(function () {
+        $('select[name="ProveedorDropDown"], select[name="LiquidacionEstadoDropDown"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%',
+        });
+
+        $('#FechaInicioDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true
+        });
+
+        $('#FechaFinDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true
+        });
+
+        var FechaInicio = new Date();
+        FechaInicio.setDate(FechaInicio.getDate() - 7);
+        $('#FechaInicioDatePicker').datepicker('setDate', (FechaInicio.getDate()) + '/' + (FechaInicio.getMonth() + 1) + '/' + (FechaInicio.getFullYear()));
+
+        var FechaFin = new Date();
+        FechaFin.setDate(FechaFin.getDate());
+        $('#FechaFinDatePicker').datepicker('setDate', (FechaFin.getDate()) + '/' + (FechaFin.getMonth() + 1) + '/' + (FechaFin.getFullYear()));
+
+        $('.close-button').unbind();
+
+        $('.close-button').click(function () {
+            if ($('.datepicker').is(":visible")) {
+                $(this).parent().datepicker('hide');
+            } else {
+                $(this).parent().datepicker('show');
+            }
+        });
+    });
+</script>
+
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+<script src="~/scripts/Liquidacion/Index.js?version=1.0"></script>

@@ -1,0 +1,311 @@
+﻿@model WebApplication.Areas.GASTO.Models.DetalleSolicitudViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>DETALLE DE SOLICITUD Nro: @Model.Codigo</h3>
+</div>
+<input type="hidden" id="hdfIdUsuario_FormularioDet" value="@Model.IdSolicitud" />
+<input type="hidden" id="hdfIdTipo_FormularioDet" value="@ViewBag.IdTipo" />
+<input type="hidden" id="hdfIdDestino_FormularioDet" value="@ViewBag.IdDestino" />
+<input type="hidden" id="hdfIdTipoReembolso_FormularioDet" value="@ViewBag.IdTipoReembolso" />
+<div class="modal-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <ul id="detalleLiquidacion" class="nav nav-tabs responsive-tabs">
+                <li class="nav-item active">
+                    <a class="nav-link nav-link-tab active" data-toggle="tab" href="#info" role="tab" data-index="0">Información Detalle</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <br />
+
+
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+            <input type="hidden" id="hdfCodigoSociedad" value="@ViewBag.CodigoSociedad" />
+            @using (Html.BeginForm("Guardar", "Solicitud", FormMethod.Post, new { @id = "frm-guardar-solicitud" }))
+            {
+                <div class="row">
+                    <div id="filtros">
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal  rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">DNI - Nombre: </label>
+                                        <div class="col-sm-8">
+                                            @Html.TextBoxFor(m => m.NomApe, new {@class = "form-control input-sm",@id = "txtUsuarioBeneficiario",@readonly = "true" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4">Centro de Costo: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.CECO, new { @class = "form-control input-sm", @id = "txtCentroCosto", @readonly = "true" })
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="col-sm-4">Sucursal: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.Sucursal, new { @class = "form-control input-sm", @id = "txtSucursal", @readonly = "true" })
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="col-sm-4">Desde</label>
+                                    <div class="col-sm-8">
+                                            @Html.TextBoxFor(m => m.FechaInicioStr,
+                                                                                                 new
+                                                                                                 {
+                                                                                                     @class = "form-control input-sm",
+                                                                                                     @placeholder = "FECHA INICIO",
+                                                                                                     @readonly = "true"
+                                                                                                 })
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="col-sm-4">Tipo Solicitud: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.Tipo, new { @class = "form-control input-sm", @id = "txtTipo", @readonly = "true" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="divTipoReembolso_"  style="display:none;">
+                                    <label class="col-sm-4" >Tipo Reembolso: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.TipoReembolso, new { @class = "form-control input-sm", @id = "txtTipoReembolso", @readonly = "true" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="divMoneda_">
+                                    <label class="col-sm-4" id="lblMoneda">Moneda: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.Moneda, new { @class = "form-control input-sm", @id = "txtMoneda", @readonly = "true" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="divImporte_">
+                                    <label class="col-sm-4" id="lblImporte">Importe: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.ImporteSolicitud,
+                                         new
+                                         {
+                                             @class = "form-control input-sm",
+                                             @id = "txtImporte",
+                                             @autofocus = "autofocus",
+                                             @placeholder = "Importe",
+                                             @onkeypress = "return validarSoloNumeros(event)",
+                                             @readonly = "true"
+                                         })
+                                    </div>
+                                </div>
+                                <div class="form-group hide" id="divComentario_">
+                                    <label class="col-sm-4" id="lblComentario">Comentarios: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextAreaFor(m => m.Comentario, new { @class = "form-control input-sm", @rows = 2, @columns = 60, @id = "txtComentario", @readonly = "true" })
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-sm-4">Aprobador: </label>
+                                    <div class="col-sm-8" id="content-ListaUsuarioCentroCosto">
+                                        @Html.TextBoxFor(m => m.Aprobador, new { @class = "form-control input-sm", @id = "txtAprobador", @readonly = "true" })
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-4">Cta Bancaria: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.CtaBancaria, new { @class = "form-control input-sm", @id = "txtCtaBancaria", @readonly = "true" })
+                                    </div>
+
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="col-sm-4">Motivo Solicitud: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextAreaFor(m => m.Motivo, new { @class = "form-control input-sm", @rows = 2, @columns = 60, @id = "txtMotivoCreacionSolicitud", @readonly = "true" })
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-4">Hasta</label>
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(m => m.FechaFinStr,
+                                                                                        new
+                                                                                             {
+                                                                                                 @class = "form-control input-sm",
+                                                                                                 @placeholder = "FECHA FIN",
+                                                                                                 @readonly = "true"
+                                                                                             })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-4">Destino: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.Destino, new { @class = "form-control input-sm", @id = "txtDestino", @readonly = "true" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="divUpload_" style="display:none;">
+                                    <label class="col-sm-4">Archivo:</label>
+                                    <div class="col-md-8">
+                                        <a href="/FilesCotizacionSolicitudes/@Model.NombreFile">Ver pdf</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            }
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+       
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cerrar</button>
+    </div>
+</div>
+</div> @*FIN MODAL*@
+
+<script>
+    $(document).ready(function () {
+       
+        $('#fecha-content-inicio').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+
+        $('#fecha-content-fin').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+
+        //$('#dllTipoSolicitud').change(function () {
+        //    var tipsolicitud = $('#dllTipoSolicitud').val();
+        //    if (tipsolicitud == "2") {
+        //        $("#divMoneda_").css("display", "none");
+        //        $("#divComentario_").css("display", "none");
+        //        $("#divImporte_").css("display", "none");
+
+
+        //        $('#dllTipoReembolso').change();
+        //        $("#divTipoReembolso_").css("display", "block");
+        //    }
+        //    else {
+        //        $("#divMoneda_").css("display", "block");
+        //        $("#divComentario_").css("display", "block");
+        //        $("#divImporte_").css("display", "block");
+
+        //        $('#dllTipoReembolso').val("1");
+        //        $('#dllTipoReembolso').change();
+        //        $("#divTipoReembolso_").css("display", "none");
+        //    }
+        //});
+
+        //$('#dllTipoReembolso').change(function () {
+        //    var idtiporeembolso = $('#dllTipoReembolso').val();
+        //    if (idtiporeembolso == "1") {
+        //        var tipsolicitud = $('#dllTipoSolicitud').val();
+        //        if (tipsolicitud == "1")
+        //            $("#divMoneda_").css("display", "block");
+        //        else
+        //            $("#divMoneda_").css("display", "none"); 
+        //    }
+        //    else {
+        //        $("#divMoneda_").css("display", "block");
+        //    }
+        //});
+
+        //$('#dllAmbito').change(function () {
+        //    debugger;
+        //    var ambito = parseInt($('#dllAmbito').val());
+        //    if (ambito == 1) {
+        //        $("#divAmbito").css("display", "none");
+        //        $("#divUpload").css("display", "none");
+        //        $('#dllUsuarioAprobador').val("0");
+        //        $('#dllUsuarioAprobador').change();
+        //    }
+        //    else {
+        //        $("#divAmbito").css("display", "block");
+        //        $("#divUpload").css("display", "block");
+        //    }
+        //});
+
+
+        //LAGICA PARA CARG CENTROCOSOT Y APROBADOR
+       
+        var idtipo = $('#hdfIdTipo_FormularioDet').val();
+        if (idtipo == "2") {
+            //$("#dllTipoSolicitud").change();
+            //$("#dllTipoReembolso").change();
+            $("#divMoneda_").css("display", "none");
+            $("#divComentario_").css("display", "none");
+            $("#divImporte_").css("display", "none");
+            $("#divTipoReembolso_").css("display", "block");
+        } else {
+            $("#divMoneda_").css("display", "block");
+            $("#divComentario_").css("display", "block");
+            $("#divImporte_").css("display", "block");
+            $("#divTipoReembolso_").css("display", "none");
+        }
+
+        var idtiporeembolso = $('#hdfIdTipoReembolso_FormularioDet').val();
+        if (idtiporeembolso == "1") {
+            if (idtipo == "1")
+                $("#divMoneda_").css("display", "block");
+            else
+                $("#divMoneda_").css("display", "none");
+        } else {
+            $("#divMoneda_").css("display", "block");
+        }
+      
+        var iddestino = parseInt($('#hdfIdDestino_FormularioDet').val());
+        if (iddestino != 1) {
+            //$("#divAmbito").css("display", "block");
+            $("#divUpload_").css("display", "block");
+           
+         } else {
+            //$("#divAmbito").css("display", "none");
+            $("#divUpload_").css("display", "none");
+            
+        }
+    });
+
+    
+
+</script>
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+<script src="~/Areas/GASTO/Scripts/Solicitud/_Formulario.js"></script>

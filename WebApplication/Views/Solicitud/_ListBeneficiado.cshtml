@@ -1,0 +1,9 @@
+﻿@model List<Data.Usuario>
+
+<select class="form-control select2" id="listBeneficiado">
+    @foreach (var beneficiado in Model)
+    {
+        <option id="@beneficiado.ID" value="@beneficiado.ID" data-centro="@beneficiado.CodigoCentroCosto" data-telefono="@beneficiado.Telefono" data-nrodocumento="@beneficiado.NumeroDocumento">@beneficiado.Nombres</option>
+    }
+</select>
+

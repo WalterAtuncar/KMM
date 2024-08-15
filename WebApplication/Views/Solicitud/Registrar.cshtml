@@ -1,0 +1,2098 @@
+﻿@model Data.Solicitud
+<style>
+    #map {
+        width: 100%;
+        /*height: 570px;*/
+        height: 90vh;
+    }
+
+    #tbl-precio-estimado > thead > tr > th {
+        background-color: #0E137C;
+        border: #0E137C 2px solid;
+    }
+
+    #tbl-precio-estimado > tbody {
+        border: #0E137C 2px solid;
+    }
+
+        #tbl-precio-estimado > tbody > tr > td {
+            padding: 1px;
+        }
+
+    #txt-price {
+        font-size: 1.5em;
+        font-weight: 600;
+    }
+
+    .select-width .select2-container {
+        width: 100% !important;
+    }
+
+    .datepicker-days table {
+        background-color: #fff;
+    }
+
+    #div-sol-reg-controls {
+        position: static;
+        width: auto;
+        overflow: auto;
+        /*max-height: 90vh;*/
+        max-height: 90vh;
+    }
+
+    .form-control {
+        height: 30px;
+        font-size: 12px;
+    }
+
+    select.form-control {
+        padding: 4px;
+    }
+
+    #div-beneficiados .form-control {
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+
+    .autocomplete-suggestions {
+        border: 1px solid #999;
+        background: #FFF;
+        overflow: auto;
+    }
+
+    .autocomplete-suggestion {
+        padding: 2px 5px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .autocomplete-selected {
+        background: #F0F0F0;
+    }
+
+    .autocomplete-suggestions strong {
+        font-weight: normal;
+        color: #3399FF;
+    }
+
+    .autocomplete-group {
+        padding: 2px 5px;
+    }
+
+        .autocomplete-group strong {
+            display: block;
+            border-bottom: 1px solid #000;
+        }
+
+    .embedded-daterangepicker .daterangepicker::before,
+    .embedded-daterangepicker .daterangepicker::after {
+        display: none;
+    }
+
+
+    .embedded-daterangepicker .daterangepicker {
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        float: left;
+        width: 100%;
+        margin-top: 0;
+        border: 0px !important;
+        margin-left: 1%;
+    }
+
+        .embedded-daterangepicker .daterangepicker .drp-calendar {
+            width: 10%;
+            max-width: 10%;
+        }
+
+    .daterangepicker .calendar-table td, .daterangepicker .calendar-table th {
+        white-space: nowrap;
+        text-align: center;
+        vertical-align: middle;
+        min-width: 26px !important;
+        width: 32px;
+        height: 24px;
+        line-height: 24px;
+        font-size: 12px;
+        border-radius: 4px;
+        border: 1px solid transparent;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+
+    @@media (min-width: 564px) {
+        .daterangepicker .drp-calendar.right {
+            margin-left: 40% !important;
+        }
+    }
+
+    @@media screen and (max-width: 1600px) {
+        .daterangepicker.show-calendar .drp-calendar {
+            display: contents !important;
+        }
+    }
+</style>
+
+@{
+    string key = ViewBag.Key;
+    //string key = "AIzaSyD58demU6OKJ58HqOwaOqKmjOjq3HNAVCg";
+    string minutes = ViewBag.Hour;
+}
+
+<input hidden id="InputBeneficiado" />
+<input hidden id="HoraActualMinutos" value="@minutes" />
+
+<div class="row">
+    <input hidden id="ListaBeneficiado" />
+    @if (string.IsNullOrEmpty(key))
+    {
+        <div class="alert alert-danger col-sm-12" style="margin-bottom: 0px;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <p>No existe una clave API válida para activar el Google Maps. Por favor comunicarse con el área de soporte.</p>
+        </div>
+    }
+    <div class="col-sm-9" style="padding-right:5px; padding-left:0px;">
+        <div id="map"></div>
+    </div>
+    <div class="col-sm-3" style="padding-right:0px; padding-left:0px;">
+        <div id="div-sol-reg-controls">
+            <form id="frm-sol" style="overflow: hidden;">
+                <div class="row">
+                    <div class="col-sm-12">
+
+                        <table id="tbl-precio-estimado" class="table table-bordered table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span style="left:20px;top: 0px;position: absolute;"> <span id="spn-km">0.00</span> km</span>
+                                        Precio Estimado
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <span id="txt-price" class="text-danger">S/ <span id="spn-precio">0.00</span> </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Tipo de servicio</label>
+                        @{Html.RenderAction("GetDropDown", "TipoServicio", new { id = string.Empty, nombre = "TipoServicio" }); }
+                        @*@Html.DropDownList("listaTipoServicio", new SelectList(ViewBag.ListaTipoServicio, "ID", "Nombres"), new { @id = "TipoServicio", @name= 'TipoServicio' })*@
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Tipo de destino</label>
+                        @{Html.RenderAction("GetDropDown", "TipoDestino", new { id = string.Empty, nombre = "TipoDestino" }); }
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-location-arrow"></i>
+                            </span>
+                            @Html.TextBoxFor(x => x.OrigenDireccion, new { @class = "form-control input-toggle-marker", @placeholder = "Origen", @required = "" })
+                            <input type="hidden" name="OrigenLat" />
+                            <input type="hidden" name="OrigenLng" />
+                            <input type="hidden" id="hdfDireccionOrigen" />
+                        </div>
+                    </div>
+                </div>
+                <div id="sol-reg-step-1" class="sol-reg-step">
+                    <div id="div-destinos">
+
+                    </div>
+                    <div id="div-btn-add-destino" style="display:none;">
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;&nbsp;
+                                <a href="javascript:void(0);" id="btn-add-destino">
+                                    <i class="fa fa-plus-circle fa-lg"></i>&nbsp;Agregar destino
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div id="sol-reg-step-2" class="sol-reg-step">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label>Centro de costo afecto</label>
+                                @{Html.RenderAction("GetDropDown", "CentroCosto", new { @class = "select-width", id = string.Empty, nombre = "CentroCostoAfectoCodigoSap", @default = "-SELECCIONE-" }); }
+                            </div>
+                            <div class="form-group" id="div-fg-ordenservicio">
+                                <label>Órden de servicio@*&nbsp;&nbsp;<input type="checkbox" name="chk-os" />*@ </label>
+                                <div class="row">
+                                    <div class="col-sm-7">
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(x => x.NroOrdenServicio, new { @class = "form-control", @id = "txtOrdenServicio", @maxlength = "12", placeholder = "Ingrese OS", @disabled = "disabled" })
+                                            <span class="input-group-addon" style="cursor:pointer" data-toggle="tooltip">
+                                                <input type="checkbox" id="idDesbloquear" />
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-sm-5" style="padding-left:0;">
+                                        <div id="div-validate-os-status">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Aprobador</label>
+                                <div id="content-ListaUsuarioCentroCosto">
+                                    @Html.Partial("_ListaUsuarioCentroCosto")
+                                </div>
+                            </div>
+                            <div class="form-group hidden" id="div-fg-nrohoras">
+                                <label>Nro de horas</label>
+                                @Html.TextBoxFor(x => x.CantidadHoras, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label>Motivo creación</label>
+                                @{Html.RenderAction("GetDropDown", "MotivoCreacionSolicitud", new { id = string.Empty, @default = "-SELECCIONE-", @required = "" }); }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div id="sol-reg-step-3" class="sol-reg-step">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-2" style="display:none;">
+                            <label>Rango de Fechas</label>
+                            <input id="daterangepicker-result" type="hidden" name="datefilter" value="" class="form-control" style="text-align:center;" />
+                        </div>
+                        <div class="col-sm-12" style="z-index: 1;">
+                            <input id="daterangepicker1" type="hidden">
+                            <div id="daterangepicker1-container" class="embedded-daterangepicker"></div>
+                        </div>
+                        <div class="col-sm-8 col-sm-offset-2">
+                            @*<div id="div-fecha-servicio"></div>*@
+                            <input type="hidden" name="FechaServicio" />
+                            <br />
+                            <div class="input-group bootstrap-timepicker timepicker">
+                                <input id="txt-hora-servicio" type="text" value="@minutes" class="form-control input-small" style="text-align:center;">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                            </div>
+                            @Html.HiddenFor(x => x.HoraServicioEnMinutos)
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="form-horizontal">
+                            <div class="col-sm-8">
+                                <label>Beneficiados</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <a href="javascript:void(0);" id="btn-remove-beneficiado" data-toggle="tooltip" title="Quitar beneficiado">
+                                    <i class="fa fa-minus-circle fa-lg"></i>
+                                </a>
+                                @*&nbsp;&nbsp;*@
+                                <span id="spn-cantidad-beneficiados">1</span>
+                                @*&nbsp;&nbsp;*@
+                                <a href="javascript:void(0);" id="btn-add-beneficiado" data-toggle="tooltip" title="Agregar beneficiado">
+                                    <i class="fa fa-plus-circle fa-lg"></i>
+                                </a>
+                            </div>
+                            <div class="col-sm-4" style="padding-left: 0px;">
+                                <label>Teléfonos</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="div-beneficiados">
+                        <div class="form-horizontal rowUser">
+                            <div class="col-sm-8" style="padding-left: 0px;">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                    @Html.DropDownList("listaBeneficiado", new SelectList(ViewBag.ListaBeneficiado, "ID", "Nombres"), new { @id = "dllBeneficiado-0", @class = "form-control select2" })
+                                </div>
+                            </div><div class="col-sm-4" style="padding-right: 0px; padding-left: 0px;"><input type="text" maxlength="9" onkeypress="return validarSoloNumeros(event)" class="form-control" required="" /></div>
+                        </div>
+                        <br />
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label>Observaciones</label>
+                                @Html.TextAreaFor(x => x.Observaciones, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-sm-8 col-sm-offset-2 text-center">
+                        <button type="button" id="btn-save" class="btn btn-primary form-control">Reservar</button>
+                    </div>
+                </div>
+                <br />
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-calificacion" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+@*<div class="modal fade" id="carga" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content text-center">
+                <div style="z-index: 10010; position: fixed; padding: 3px; margin: 0px; width: 150px; top: 237.5px; left: 608px; text-align: center; color: rgb(255, 255, 255); border: 0px solid rgb(255, 131, 4); background-color: rgb(51, 51, 51); cursor: wait; border-radius: 10px; opacity: 0.99;"><table align="center"><tbody><tr><td style="padding-top:15px;"><img src="/Content/img/gif-loading.gif" width="50"></td></tr><tr><td style="padding:11px;font-size:13px;">Cargando</td></tr></tbody></table></div>
+                <div style="z-index: 10010; position: fixed; padding: 3px; margin: 0px; width: 150px; top: 0px; left: px; text-align: center; color: rgb(255, 255, 255); border: 0px solid rgb(255, 131, 4); background-color: rgb(51, 51, 51); cursor: wait; border-radius: 10px; opacity: 0.99;"><table align="center"><tbody><tr><td style="padding-top:15px;"><img src="/Content/img/gif-loading.gif" width="50"></td></tr><tr><td style="padding:11px;font-size:13px;">Cargando</td></tr></tbody></table></div>
+            </div>
+        </div>
+    </div>*@
+
+<script>
+
+    var __lat_default = -12.0480505;
+    var __lng_default = -77.10029129999998;
+    var __map;
+    var __directionsService;
+    var __directionsDisplay;
+    var __arrDestinos = [];
+    var __arrBeneficiados = [];
+    var __arrBeneficiadosSelected = [];
+    var __beneficiadoObject = [];
+    var __$div_destinos = $('#div-destinos');
+    var __txt_origen_id = 'OrigenDireccion';
+    var __markers = [];
+    var __objTarifaProveedor = {};
+    var __currentInputMarker;
+    var __currentDestinoIndex = 0;
+    var __currentBeneficiadoIndex = 0;
+    var $origin = '@Url.Content("~/")';
+    var __users_autocomplete = [];
+    var __listaDestino = [];
+    var geocoder;
+    var arraySolicitudProveedor = [];
+    var validaciones = true;
+    var validacionCentroCosto = true;
+    var validacionOrdenServicio = true;
+    var eventDisplay = false;
+    var horaActualMinutos = 0;
+    var horaActual = "";
+    var __countAprobadoresDisponibles = 0;
+    var idUserAprobador = 0;
+
+    var url = {
+        ValidarOrdenServicio: '@Url.Action("ValidarOrdenServicio", "Solicitud")',
+        ValidarCentroCosto: '@Url.Action("ValidarCentroCosto", "Solicitud")',
+        CalificarServicio: '@Url.Action("Calificacion", "Solicitud")',
+        GetListBeneficiado: '@Url.Action("GetListBeneficiado", "Solicitud")',
+        ValidarCalificacion: '@Url.Action("ValidarCalificacion", "Solicitud")',
+        GetListUsers: '@Url.Action("GetListJson", "Users")'
+    };
+
+    $(document).ready(function () {
+
+
+        //function printTheTime() {
+
+        //    var length = $('.pac-container').find('.pac-item').length;
+        //    var length_ = $('.pac-container').find('.pac-item').find('.pac-item-query').length;
+        //    for (var i = 0; i < length; i++) {
+        //        var name = $('.pac-container').find('.pac-item').eq(i).text();
+        //        if (name == 'Jorge Chavez International Airport (LIM)Avenida Elmer Faucett, Callao, Perú') {
+        //            $('.pac-container').find('.pac-item')[i].remove();
+        //        } else {
+
+        //        }
+        //    }
+
+        //    for (var j = 0; j < length_; j++) {
+        //        var name_ = $('.pac-container').find('.pac-item').find('.pac-item-query').eq(j).text();
+        //        if (name_ == 'Aeropuerto Internacional Jorge Chávez (LIM)') {
+        //            $('.pac-container').find('.pac-item')[j].remove();
+        //        } else {
+
+        //        }
+        //    }
+        //    setTimeout(printTheTime, 1000);
+        //}
+
+        //// run this in 500ms (1 second)
+        //setTimeout(printTheTime, 1000);
+
+
+        $('#idDesbloquear').change(function (e) {
+            validacionCheck = $(this).is(':checked');
+            if (validacionCheck) {
+                $('#CentroCostoAfectoCodigoSap').prop("disabled", true)
+                $('#txtOrdenServicio').prop("disabled", false);
+                $('#txtOrdenServicio').focus();
+            } else {
+                $('#txtOrdenServicio').prop("disabled", true);
+                $('#txtOrdenServicio').val('');
+                $('#CentroCostoAfectoCodigoSap').prop("disabled", false);
+                $('#div-validate-os-status').html('');
+            }
+        });
+
+        $('#dllBeneficiado-0').select2({ dropdownAutoWidth: true });
+
+        $.ajax({
+            url: url.ValidarCalificacion,
+            data: {},
+            type: 'POST',
+            async: false,
+            cache: false,
+            success: function (data) {
+                if (data.ID > 0) {
+                    var pid = data.ID;
+                    fn_BloquearPantalla();
+                    $('#modal-calificacion .modal-content').empty();
+                    $('#modal-calificacion .modal-content').load(url.CalificarServicio, { id: pid }, function () {
+                        fn_DesbloquearPantalla();
+                    });
+                    $('#modal-calificacion').modal('show');
+                }
+            },
+            error: function (request, status, error) {
+                toastr["error"]('Ocurrio un error en el servicio');
+                fn_DesbloquearPantalla();
+            }
+        });
+
+        $.post(url.GetListBeneficiado, function (data) {
+            $('#InputBeneficiado').val(data)
+        });
+
+
+
+        $('#txtOrdenServicio').blur(function (e) {
+            e.preventDefault();
+            if ($('#txtOrdenServicio').val() !== "") {
+                validarOrdenServicio();
+            }
+
+        });
+
+        $('#txtOrdenServicio').keyup(function (e) {
+            e.preventDefault();
+            if (e.which === 13) {
+                if ($('#txtOrdenServicio').val() !== "") {
+                    validarOrdenServicio();
+                }
+            }
+        });
+
+
+        $("#CentroCostoAfectoCodigoSap").change(function () {
+            validarCentroCosto();
+        });
+
+        $('#btn-validate-os').change(function () {
+            var ordenServicio = $('#txtOrdenServicio').val();
+            var selector = this;
+            if (selector.checked) {
+                if (ordenServicio === "" || ordenServicio === null) {
+                    toastr["error"]("Ingrese OS a validar");
+                } else {
+                    validarOrdenServicio();
+                }
+
+            } else {
+                $('#div-validate-os-status').html('');
+            }
+        });
+
+
+
+        $('select[name="CategoriaProducto"]').removeAttr('required');
+        //$('.hidden').removeClass('hidden');
+
+        $(document).on('focus', '.input-toggle-marker', function (e) {
+            e.preventDefault();
+            var $input = $(this);
+            $('.input-group').find('.input-group-addon').css('background-color', '#eee');
+            $('.input-group').find('.input-group-addon').css('color', '#555555');
+            $input.closest('.input-group').first().find('.input-group-addon').css('background-color', '#2B48A0');
+            $input.closest('.input-group').first().find('.input-group-addon').css('color', '#fff');
+            __currentInputMarker = $input.attr('id');
+            var lat = parseFloat($input.attr('data-lat'));
+            var lng = parseFloat($input.attr('data-lng'));
+            __setMarker(lat, lng);
+        });
+
+        $('select[name="CentroCostoAfectoCodigoSap"], select[name="MotivoCreacionSolicitudID"], select[name="CategoriaProductoID"], select[name="listaAprobadores"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+
+        //$('#div-fecha-servicio').datepicker({
+        //    format: 'dd/mm/yyyy',
+        //    startDate: "Hoy"
+        //}).on('changeDate', function (e) {
+        //    $('input[name="FechaServicio"]').val(e.format('dd/mm/yyyy'))
+        //})
+
+        //$("#div-fecha-servicio").datepicker("setDate", new Date());
+
+        $("#txt-hora-servicio").timepicker({ modalBackdrop: true, showMeridian: false }).on("show.timepicker", function (e) {
+            horaActual = e.time.value;
+            horaActualMinutos = ((e.time.hours + (e.time.meridian == 'PM' ? 12 : 0)) * 60) + e.time.minutes;
+        });
+
+        $(function () {
+
+            var picker = $('#daterangepicker1').daterangepicker({
+                "parentEl": "#daterangepicker1-container",
+                "autoApply": true,
+                "minDate": new Date(),
+                "dateLimit": { days: 7 },
+                "locale": {
+                    "daysOfWeek": [
+                        "Do",
+                        "Lu",
+                        "Ma",
+                        "Mi",
+                        "Ju",
+                        "Vi",
+                        "Sá"
+                    ],
+                    "monthNames": [
+                        "Enero",
+                        "Febrero",
+                        "Marzo",
+                        "Abril",
+                        "Mayo",
+                        "Junio",
+                        "Julio",
+                        "Agosto",
+                        "Septiembre",
+                        "Octubre",
+                        "Noviembre",
+                        "Diciembre"
+                    ]
+
+                }
+            });
+
+
+            picker.on('apply.daterangepicker', function (ev, picker) {
+                $("#daterangepicker-result").val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            });
+
+
+            picker.data('daterangepicker').hide = function () { };
+
+
+            picker.data('daterangepicker').show();
+
+            //$('input[name="datefilter"]').daterangepicker({
+            //    autoUpdateInput: false,
+            //    dateLimit: { days: 7 },
+            //    //singleDatePicker: true,
+            //    locale: {
+            //        applyLabel: "Aplicar",
+            //        cancelLabel: "Limpiar",
+            //        "daysOfWeek": [
+            //            "Do",
+            //            "Lu",
+            //            "Ma",
+            //            "Mi",
+            //            "Ju",
+            //            "Vi",
+            //            "Sá"
+            //        ],
+            //        "monthNames": [
+            //            "Enero",
+            //            "Febrero",
+            //            "Marzo",
+            //            "Abril",
+            //            "Mayo",
+            //            "Junio",
+            //            "Julio",
+            //            "Agosto",
+            //            "Septiembre",
+            //            "Octubre",
+            //            "Noviembre",
+            //            "Diciembre"
+            //        ]
+
+            //    }
+            //});
+
+            //$('input[name="datefilter"]').on('apply.daterangepicker', function (ev, picker) {
+            //    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            //});
+
+            //$('input[name="datefilter"]').on('cancel.daterangepicker', function (ev, picker) {
+            //    $(this).val('');
+            //});
+        });
+
+        $('#txt-hora-servicio').timepicker({ modalBackdrop: true, showMeridian: false }).on('changeTime.timepicker', function (e) {
+            var date = new Date();
+            var fechaActual = (date.getDate() + '/' + (((date.getMonth() < 10) ? '0' : '') + (date.getMonth() + 1)) + '/' + date.getFullYear());
+            var fechaServicio = $('input[name="FechaServicio"]').val();
+            if (fechaActual == fechaServicio) {
+                var horaCambiadaMinutos = ((e.time.hours) * 60) + e.time.minutes;
+                if (horaCambiadaMinutos < horaActualMinutos) {
+                    toastr["warning"]("La hora no debe ser menor a la establecida");
+                    $("#txt-hora-servicio").val(horaActual);
+                    $('input[name="HoraServicioEnMinutos"]').val(horaActualMinutos);
+                } else {
+                    $('input[name="HoraServicioEnMinutos"]').val(horaCambiadaMinutos);
+                }
+            }
+        });
+
+        horaActual = $("#txt-hora-servicio").val();
+
+        $('select[name="TipoServicio"]').change(function (e) {
+            e.preventDefault();
+            if ($(this).val() == 'N') {
+                $('select[name="TipoDestino"] option[value="1"]').css('display', '');
+                $('#div-fg-nrohoras').removeClass('hidden').addClass('hidden');
+                $('#div-fg-categoriaproducto').removeClass('hidden').addClass('hidden');
+                $('#div-fg-nroproductos').removeClass('hidden').addClass('hidden');
+                $('input[name="CantidadHoras"]').removeAttr('required');
+                $('input[name="CategoriaProducto"]').removeAttr('required');
+                $('input[name="CantidadProductos"]').removeAttr('required');
+            } else {
+                if ($(this).val() == 'H') {
+                    $('#div-fg-nrohoras').removeClass('hidden');
+                    $('input[name="CantidadHoras"]').attr('required', '');
+                    $('#div-fg-categoriaproducto').removeClass('hidden').addClass('hidden');
+                    $('#div-fg-nroproductos').removeClass('hidden').addClass('hidden');
+                } else if ($(this).val() == 'M') {
+                    $('#div-fg-nrohoras').removeClass('hidden').addClass('hidden');
+                    $('#div-fg-categoriaproducto').removeClass('hidden');
+                    $('#div-fg-nroproductos').removeClass('hidden');
+                    $('input[name="CategoriaProducto"]').attr('required', '');
+                    $('input[name="CantidadProductos"]').attr('required', '');
+                }
+                $('select[name="TipoDestino"] option[value="1"]').css('display', 'none');
+            }
+        });
+
+        $('select[name="TipoDestino"]').change(function (e) {
+            e.preventDefault();
+            if ($(this).val() == 1) {//MODIFICADO POR CARLOS HUALLPA
+                $('#div-btn-add-destino').css('display', 'none');
+            } else {
+                $('#div-btn-add-destino').css('display', '');
+            }
+        });
+
+        $('input[name="chk-os"]').change(function (e) {
+            e.preventDefault();
+            if ($(this).is(':checked')) {
+                //$('select[name="CentroCostoAfectoCodigoSap"]').select2("enable", false);
+                $('input[name="NroOrdenServicio"]').removeAttr('disabled');
+                $('#div-validate-os-status').html('');
+            } else {
+                //$('select[name="CentroCostoAfectoCodigoSap"]').select2("enable");
+                $('input[name="NroOrdenServicio"]').attr('disabled', 'disabled');
+                $('#div-validate-os-status').html('');
+                $('#txtOrdenServicio').val('');
+            }
+        });
+
+        $('#btn-add-beneficiado').click(function (e) {
+            e.preventDefault();
+            __addBeneficiado();
+        });
+
+        $('#btn-remove-beneficiado').click(function (e) {
+            e.preventDefault();
+            deleteBeneficiado();
+        });
+
+        $('input[name="rad-tipo-beneficiado"]').change(function (e) {
+            e.preventDefault();
+            $('.input-beneficiado-nombre').autocomplete({
+                lookup: $(this).val() == 'personal' ? __users_autocomplete : [],
+                onSelect: function (suggestion) {
+                    $(this).closest('.row').find('.input-beneficiado-dni').val(suggestion.data.dni);
+                    $(this).closest('.row').find('.input-beneficiado-celular').val(suggestion.data.celular);
+                }
+            });
+        });
+
+        $('#btn-save').click(function (e) {
+            e.preventDefault();
+            document.getElementById("btn-save").disabled = true;
+            debugger;
+            var $frm = $('#frm-sol');
+            var formParsley = $frm.parsley(__defaultParsleyForm());
+            var isValid = formParsley.validate();
+
+            //Validacion para 0.00 y 0.01 NEY TANGOA 24/04/2021
+
+
+
+
+
+
+            var precio = $("#txt-price").text().split(' ')[1];
+
+            if (precio == "0.01" || precio == "0.00" ) {
+                toastr["error"]("No existe un tarifario negociado.");
+                document.getElementById("btn-save").disabled = false;
+                fn_DesbloquearPantalla();
+                return;
+            }
+
+
+
+            var ArrayBeneficiados = [];
+            $('#div-beneficiados .rowUser').each(function () {
+                ArrayBeneficiados.push({
+                    UsersID: $(this).find('select option:selected').val(),
+                    Telefono: $(this).find('input').val()
+                });
+            });
+
+            for (var i = 0; i < ArrayBeneficiados.length; i++) {
+
+                if (ArrayBeneficiados[i].Telefono == "" || ArrayBeneficiados[i].Telefono == null || ArrayBeneficiados[i].Telefono == " " || ArrayBeneficiados[i].Telefono.length < 9) {
+                    toastr["error"]("Debe ingresar el número telefónico corretamente");
+                    document.getElementById("btn-save").disabled = false;
+                    fn_DesbloquearPantalla();
+                    return;
+                }
+
+            }
+
+            var daterange = $('input[name="datefilter"]').val().split('-');
+
+            if (daterange[0] = "" || daterange[0] == null || daterange == false) {
+                toastr["error"]("Debe ingresar el rango de fechas corretamente");
+                document.getElementById("btn-save").disabled = false;
+                fn_DesbloquearPantalla();
+                return;
+            }
+
+            var indicador = true;
+            if (isValid) {
+                var idCentroCosto = $('select[name="CentroCostoAfectoCodigoSap"]').val();
+                if (idCentroCosto == '') {
+                    toastr["warning"]('Debe seleccionar un centro de costo afecto.');
+                    document.getElementById("btn-save").disabled = false;
+                    indicador = false;
+                    return;
+                }
+            }
+            indicador = true;
+            if (isValid) {
+                idUserAprobador = parseInt($('select[name="listaAprobadores"]').val());
+				if (__countAprobadoresDisponibles >= 0 && (idUserAprobador == 0 || idUserAprobador == '' || idUserAprobador == '0')) {
+                    toastr["warning"]('Debe seleccionar un aprobador.');
+                    document.getElementById("btn-save").disabled = false;
+                    indicador = false;
+                    return;
+                }
+            }
+            indicador = true;
+            if (isValid) {
+                $('#div-beneficiados .rowUser').each(function (index, value) {
+                    var idBeneficiado = $(this).find('select option:selected').val();
+                    if (index == 0 && idBeneficiado == '0') {
+                        toastr["warning"]('Debe seleccionar un beneficiado.');
+                        document.getElementById("btn-save").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+                });
+            }
+
+            indicador = true;
+            if (isValid) {
+                var Aprob = $('#dllListaAprobadores').val();
+
+                $('[id^="dllBeneficiado-"]').each(function (index, element) {
+                    // Obtén el ID del elemento actual
+                    var elementId = $(element).attr('id');
+                    var Beneficiado = $('#' + elementId + ' option:selected').val();
+
+                    // Compara el ID del elemento actual con el valor de Aprob
+                    if (Beneficiado == Aprob) {
+                        toastr["warning"]('El aprobador no puede ser igual que el Beneficiado.');
+                        document.getElementById("btn-save").disabled = false;
+                        indicador = false;
+                        return false; // Detiene el recorrido
+                    }
+                });
+
+            }
+
+            if (indicador) {
+                validarCentroCostoSave(isValid);
+            }
+        });
+
+        $('#btn-add-destino').click(function (e) {
+            e.preventDefault();
+            __addDestino();
+        });
+
+        $('[data-toggle="tooltip"]').tooltip();
+
+        getUsuarioCentroCosto('');
+
+        $('select#CentroCostoAfectoCodigoSap').change(function () {
+            var ceco = $("#CentroCostoAfectoCodigoSap").val();
+            getUsuarioCentroCosto(ceco);
+        })
+
+    });
+
+    var getUsuarioCentroCosto = function (_ceco) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaAprobadores_PV", "Solicitud")',
+            type: 'POST',
+            data: { ceco: _ceco },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaUsuarioCentroCosto").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+    var deleteDestino = function (element) {
+        //debugger;
+        __currentDestinoIndex--;
+        element.parent().parent().parent().remove();
+
+        //Mostrar ruta
+        __directionsService = new google.maps.DirectionsService;
+        __directionsDisplay = new google.maps.DirectionsRenderer({
+            draggable: true,
+            map: __map,
+            //panel: document.getElementById('div-destinos')
+        });;
+
+        __directionsDisplay.addListener('directions_changed', function () {
+            //debugger;
+            setNewAddressBeforePlaceChanged(__directionsDisplay.getDirections());
+        });
+
+        var origen = $("#" + __txt_origen_id).val();
+
+        __map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: $('input[name="OrigenLat"]').val(), lng: $('input[name="OrigenLng"]').val() },
+            zoom: 16
+        });
+
+        __directionsDisplay.setMap(__map);
+
+        var destino = $("#div-destinos input:last").val();
+
+        __listaDestino = [];
+        var cantidad = $(".input-destino").length;
+        var waypoints = [];
+
+        __listaDestino.push({ LatitudOrigen: $('input[name="OrigenLat"]').val(), LongitudOrigen: $('input[name="OrigenLng"]').val(), DireccionOrigen: $("#" + __txt_origen_id).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: 1 });
+        $(".input-destino").each(function (index) {
+            __listaDestino[index].LatitudDestino = $(this).attr('data-lat');
+            __listaDestino[index].LongitudDestino = $(this).attr('data-lng');
+            __listaDestino[index].DireccionDestino = $(this).val();
+            if (index < cantidad - 1) {
+                __listaDestino.push({ LatitudOrigen: $(this).attr('data-lat'), LongitudOrigen: $(this).attr('data-lng'), DireccionOrigen: $(this).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: index + 2 });
+                waypoints.push($(this).val());
+            }
+        });
+        __calculateAndDisplayRoute(origen, destino, waypoints);
+
+        @*fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("TarifaPost", "Solicitud")',
+            type: 'POST',
+            data: { TipoServicioID: $("select[name='TipoServicio']").val(), ListaDestino: __listaDestino },
+            cache: false,
+            async: true,
+            success: function (data) {
+                console.log('Tarifa',data);
+                if (data.result.length > 0) {
+                    arraySolicitudProveedor = data.result;
+                    $("#spn-precio").text(data.operation.ObjectResult.Total.toFixed(2));
+                    $("#spn-km").text(data.operation.ObjectResult.DistanciaKilometro.toFixed(2));
+                    fn_DesbloquearPantalla();
+                } else {
+                    fn_DesbloquearPantalla();
+                    toastr["info"]("No existe una tarifa para esta ruta");
+                }
+            }
+        });*@
+    }
+
+    function __addBeneficiado() {
+        var beneficiado = $("#dllBeneficiado-" + __currentBeneficiadoIndex).val();
+        if (beneficiado == "") {
+            toastr["warning"]("Debe seleccionar un beneficiado");
+        } else {
+            if (beneficiado != undefined) {
+                __arrBeneficiadosSelected.push(beneficiado);
+            }
+
+            __currentBeneficiadoIndex++;
+
+            var data = $('#InputBeneficiado').val();
+
+            var newData = data.replace("[ID]", "dllBeneficiado-" + __currentBeneficiadoIndex)
+
+            var html = '<div class="form-horizontal rowUser"><div class="col-sm-8" style="padding-left: 0px;"><div class="input-group"><span class="input-group-addon"><i class="fa fa-user"></i></span>';
+            html += newData;
+            html += '</div></div><div class="col-sm-4" style="padding-right: 0px; padding-left: 0px;"><input type="text" maxlength="9" onkeypress="return validarSoloNumeros(event)" class="form-control" required=""/></div></div><br/>';
+            $('#div-beneficiados').append(html);
+
+            var count = $('#div-beneficiados').children('div').length;
+
+            $('#spn-cantidad-beneficiados').text(count);
+
+            __enabledDisabledBeneficiado($('#dllBeneficiado-' + __currentBeneficiadoIndex), __arrBeneficiadosSelected, __currentBeneficiadoIndex);
+            $('#dllBeneficiado-' + __currentBeneficiadoIndex).select2({ dropdownAutoWidth: true });
+
+            $('#dllBeneficiado-' + __currentBeneficiadoIndex).change(function (e) {
+                e.preventDefault();
+                var newBeneficiadoSelected = $(this).val();
+
+                var index = $('#div-beneficiados select').index($(this));
+                __arrBeneficiadosSelected[index] = newBeneficiadoSelected;
+                var cantidad = $("#div-beneficiados select").length;
+                for (var i = 1; i <= cantidad; i++) {
+                    $('#dllBeneficiado-' + i + ' option').prop("disabled", false);
+                    __enabledDisabledBeneficiado($('#dllBeneficiado-' + i), __arrBeneficiadosSelected, i - 1);
+                }
+            });
+        }
+    }
+
+    var deleteBeneficiado = function (e) {
+        var count = $('#div-beneficiados').children('div').length;
+        if (count === 1) {
+            toastr["warning"]('Debe tener al menos 1 beneficiado');
+        } else {
+            __currentBeneficiadoIndex--;
+            $($('#div-beneficiados').children('div')[count - 1]).next('br').remove();
+            $($('#div-beneficiados').children('div')[count - 1]).remove();
+        }
+
+        var countDelete = $('#div-beneficiados').children('div').length;
+        $('#spn-cantidad-beneficiados').text(countDelete);
+
+        __arrBeneficiadosSelected.pop();
+        for (var i = 1; i <= countDelete; i++) {
+            $('#dllBeneficiado-' + i + ' option').prop("disabled", false);
+            __enabledDisabledBeneficiado($('#dllBeneficiado-' + i), __arrBeneficiadosSelected, i - 1);
+            $('#dllBeneficiado-' + i).select2({ dropdownAutoWidth: true });
+        }
+    }
+
+    $('body').on('click', '.deleteDestino', function (e) {
+        e.preventDefault();
+        var count = $('#div-destinos').children('div').length;
+        if (count === 1) {
+            toastr["warning"]('Debe existir al menos un destino');
+        } else {
+            deleteDestino($(this));
+        }
+    });
+
+    function __enabledDisabledBeneficiado(first, second, pos) {
+        $.each(second, function (index, value) {
+            if (index != pos) {
+                first.children().each(function (a) {
+                    if ($(this).prop("disabled") == false) {
+                        if ($(this).val() == value) {
+                            $(this).prop("disabled", true);
+                        } else {
+                            $(this).prop("disabled", false);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function initMap() {
+
+        __map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: __lat_default, lng: __lng_default },
+            zoom: 16
+        });
+
+        __setCurrentPositionToElement(__txt_origen_id);
+        __addSearchBox(__txt_origen_id);
+        __addDestino();
+
+        geocoder = new google.maps.Geocoder();
+    }
+
+    function codeAddress(address) {
+
+        geocoder.geocode({
+            'address': address
+        }, function (results, status) {
+            if (status === google.maps.GeocoderStatus.OK) {
+                if (results[1]) {
+                } else {
+                    alert('No results found');
+                }
+            } else {
+                alert('Geocoder failed due to: ' + status);
+            }
+        });
+    }
+
+    function handleEvent(event) {
+
+        var lat = event.latLng.lat();
+        var lng = event.latLng.lng();
+        //codeLatLng(lat, lng);
+        __setAddressByLatByLng(lat, lng, __currentInputMarker);
+    }
+
+    function codeLatLng(lat, lng) {
+
+        var latlng = new google.maps.LatLng(lat, lng);
+        geocoder.geocode({
+            'latLng': latlng
+        }, function (results, status) {
+            if (status === google.maps.GeocoderStatus.OK) {
+                if (results[1]) {
+                } else {
+                    alert('No results found');
+                }
+            } else {
+                alert('Geocoder failed due to: ' + status);
+            }
+        });
+    }
+
+    function __setCurrentPositionToElement(elementID) {
+
+        if (navigator.geolocation) {
+            //debugger;
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                __map.setCenter(pos);
+
+                if (elementID == __txt_origen_id) {
+                    __setMarker(pos.lat, pos.lng);
+                    __setAddressByLatByLng(pos.lat, pos.lng, elementID);
+                    $('input[name="OrigenLat"]').val(pos.lat);
+                    $('input[name="OrigenLng"]').val(pos.lng);
+                }
+            }, function () {
+                handleLocationError(true, infoWindow, map.getCenter());
+            });
+        } else {
+            // Browser doesn't support Geolocation
+            handleLocationError(false, infoWindow, __map.getCenter());
+        }
+    }
+
+    function __addSearchBox(elementID, type) {
+
+        var input = document.getElementById(elementID);
+        var searchBox = new google.maps.places.SearchBox(input);
+        __map.addListener('bounds_changed', function () {
+
+            searchBox.setBounds(__map.getBounds());
+        });
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.bindTo('bounds', __map);
+
+        __directionsDisplay = new google.maps.DirectionsRenderer({
+            draggable: true,
+            map: __map,
+        });
+
+        __directionsDisplay.addListener('directions_changed', function () {
+
+            setNewAddressBeforePlaceChanged(__directionsDisplay.getDirections());
+        },true);
+
+        autocomplete.addListener('place_changed', function () {
+            //debugger;
+            var places = autocomplete.getPlace();
+            if (!places.geometry) {
+                //console.log("No details available for input: '" + place.name + "'");
+                return;
+            }
+
+            if (places.geometry.viewport) {
+                __map.fitBounds(places.geometry.viewport);
+            } else {
+                __map.setCenter(places.geometry.location);
+                __map.setZoom(17);
+            }
+
+            var lat = places.geometry.location.lat();
+            var lng = places.geometry.location.lng();
+            eventDisplay = true;
+
+            __directionsService = new google.maps.DirectionsService;
+            //__directionsDisplay = new google.maps.DirectionsRenderer({
+            //    draggable: true,
+            //    map: __map,
+            //});
+
+            //__directionsDisplay.addListener('directions_changed', function () {
+            //    setNewAddressBeforePlaceChanged(__directionsDisplay.getDirections());
+            //});
+
+            __map = new google.maps.Map(document.getElementById('map'), {
+                //center: { lat: __lat_default, lng: __lng_default },
+                zoom: 16
+            });
+
+            __directionsDisplay.setMap(__map);
+            var origen = $("#" + __txt_origen_id).val();
+            //NT 14/07/2023
+            //var destino = $("#div-destinos input:last").val();
+            //var destino = typeof places.plus_code === "undefined" ? $("#div-destinos input:last").val() : places.plus_code.compound_code;
+            var destino = ($("#div-destinos input:last").val() == '') ? $("#div-destinos input:last").val() : (typeof places.plus_code === "undefined" ? $("#div-destinos input:last").val() : places.plus_code.compound_code);
+            //var destino = "";
+            //if ($("#div-destinos input:last").val() == "" || $("#div-destinos input:last").attr('data-hdfNameOrigin') == undefined) {
+            //    destino = $("#div-destinos input:last").val();
+            //}
+            //else {
+            //    destino = $("#div-destinos input:last").attr('data-hdfNameOrigin');
+            //}
+            //var destino = $("#div-destinos input:last").attr('data-hdfNameOrigin');
+
+            if (elementID == __txt_origen_id) {
+                $('input[name="OrigenLat"]').val(lat);
+                $('input[name="OrigenLng"]').val(lng);
+                //$("#hdfDireccionOrigen").val(origen);  //bag coordenas JCEP
+                $("#hdfDireccionOrigen").val(typeof places.plus_code === "undefined" ? origen : places.plus_code.compound_code);  //bag coordenas JCEP
+
+                if (origen != "" && destino != "") {
+                    __listaDestino = [];
+                    var cantidad = $(".input-destino").length;
+                    var waypoints = [];
+                    __listaDestino.push({ LatitudOrigen: $('input[name="OrigenLat"]').val(), LongitudOrigen: $('input[name="OrigenLng"]').val(), DireccionOrigen: $("#" + __txt_origen_id).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: 1 });
+                    $(".input-destino").each(function (index) {
+                        __listaDestino[index].LatitudDestino = $(this).attr('data-lat');
+                        __listaDestino[index].LongitudDestino = $(this).attr('data-lng');
+                        __listaDestino[index].DireccionDestino = $(this).val();
+                        if (index < cantidad - 1) {
+                            __listaDestino.push({ LatitudOrigen: $(this).attr('data-lat'), LongitudOrigen: $(this).attr('data-lng'), DireccionOrigen: $(this).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: index + 2 });
+                            //waypoints.push($(this).val());
+                            waypoints.push($(this).attr('data-hdfNameOrigin')); //bag coordenas JCEP
+                        }
+                    });
+                    __calculateAndDisplayRoute(origen, destino, waypoints);
+                } else if (destino == "") {
+                    __setMarker(lat, lng, elementID);
+                    __setAddressByLatByLng(lat, lng, elementID);
+                }
+            } else {  //bag coordenas JCEP
+                $('#' + elementID).attr('data-hdfNameOrigin', destino);
+            }
+
+            $('#' + elementID).attr('data-lat', lat);
+            $('#' + elementID).attr('data-lng', lng);
+
+            __listaDestino = [];
+
+            if ($('input[name="OrigenLat"]').val() != "") {
+                var cantidad = $(".input-destino").length;
+                var waypoints = [];
+
+                __listaDestino.push({ LatitudOrigen: $('input[name="OrigenLat"]').val(), LongitudOrigen: $('input[name="OrigenLng"]').val(), DireccionOrigen: $("#" + __txt_origen_id).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: 1 });
+                $(".input-destino").each(function (index) {
+                    __listaDestino[index].LatitudDestino = $(this).attr('data-lat');
+                    __listaDestino[index].LongitudDestino = $(this).attr('data-lng');
+                    __listaDestino[index].DireccionDestino = $(this).val();
+                    if (index < cantidad - 1) {
+                        __listaDestino.push({ LatitudOrigen: $(this).attr('data-lat'), LongitudOrigen: $(this).attr('data-lng'), DireccionOrigen: $(this).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: index + 2 });
+                        //waypoints.push($(this).val());
+                        waypoints.push($(this).attr('data-hdfNameOrigin'));
+                    }
+                });
+
+            if (origen != "" && destino != "") {
+                __calculateAndDisplayRoute(origen, destino, waypoints);
+            }
+            }
+
+            @*if (origen != "" && destino != "") {
+                fn_BloquearPantalla();
+                $.ajax({
+                    url: '@Url.Action("TarifaPost", "Solicitud")',
+                    type: 'POST',
+                    data: { TipoServicioID: $("select[name='TipoServicio']").val(), ListaDestino: __listaDestino },
+                    cache: false,
+                    async: true,
+                    success: function (data) {
+                        console.log('Tarifa:',data);
+                        if (data.result.length > 0) {
+                            arraySolicitudProveedor = data.result;
+                            $("#spn-precio").text(data.operation.ObjectResult.Total.toFixed(2));
+                            $("#spn-km").text(data.operation.ObjectResult.DistanciaKilometro.toFixed(2));
+                            fn_DesbloquearPantalla();
+                        } else {
+                            fn_DesbloquearPantalla();
+                            toastr["info"]("No existe una tarifa para esta ruta");
+                        }
+                    }
+                });
+            }*@
+        });
+
+        searchBox.addListener('places_changed', function () {
+            var places = searchBox.getPlaces();
+            if (places.length == 0) {
+                return;
+            }
+            var place = places[0];
+            var lat = place.geometry.location.lat();
+            var lng = place.geometry.location.lng();
+            eventDisplay = true;
+
+            //Mostrar ruta
+            __directionsService = new google.maps.DirectionsService;
+            __directionsDisplay = new google.maps.DirectionsRenderer({
+                draggable: true,
+                map: __map,
+                //panel: document.getElementById('div-destinos')
+            });
+
+            __directionsDisplay.addListener('directions_changed', function () {
+                setNewAddressBeforePlaceChanged(__directionsDisplay.getDirections());
+            });
+
+            __map = new google.maps.Map(document.getElementById('map'), {
+                //center: { lat: __lat_default, lng: __lng_default },
+                zoom: 16
+            });
+
+            __directionsDisplay.setMap(__map);
+
+            var origen = $("#" + __txt_origen_id).val();
+            var destino = $("#div-destinos input:last").val();
+            //var destino = $("#div-destinos input:last").attr('data-hdfNameOrigin');
+
+
+            if (elementID == __txt_origen_id) {
+                $('input[name="OrigenLat"]').val(lat);
+                $('input[name="OrigenLng"]').val(lng);
+                if (origen != "" && destino != "") {
+                    __listaDestino = [];
+                    var cantidad = $(".input-destino").length;
+                    var waypoints = [];
+
+                    __listaDestino.push({ LatitudOrigen: $('input[name="OrigenLat"]').val(), LongitudOrigen: $('input[name="OrigenLng"]').val(), DireccionOrigen: $("#" + __txt_origen_id).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: 1 });
+                    $(".input-destino").each(function (index) {
+                        __listaDestino[index].LatitudDestino = $(this).attr('data-lat');
+                        __listaDestino[index].LongitudDestino = $(this).attr('data-lng');
+                        __listaDestino[index].DireccionDestino = $(this).val();
+                        if (index < cantidad - 1) {
+                            __listaDestino.push({ LatitudOrigen: $(this).attr('data-lat'), LongitudOrigen: $(this).attr('data-lng'), DireccionOrigen: $(this).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: index + 2 });
+                            //waypoints.push($(this).val());
+                            waypoints.push($(this).attr('data-hdfNameOrigin'));
+                        }
+                    });
+                    __calculateAndDisplayRoute(origen, destino, waypoints);
+                } else if (destino == "") {
+                    __setMarker(lat, lng, elementID);
+                    __setAddressByLatByLng(lat, lng, elementID);
+                }
+            } else {
+                $('#' + elementID).attr('data-hdfNameOrigin', destino);
+            }
+
+            $('#' + elementID).attr('data-lat', lat);
+            $('#' + elementID).attr('data-lng', lng);
+
+            __listaDestino = [];
+
+            if ($('input[name="OrigenLat"]').val() != "") {
+                var cantidad = $(".input-destino").length;
+                var waypoints = [];
+
+                __listaDestino.push({ LatitudOrigen: $('input[name="OrigenLat"]').val(), LongitudOrigen: $('input[name="OrigenLng"]').val(), DireccionOrigen: $("#" + __txt_origen_id).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: 1 });
+                $(".input-destino").each(function (index) {
+                    __listaDestino[index].LatitudDestino = $(this).attr('data-lat');
+                    __listaDestino[index].LongitudDestino = $(this).attr('data-lng');
+                    __listaDestino[index].DireccionDestino = $(this).val();
+                    if (index < cantidad - 1) {
+                        __listaDestino.push({ LatitudOrigen: $(this).attr('data-lat'), LongitudOrigen: $(this).attr('data-lng'), DireccionOrigen: $(this).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: index + 2 });
+                        //waypoints.push($(this).val());
+                        waypoints.push($(this).attr('data-hdfNameOrigin'));
+                    }
+                });
+
+                if (origen != "" && destino != "") {
+                    __calculateAndDisplayRoute(origen, destino, waypoints);
+                }
+            }
+            //console.log('datos envio: ', __listaDestino); //PRUEBAJCEP
+            if (origen != "" && destino != "") {
+                fn_BloquearPantalla();
+                $.ajax({
+                    url: '@Url.Action("TarifaPost", "Solicitud")',
+                    type: 'POST',
+                    data: { TipoServicioID: $("select[name='TipoServicio']").val(), ListaDestino: __listaDestino },
+                    cache: false,
+                    async: true,
+                    success: function (data) {
+                        //debugger;
+                        //console.log('Tarifa:', data); //PRUEBAJCEP
+                        if (data.result.length > 0) {
+                            arraySolicitudProveedor = data.result;
+                            $("#spn-precio").text(data.operation.ObjectResult.Total.toFixed(2));
+                            $("#spn-km").text(data.operation.ObjectResult.DistanciaKilometro.toFixed(2));
+                            fn_DesbloquearPantalla();
+                        } else {
+                            fn_DesbloquearPantalla();
+                            toastr["info"]("No existe una tarifa para esta ruta");
+                        }
+                    }
+                });
+
+            }
+        });
+    }
+
+    function __calculateAndDisplayRoute(origen, destino, waypoints) {
+        //var originCase = $("#hdfDireccionOrigen").val() == "Calle 3 104, Magdalena del Mar, Perú" ? "D, Magdalena del Mar 15076" : $("#hdfDireccionOrigen").val();
+        var waypts = [];
+        var checkboxArray = waypoints;
+        for (var i = 0; i < checkboxArray.length; i++) {
+            waypts.push({
+                location: checkboxArray[i],
+                stopover: true
+            });
+        }
+        __directionsService.route({
+            origin: $("#hdfDireccionOrigen").val(), //bag coordenas JCEP
+            //origin: originCase, //bag coordenas JCEP
+            //origin: origen,
+            destination: destino,
+            waypoints: waypts,
+            optimizeWaypoints: true,
+            travelMode: 'DRIVING'
+        }, function (response, status) {
+            if (status === 'OK') {
+                //console.log('datos response ', response);
+                __directionsDisplay.setDirections(response);
+
+            } else {
+                toastr["warning"]("Ingrese direcciones correctas");
+                __map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: __lat_default, lng: __lng_default },
+                    zoom: 16
+                });
+            }
+        });
+    }
+
+
+    function setNewAddressBeforePlaceChanged(result) {
+        var origen = $("#" + __txt_origen_id).val();
+        var destino = $("#div-destinos input:last").val();
+        var cantidad = $(".input-destino").length;
+        var address = [];
+
+        address.push({ id: __txt_origen_id, val: origen });
+        $(".input-destino").each(function (index) {
+            if (index < cantidad - 1) {
+                address.push({ id: $(this).attr("id"), val: $(this).val() });
+                //address.push({ id: $(this).attr("id"), val: $(this).attr('data-hdfNameOrigin') });
+            }
+        });
+        address.push({ id: $("#div-destinos input:last").attr("id"), val: destino });
+        var waypoints = result.routes[0];
+        var __waypoints = [];
+        for (var i = 0; i < waypoints.legs.length; i++) {
+            if (waypoints.legs[i].start_address != address[i].val) {
+                $('#' + address[i].id).val(waypoints.legs[i].start_address == 'XVGR+QR, Callao, Perú' ? 'Jorge Chavez International Airport (LIM), Avenida Elmer Faucett, Callao, Perú' : waypoints.legs[i].start_address );
+                $('#' + address[i].id).attr('data-lat', waypoints.legs[i].start_location.lat());
+                $('#' + address[i].id).attr('data-lng', waypoints.legs[i].start_location.lng());
+            }
+            if (i == waypoints.legs.length - 1) {
+                if (waypoints.legs[i].end_address != address[i + 1].val) {
+                    $('#' + address[i + 1].id).val(waypoints.legs[i].end_address == 'XVGR+QR, Callao, Perú' ? 'Jorge Chavez International Airport (LIM), Avenida Elmer Faucett, Callao, Perú' : waypoints.legs[i].end_address);
+                    $('#' + address[i + 1].id).attr('data-lat', waypoints.legs[i].end_location.lat());
+                    $('#' + address[i + 1].id).attr('data-lng', waypoints.legs[i].end_location.lng());
+                }
+            }
+        }
+        if (origen != "" && destino != "") {
+            __listaDestino = [];
+            __listaDestino.push({ LatitudOrigen: $('#' + address[0].id).attr('data-lat'), LongitudOrigen: $('#' + address[0].id).attr('data-lng'), DireccionOrigen: $("#" + __txt_origen_id).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: 1 });
+            $(".input-destino").each(function (index) {
+                __listaDestino[index].LatitudDestino = $(this).attr('data-lat');
+                __listaDestino[index].LongitudDestino = $(this).attr('data-lng');
+                __listaDestino[index].DireccionDestino = $(this).val();
+                if (index < cantidad - 1) {
+                    __listaDestino.push({ LatitudOrigen: $(this).attr('data-lat'), LongitudOrigen: $(this).attr('data-lng'), DireccionOrigen: $(this).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: index + 2 });
+                }
+            });
+
+            //console.log('datos envio: ', __listaDestino);  //PRUEBAJCEP
+            $.ajax({
+            url: '@Url.Action("TarifaPost", "Solicitud")',
+            type: 'POST',
+            data: { TipoServicioID: $("select[name='TipoServicio']").val(), ListaDestino: __listaDestino },
+            cache: false,
+            async: true,
+            beforeSend: function () {
+                fn_BloquearPantalla();
+            },
+                success: function (data) {
+                //console.log('Tarifa', data);  //PRUEBAJCEP
+                if (data.result.length > 0) {
+                    arraySolicitudProveedor = data.result;
+
+                    //var AxuDestino = arraySolicitudProveedor[1].ListaDestino[0].ZonaDestino;
+
+                    //if (true) {
+
+                    //}
+
+                    $("#spn-precio").text(data.operation.ObjectResult.Total.toFixed(2));
+                    $("#spn-km").text(data.operation.ObjectResult.DistanciaKilometro.toFixed(2));
+                    fn_DesbloquearPantalla();
+                } else {
+                    fn_DesbloquearPantalla();
+                    toastr["info"]("No existe una tarifa para esta ruta");
+                }
+            }
+        });
+        }
+
+    }
+
+    function __setNewAddress(result) {
+        var origen = $("#" + __txt_origen_id).val();
+        var destino = $("#div-destinos input:last").val();
+        var cantidad = $(".input-destino").length;
+        var address = [];
+        address.push({ id: __txt_origen_id, val: origen });
+        $(".input-destino").each(function (index) {
+            if (index < cantidad - 1) {
+                address.push({ id: $(this).attr("id"), val: $(this).val() });
+            }
+        });
+        address.push({ id: $("#div-destinos input:last").attr("id"), val: destino });
+        var waypoints = result.routes[0];
+        var __waypoints = [];
+        for (var i = 0; i < waypoints.legs.length; i++) {
+            if (waypoints.legs[i].start_address != address[i].val) {
+                $('#' + address[i].id).val(waypoints.legs[i].start_address);
+                $('#' + address[i].id).attr('data-lat', waypoints.legs[i].start_location.lat());
+                $('#' + address[i].id).attr('data-lng', waypoints.legs[i].start_location.lng());
+            }
+            if (i == waypoints.legs.length - 1) {
+                if (waypoints.legs[i].end_address != address[i + 1].val) {
+                    $('#' + address[i + 1].id).val(waypoints.legs[i].end_address);
+                    $('#' + address[i + 1].id).attr('data-lat', waypoints.legs[i].end_location.lat());
+                    $('#' + address[i + 1].id).attr('data-lng', waypoints.legs[i].end_location.lng());
+                }
+            }
+        }
+        if (origen != "" && destino != "") {
+            fn_BloquearPantalla();
+            __listaDestino = [];
+            __listaDestino.push({ LatitudOrigen: $('#' + address[0].id).attr('data-lat'), LongitudOrigen: $('#' + address[0].id).attr('data-lng'), DireccionOrigen: $("#" + __txt_origen_id).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: 1 });
+            $(".input-destino").each(function (index) {
+                __listaDestino[index].LatitudDestino = $(this).attr('data-lat');
+                __listaDestino[index].LongitudDestino = $(this).attr('data-lng');
+                __listaDestino[index].DireccionDestino = $(this).val();
+                if (index < cantidad - 1) {
+                    __listaDestino.push({ LatitudOrigen: $(this).attr('data-lat'), LongitudOrigen: $(this).attr('data-lng'), DireccionOrigen: $(this).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: index + 2 });
+                }
+            });
+        }
+    }
+
+    function __setNewAddressDelete(result) {
+        var origen = $("#" + __txt_origen_id).val();
+        var destino = $("#div-destinos input:last").val();
+        var cantidad = $(".input-destino").length;
+        var address = [];
+        address.push({ id: __txt_origen_id, val: origen });
+        $(".input-destino").each(function (index) {
+            if (index < cantidad - 1) {
+                address.push({ id: $(this).attr("id"), val: $(this).val() });
+            }
+        });
+        address.push({ id: $("#div-destinos input:last").attr("id"), val: destino });
+        var waypoints = result.routes[0];
+        var __waypoints = [];
+        for (var i = 0; i < waypoints.legs.length; i++) {
+            if (waypoints.legs[i].start_address != address[i].val) {
+                $('#' + address[i].id).val(waypoints.legs[i].start_address);
+                $('#' + address[i].id).attr('data-lat', waypoints.legs[i].start_location.lat());
+                $('#' + address[i].id).attr('data-lng', waypoints.legs[i].start_location.lng());
+            }
+            if (i == waypoints.legs.length - 1) {
+                if (waypoints.legs[i].end_address != address[i + 1].val) {
+                    $('#' + address[i + 1].id).val(waypoints.legs[i].end_address);
+                    $('#' + address[i + 1].id).attr('data-lat', waypoints.legs[i].end_location.lat());
+                    $('#' + address[i + 1].id).attr('data-lng', waypoints.legs[i].end_location.lng());
+                }
+            }
+        }
+    }
+
+    function __setMarker(lat, lng, elementID) {
+
+        if (elementID == __txt_origen_id) {
+            if (!lat || !lng) {
+                lat = __lat_default;
+                lng = __lng_default;
+            }
+            __map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: lat, lng: lng },
+                zoom: 16
+            });
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(lat, lng),
+                draggable: true,
+                visible: true
+            });
+
+            marker.addListener('dragend', handleEvent);
+            marker.setMap(__map);
+        }
+    }
+
+    function __setAddressByLatByLng(lat, lng, elementID) {
+        $.get('http://maps.googleapis.com/maps/api/geocode/json', {
+            latlng: lat + ',' + lng,
+            sensor: true
+        }, function (data) {
+            if (data) {
+                if (data.results.length != 0)
+                    $('#' + elementID).val(data.results[0].formatted_address);
+
+                $('#' + elementID).attr('data-lat', lat);
+                $('#' + elementID).attr('data-lng', lng);
+                __setMarker(lat, lng, __txt_origen_id)
+            }
+        });
+    }
+
+    function ___setAddressByLatByLng(lat, lng, elementID) {
+        $.get('http://maps.googleapis.com/maps/api/geocode/json', {
+            latlng: lat + ',' + lng,
+            sensor: true
+        }, function (data) {
+            if (data && data.results) {
+                $('#' + elementID).val(data.results[0].formatted_address);
+                $('#' + elementID).attr('data-lat', lat);
+                $('#' + elementID).attr('data-lng', lng);
+            }
+        });
+    }
+
+    function __addDestino() {
+        var ultimo = $("#div-destinos input:last").val();
+        if (ultimo == "") {
+            toastr["info"]("Debe ingresar un destino para agregar otro");
+        } else {
+            __currentDestinoIndex++;
+            var txt_destino_id = 'txt-destino-' + __currentDestinoIndex;
+            //var html = '<div class="row" style="height:15px;">'
+            //    + '</div></div>';
+            var html = '<div class="row" style="margin-top:15px;"><div class="col-sm-12">'
+                        + '<div class="input-group"><span class="input-group-addon"><i class="fa fa-map-marker"></i></span>'
+                        + '<input type="text" id="' + txt_destino_id + '" class="form-control input-toggle-marker input-destino" placeholder="Destino ' + __currentDestinoIndex + '" required="" />'
+                        + '<span class="input-group-addon deleteDestino"><i class="fa fa-remove"></i></span>'
+                        + '</div></div></div>';
+            __$div_destinos.append(html);
+            __addSearchBox(txt_destino_id);
+            //$('#txt-destino-' + __currentDestinoIndex).focus();
+        }
+    }
+
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                                'Error: The Geolocation service failed.' :
+                                'Error: Your browser doesn\'t support geolocation.');
+    }
+
+    var getListaSolicitudProveedor = function (e) {
+        var SolicitudProveedorTaxi = function () { };
+        var listaSolicitudProveedorTaxi = new Array();
+        $.each(arraySolicitudProveedor, function () {
+            var solicitudProveedorTaxi = new SolicitudProveedorTaxi();
+            solicitudProveedorTaxi.ProveedorTaxiID = this.IdProveedor;
+            solicitudProveedorTaxi.PrecioServicio = this.Total.toFixed(2);
+            listaSolicitudProveedorTaxi.push(solicitudProveedorTaxi);
+        });
+        return listaSolicitudProveedorTaxi;
+    }
+
+    var getListaDestino = function (e) {
+        var Destino = function () { };
+        var listaDestino = new Array();
+
+
+
+
+        $.each(arraySolicitudProveedor, function (i, obj) {
+            debugger;
+            $.each(this.ListaDestino, function (i, objDestino) {
+                var destino = new Destino();
+                destino.IdProveedor = obj.IdProveedor;
+                destino.LatitudOrigen = objDestino.LatitudOrigen;
+                destino.LongitudOrigen = objDestino.LongitudOrigen;
+                destino.LatitudDestino = objDestino.LatitudDestino;
+                destino.LongitudDestino = objDestino.LongitudDestino;
+                destino.ZonaOrigen = objDestino.ZonaOrigen;
+                destino.ZonaDestino = objDestino.ZonaDestino;
+                destino.DireccionOrigen = objDestino.DireccionOrigen;
+                destino.NumeroDireccionOrigen = objDestino.NumeroDireccionOrigen;
+                destino.DireccionDestino = objDestino.DireccionDestino;
+                destino.NumeroDireccionDestino = objDestino.NumeroDireccionDestino;
+                destino.DistanciaDestinoKilometro = objDestino.DistanciaDestinoKilometro;
+                destino.Negociado = objDestino.Negociado;
+                destino.Precio = objDestino.Precio.toFixed(2);
+                listaDestino.push(destino);
+            });
+        });
+        return listaDestino;
+    }
+
+    var validarOrdenServicio = function (e) {
+        debugger;
+        validacionOrdenServicio = true;
+        fn_BloquearPantalla();
+        var ordenServicio = $('#txtOrdenServicio').val();
+        $.ajax({
+            url: url.ValidarOrdenServicio,
+            type: 'POST',
+            data: { ordenServicio: ordenServicio },
+            cache: false,
+            async: false,
+            success: function (data) {
+                if (data.Success) {
+                    validacionOrdenServicio = true;
+                    $('#CentroCostoAfectoCodigoSap').val(data.ObjectResult.KOSTV);
+                    $('#CentroCostoAfectoCodigoSap').trigger('change')
+                    getUsuarioCentroCosto(data.ObjectResult.KOSTV)
+                    $('#div-validate-os-status').html('<i class="fa fa-check fa-lg text-success"></i><label style="font-size: 11px;" class = "text-success">Liberada</label>');
+                    $("#btn-save").prop("disabled", false);
+                    fn_DesbloquearPantalla();
+                } else {
+                    validacionOrdenServicio = false;
+                    toastr["error"](data.Message);
+                    $('#div-validate-os-status').html('<i class="fa fa-times fa-lg text-danger"></i><label style="font-size: 11px;" class = "text-danger">' + data.Message + '</label>');
+                    $("#btn-validate-os").prop('checked', false);
+                    $("#btn-save").prop("disabled", false);
+                    fn_DesbloquearPantalla();
+                }
+            }
+        });
+    }
+
+    var validarCentroCosto = function (e) {
+        fn_BloquearPantalla();
+        validacionCentroCosto = true;
+        var centroCosto = $('#CentroCostoAfectoCodigoSap').val();
+        var ordenServicio = $('#txtOrdenServicio').val()
+        $.ajax({
+            url: url.ValidarCentroCosto,
+            type: 'POST',
+            data: { codigoCentroCosto: centroCosto },
+            cache: false,
+            async: false,
+            success: function (data) {
+                if (data.Success) {
+                    $('#CentroCostoAfectoCodigoSap').prop("disabled", true)
+                    $('#txtOrdenServicio').removeAttr('disabled')
+                    if (ordenServicio == "") {
+                        validacionCentroCosto = true;
+                        $('#idDesbloquear').prop('checked', true);
+                        toastr["info"]("Debe ingresar una OS");
+                        $('#div-validate-os-status').html('<i class="fa fa-info-circle fa-lg text-primary"></i> <label style="font-size: 11px;" class = "text-primary">Debe ingresar una OS</label>');
+                        setTimeout(function () {
+                            $('#txtOrdenServicio').focus();
+                        }, 100);
+                    } else {
+                        validacionCentroCosto = true;
+                    }
+                    $("#btn-save").prop("disabled", false);
+                } else {
+                    $('#CentroCostoAfectoCodigoSap').prop("disabled", false)
+                    $("#btn-save").prop("disabled", false);
+                    validacionCentroCosto = false;
+                }
+
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+    var validarCentroCostoSave = function (isValid) {
+        validacionCentroCosto = true;
+        var centroCosto = document.getElementById('CentroCostoAfectoCodigoSap').value;
+        var ordenServicio = document.getElementById('txtOrdenServicio').value;
+        if (centroCosto == "") {
+            toastr["error"]("El centro de costo no se encuentra registrado en el Sistema de Komatsu");
+            document.getElementById("btn-save").disabled = true;
+        } else {
+            $.ajax({
+            url: url.ValidarCentroCosto,
+            type: 'POST',
+            data: { codigoCentroCosto: centroCosto },
+            dataType: 'JSON',
+            beforeSend: function () {
+                fn_BloquearPantalla();
+            },
+            cache: false,
+            async: true,
+                        success: function (data) {
+                            if (data.Success) {
+                                document.getElementById("CentroCostoAfectoCodigoSap").disabled = true
+                                document.getElementById("txtOrdenServicio").disabled = false
+                                if (ordenServicio == "") {
+                                    validacionCentroCosto = true;
+                                    $('#idDesbloquear').prop('checked', true);
+                                    toastr["info"]("Debe ingresar una OS");
+                                    $('#div-validate-os-status').html('<i class="fa fa-info-circle fa-lg text-primary"></i> <label style="font-size: 11px;" class = "text-primary">Debe ingresar una OS</label>');
+                                    setTimeout(function () {
+                                        $('#txtOrdenServicio').focus();
+                                    }, 100);
+                                } else {
+                                    validacionCentroCosto = true;
+                                }
+                            } else {
+                                document.getElementById("CentroCostoAfectoCodigoSap").disabled = false
+                                document.getElementById("btn-save").disabled = false
+                                validacionCentroCosto = false;
+                            }
+
+                            // Continuación del flujo principal
+                            if (validacionCentroCosto) {
+                                var ordenServicio = document.getElementById('txtOrdenServicio').value;
+                                validarOrdenServicio();
+                                if (isValid && validacionOrdenServicio) {
+                                    fn_BloquearPantalla();
+
+                                    __arrBeneficiados = [];
+                                    $('#div-beneficiados .rowUser').each(function () {
+                                        __arrBeneficiados.push({
+                                            UsersID: $(this).find('select option:selected').val(),
+                                            Telefono: $(this).find('input').val()
+                                        });
+                                    });
+
+                                    if (!$('input[name="HoraServicioEnMinutos"]').val()) {
+                                        var hours = $('#txt-hora-servicio').data('timepicker').hour;
+                                        var minutes = $('#txt-hora-servicio').data('timepicker').minute;
+                                        var meridian = $('#txt-hora-servicio').data('timepicker').meridian;
+                                        $('input[name="HoraServicioEnMinutos"]').val(((hours + (meridian == 'PM' ? 12 : 0)) * 60) + minutes)
+                                    }
+
+                                    $('.input-destino').each(function () {
+                                        var $input = $(this);
+                                        __arrDestinos.push({
+                                            Lat: $input.attr('data-lat'),
+                                            Lng: $input.attr('data-lng'),
+                                            Direccion: $input.val()
+                                        });
+                                    });
+
+                                    if (__arrDestinos.length) {
+                                        for (var i_d = 0; i_d < __arrDestinos.length; i_d++) {
+                                            __arrDestinos[i_d].ZonaOrigen = 0;//__objTarifaProveedor.ZonaOrigen;
+                                            __arrDestinos[i_d].ZonaDestino = 0;//__objTarifaProveedor.ZonaDestino;
+                                            __arrDestinos[i_d].DistanciaKm = 0;//__objTarifaProveedor.Distancia.replace('km', '').trim();
+                                        }
+                                    }
+
+                                    debugger;
+                                    //LOGICA PARA CALCULAR LA DIFERENCIAS DE DÍAS SEGÚN EL RANGO INGRESADO
+
+                                    var daterange = $('input[name="datefilter"]').val().split('-');
+
+
+
+                                    var f1 = daterange[0].trim().split('/')
+                                    var n1 = f1[1] + "/" + f1[0] + "/" + f1[2];
+
+                                    var f2 = daterange[1].trim().split('/')
+                                    var n2 = f2[1] + "/" + f2[0] + "/" + f2[2];
+
+
+                                    var date1 = new Date(n1);
+                                    var date2 = new Date(n2);
+
+                                    var Diferencia_en_tiempo = date2.getTime() - date1.getTime();
+
+                                    var Difenrencia_en_dias = Diferencia_en_tiempo / (1000 * 3600 * 24);
+                                    //Difenrencia_en_dias = Difenrencia_en_dias == 1 ? Difenrencia_en_dias = 2 : Difenrencia_en_dias;
+                                    //FIN LOGICA DIFERENCIA DE DIAS
+
+
+                                        debugger;
+                                        if (parseInt($('#spn-precio').text()) > 0) {
+                                            for (var i = 0; i <= Difenrencia_en_dias; i++) { //INICIO DEL FOR
+
+                                            var FechaInicio = moment(date1, "DD/MM/YYYY").add('days', i);
+                                            FechaInicio = moment(FechaInicio).format('DD/MM/YYYY');
+
+                                            //var FechaInicio_ = FechaInicio + ' ' + $('#txt-hora-servicio').val()
+                                            //    FechaInicio_ = moment(FechaInicio_).format('YYYYMMDDHHmm');
+                                            //var FechaInicioSoloFecha = moment(FechaInicio).format('YYYYMMDD');
+                                            //var FechaHoy = moment().format('YYYYMMDD');
+                                            //var FechayHoraHoy = moment().format('YYYYMMDDHHmm');
+
+                                            //    if (FechaInicioSoloFecha == FechaHoy) {
+
+                                            //        if (true) {
+
+                                            //        }
+
+                                            //    }
+
+                                            var element = {
+                                                SituacionServicio: 'R',
+                                                IdTipoServicio: $('#TipoServicio').val(),
+                                                IdTipoDestino: $('#TipoDestino').val(),
+                                                TipoServicio: $('select[name="TipoServicio"]').val(),
+                                                TipoDestino: $('select[name="TipoDestino"').val(),
+                                                //FechaServicio: $('input[name="FechaServicio"]').val() + ' ' + $('#txt-hora-servicio').val(),
+                                                FechaServicio: FechaInicio + ' ' + $('#txt-hora-servicio').val(),
+                                                HoraServicioEnMinutos: $('input[name="HoraServicioEnMinutos"]').val(),
+                                                CentroCostoAfectoCodigoSap: $('select[name="CentroCostoAfectoCodigoSap"]').val(),
+                                                //NroOrdenServicio: document.getElementById('txtOrdenServicio').value,
+                                                NroOrdenServicio: $("#txtOrdenServicio").val(),
+                                                IdMotivoCreacionSolicitud: $('select[name="MotivoCreacionSolicitudID"]').val(),
+                                                CantidadHoras: $('input[name="CantidadHoras"]').val(),
+                                                CategoriaProductoID: $('select[name="CategoriaProductoID"]').val(),
+                                                CantidadProductos: $('input[name="CantidadProductos"]').val(),
+                                                OrigenLat: $('input[name="OrigenLat"]').val(),
+                                                OrigenLng: $('input[name="OrigenLng"]').val(),
+                                                OrigenDireccion: $('#' + __txt_origen_id).val(),
+                                                DestinoServicio: __arrDestinos,
+                                                SolicitudProveedorTaxi: getListaSolicitudProveedor(),
+                                                Observaciones: $('textarea[name="Observaciones"]').val(),
+                                                Beneficiado: __arrBeneficiados,
+                                                TotalServicio: $('#spn-precio').text(),
+                                                DistanciaKilometro: $('#spn-km').text()
+                                            };
+                                            $.ajax({
+                                                url: '@Url.Action("RegistrarPost", "Solicitud")',
+                                                type: 'POST',
+                                                data: { element: element, listaDestino: getListaDestino(), listaTarifa: arraySolicitudProveedor, idAprobador: idUserAprobador },
+                                                dataType: 'JSON',
+                                                async: false,
+                                                //beforeSend: function () {
+                                                //    fn_BloquearPantalla();
+                                                //},
+                                                success: function (data) {
+                                                    if (data.Success) {
+                                                        if (i == Difenrencia_en_dias) {
+                                                            window.location = '@Url.Action("IndexUsuario", "Solicitud")?upd=true';
+                                                        }
+
+                                                    } else {
+
+                                                        if (data.Message == "La hora no debe ser menor a la establecida") {
+
+                                                            i = Difenrencia_en_dias + 1;
+                                                            fn_DesbloquearPantalla();
+                                                            document.getElementById("btn-save").disabled = false;
+                                                            toastr["error"](data.Message);
+
+                                                        } else {
+                                                            toastr["error"](data.Message);
+                                                            document.getElementById("btn-save").disabled = false;
+                                                        }
+
+                                                    }
+                                                }
+                                                //,
+                                                //complete: function () {
+                                                //    fn_DesbloquearPantalla();
+                                                //    document.getElementById("btn-save").disabled = false
+                                                //}
+                                            });
+                                         } //FIN DEL FOR
+                                        } else {
+                                            document.getElementById("btn-save").disabled = false
+                                            toastr["warning"]('No existe una tarifa para esta solicitud');
+                                        }
+
+
+
+                                    } else {
+                                    document.getElementById("btn-save").disabled = false
+                                }
+                }else {
+                    if (isValid) {
+                        __arrBeneficiados = [];
+                        $('#div-beneficiados .rowUser').each(function () {
+                            __arrBeneficiados.push({
+                                UsersID: $(this).find('select option:selected').val(),
+                                Telefono: $(this).find('input').val()
+                            });
+                        });
+
+                        if (!$('input[name="HoraServicioEnMinutos"]').val()) {
+                            var hours = $('#txt-hora-servicio').data('timepicker').hour;
+                            var minutes = $('#txt-hora-servicio').data('timepicker').minute;
+                            var meridian = $('#txt-hora-servicio').data('timepicker').meridian;
+                            $('input[name="HoraServicioEnMinutos"]').val(((hours + (meridian == 'PM' ? 12 : 0)) * 60) + minutes)
+                        }
+
+                        $('.input-destino').each(function () {
+                            var $input = $(this);
+                            __arrDestinos.push({
+                                Lat: $input.attr('data-lat'),
+                                Lng: $input.attr('data-lng'),
+                                Direccion: $input.val()
+                            });
+                        });
+
+                        if (__arrDestinos.length) {
+                            for (var i_d = 0; i_d < __arrDestinos.length; i_d++) {
+                                __arrDestinos[i_d].ZonaOrigen = 0;//__objTarifaProveedor.ZonaOrigen;
+                                __arrDestinos[i_d].ZonaDestino = 0;//__objTarifaProveedor.ZonaDestino;
+                                __arrDestinos[i_d].DistanciaKm = 0;//__objTarifaProveedor.Distancia.replace('km', '').trim();
+                            }
+                        }
+
+
+                        //LOGICA PARA CALCULAR LA DIFERENCIAS DE DÍAS SEGÚN EL RANGO INGRESADO
+
+                        var daterange = $('input[name="datefilter"]').val().split('-')
+
+
+
+                        var f1 = daterange[0].trim().split('/')
+                        var n1 = f1[1] + "/" + f1[0] + "/" + f1[2];
+
+                        var f2 = daterange[1].trim().split('/')
+                        var n2 = f2[1] + "/" + f2[0] + "/" + f2[2];
+
+
+                        var date1 = new Date(n1);
+                        var date2 = new Date(n2);
+
+                        var Diferencia_en_tiempo = date2.getTime() - date1.getTime();
+
+                        var Difenrencia_en_dias = Diferencia_en_tiempo / (1000 * 3600 * 24);
+                        //Difenrencia_en_dias = Difenrencia_en_dias == 1 ? Difenrencia_en_dias = 2 : Difenrencia_en_dias;
+                        //FIN LOGICA DIFERENCIA DE DIAS
+
+
+
+                        if (parseFloat($('#spn-precio').text()) > 0.00) {
+
+                            for (var i = 0; i <= Difenrencia_en_dias; i++) { //INICIO DEL FOR
+
+                                var FechaInicio = moment(date1, "DD/MM/YYYY").add('days', i);
+                                FechaInicio = moment(FechaInicio).format('DD/MM/YYYY');
+                                var element = {
+                                    SituacionServicio: 'R',
+                                    IdTipoServicio: $('#TipoServicio').val(),
+                                    IdTipoDestino: $('#TipoDestino').val(),
+                                    TipoServicio: $('select[name="TipoServicio"]').val(),
+                                    TipoDestino: $('select[name="TipoDestino"').val(),
+                                    //FechaServicio: $('input[name="FechaServicio"]').val() + ' ' + $('#txt-hora-servicio').val(),
+                                    FechaServicio: FechaInicio + ' ' + $('#txt-hora-servicio').val(),
+                                    HoraServicioEnMinutos: $('input[name="HoraServicioEnMinutos"]').val(),
+                                    CentroCostoAfectoCodigoSap: $('select[name="CentroCostoAfectoCodigoSap"]').val(),
+                                    NroOrdenServicio: $('input[name="NroOrdenServicio"]').val(),
+                                    IdMotivoCreacionSolicitud: $('select[name="MotivoCreacionSolicitudID"]').val(),
+                                    CantidadHoras: $('input[name="CantidadHoras"]').val(),
+                                    CategoriaProductoID: $('select[name="CategoriaProductoID"]').val(),
+                                    CantidadProductos: $('input[name="CantidadProductos"]').val(),
+                                    OrigenLat: $('input[name="OrigenLat"]').val(),
+                                    OrigenLng: $('input[name="OrigenLng"]').val(),
+                                    OrigenDireccion: $('#' + __txt_origen_id).val(),
+                                    DestinoServicio: __arrDestinos,
+                                    //
+                                    SolicitudProveedorTaxi: getListaSolicitudProveedor(),
+                                    Observaciones: $('textarea[name="Observaciones"]').val(),
+                                    Beneficiado: __arrBeneficiados,
+                                    TotalServicio: $('#spn-precio').text(),
+                                    DistanciaKilometro: $('#spn-km').text()
+                                };
+
+
+                                $.ajax({
+                                    url: '@Url.Action("RegistrarPost", "Solicitud")',
+                                    type: 'POST',
+                                    data: { element: element, listaDestino: getListaDestino(), listaTarifa: arraySolicitudProveedor, idAprobador: idUserAprobador },
+                                    cache: false,
+                                    dataType: 'JSON',
+                                    //beforeSend: function () {
+                                    //    fn_BloquearPantalla();
+                                    //},
+                                    async: false,
+                                    success: function (data) {
+                                        if (data.Success) {
+                                            if (i == Difenrencia_en_dias) {
+                                                window.location = '@Url.Action("IndexUsuario", "Solicitud")?upd=true';
+                                            }
+                                        } else {
+                                            if (data.Message == "La hora no debe ser menor a la establecida") {
+                                                i = Difenrencia_en_dias + 1;
+                                                fn_DesbloquearPantalla();
+                                                document.getElementById("btn-save").disabled = false;
+                                                toastr["error"](data.Message);
+
+                                            } else {
+                                                toastr["error"](data.Message);
+                                                document.getElementById("btn-save").disabled = false
+                                            }
+                                        }
+                                    }
+                                    //,
+                                    //complete: function () {
+                                    //    if (i == Difenrencia_en_dias) {
+                                    //        //fn_DesbloquearPantalla();
+                                    //        //document.getElementById("btn-save").disabled = false
+                                    //    }
+                                    //}
+                                });
+                            }
+                            } else {
+                                document.getElementById("btn-save").disabled = false
+                                toastr["warning"]('No existe una tarifa para esta solicitud');
+                            }
+
+                    } else {
+                        document.getElementById("btn-save").disabled = false
+                    }
+                }
+            }
+        });
+        }
+    }
+
+
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=@key&libraries=places&callback=initMap" async defer></script>
+@*<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>*@
+<script type="text/javascript" src="~/Content/js/moment.min.js"></script>
+<script type="text/javascript" src="~/Content/js/daterangepicker.min.js"></script>
+@*<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>*@
+@*<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />*@
+<link rel="stylesheet" type="text/css" href="~/Content/css/daterangepicker.css" />

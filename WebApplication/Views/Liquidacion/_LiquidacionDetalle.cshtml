@@ -1,0 +1,90 @@
+﻿@model WebApplication.Models.LiquidacionViewModel
+
+
+@Html.HiddenFor(m => m.InputList, new { @id = "inputList" })
+
+@*<div class="row" id="filtros">
+    <div class="col-sm-4">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-4">Filtro: </label>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input  id="txtFiltro" type="text" class="form-control input-sm"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+
+
+<table id="tblDetalleLiquidacion" class="table table-bordered table-responsive table-gys-kom" role="grid">
+    <thead>
+        <tr role="row">
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 20px;">N°</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="min-width: 100px; max-width:100px;">Código Servicio</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 50px;">FechaServicio</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="min-width: 90px; max-width:100px;">Hora</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="min-width: 340px; max-width:360px;">Beneficiado</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 346px;">Documento</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="min-width:50px; max-width:60px;">O/S</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="min-width: 200px; max-width:300px;">Centro Costo</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="min-width: 340px; max-width:360px;">Aprobador</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">Tarifa</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">T.Espera</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">T.DesvRuta</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">T.Peaje</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">T.Estacionamiento</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">T.Desplazamiento</th>
+            <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 100px;">T.General</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{int cont = 0;}
+        @foreach (var detalle in Model.Liquidacion.ListaSolicitud)
+        {
+            cont += 1;
+            <tr role="row" style="min-height:15px; max-height:18px;">
+                <td scope="row">@cont</td>
+                <td hidden id="IdDetalle">@detalle.ID</td>
+                <td>@detalle.CodigoSolicitud</td>
+                <td>@detalle.FechaServicioStr</td>
+                <td>@detalle.HoraServicio</td>
+                <td>@detalle.Beneficiado</td>
+                <td>@detalle.Documento</td>
+                <td><input id="[OS]" type="text" class="input-sm" value="@detalle.OrdenServicio" style="width:95px;" /></td>
+                <td hidden id="IdCentroCostoAfecto">@detalle.CentroCostoAfecto</td>
+                <td id="dllCentroCosto">[dllCentroCosto]</td>
+                <td>@detalle.Aprobador</td>
+                <td class="text-right">@detalle.PrecioTarifalStr</td>
+                <td class="text-right">@detalle.PrecioDesvioRutaStr</td>
+                <td class="text-right">@detalle.PrecioPeajeStr</td>
+                <td class="text-right">@detalle.PrecioEstacionamientoStr</td>
+                <td class="text-right">@detalle.PrecioEstacionamientoStr</td>
+                <td class="text-right">@detalle.PrecioDesplazamientoStr</td>
+                <td class="text-right">@detalle.TotalGeneralStr</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<script>
+    (function () {
+
+        $("#txtFiltro").keyup(function () {
+            var searchText = $(this).val().toLowerCase();
+            // Show only matching TR, hide rest of them
+            $.each($("#tblDetalleLiquidacion tbody tr"), function (i) {
+                //console.log(i);
+                if ($(this).text().toLowerCase().indexOf(searchText) === -1 || $($(this).children()[7]).children().val().toLowerCase().indexOf(searchText) === -1)
+                    $(this).hide();
+                else
+                    $(this).show();
+            });
+        }); 
+
+    })();
+</script>

@@ -1,0 +1,7 @@
+﻿@model WebApplication.Models.UsuarioViewModel
+<ul class="nav responsable-bu">
+    @foreach (var item in Model.ListaResponsable)
+    {
+        <li><a class="responsable-item" data-toggle="tooltip" data-placement="bottom" data-id="@item.ID" title="@(item.Apellidos + ", " + item.Nombres)" href="#">@(item.Apellidos + ", " + item.Nombres)</a></li>
+    }
+</ul>

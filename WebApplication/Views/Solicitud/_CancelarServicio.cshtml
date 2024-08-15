@@ -1,0 +1,150 @@
+﻿@using System.Configuration
+@model WebApplication.Models.SolicitudViewModel
+
+
+<style>
+    #tbl-sol-canc tr td:first-child {
+        background-color: #EEEEEE;
+    }
+</style>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title" id="myModalLabel"><span class="fa fa-chevron-right"></span> Cancelar Servicio</h4>
+</div>
+<div class="modal-body">
+    <input type="hidden" id="ID" value="@Model.Solicitud.ID"/>
+    <input type="hidden" id="idCancelarSolicitud" value="@Model.Solicitud.ID" />
+    <input type="hidden" id="idCancelarServicio" value="@Model.Solicitud.IdServicioProveedor" />
+    <table id="tbl-sol-canc" class="table table-bordered table-condensed table-hover">
+        <tbody>
+            <tr>
+                <td>Fecha Servicio</td>
+                <td>@Model.Solicitud.FechaServicioStr</td>
+            </tr>
+            <tr>
+                <td>Hora Servicio</td>
+                <td>@Model.Solicitud.HoraServicio</td>
+            </tr>
+            <tr>
+                <td>Proveedor</td>
+                <td>@Model.Solicitud.ProveedorTaxi.RazonSocial</td>
+            </tr>
+            <tr>
+                <td>Nombre Conductor</td>
+                <td>@Model.Solicitud.Conductor.NombreCompleto</td>
+            </tr>
+            <tr>
+                <td>Origen</td>
+                <td>@Model.Solicitud.DireccionOrigen</td>
+            </tr>
+            <tr>
+                <td>Destino</td>
+                <td>@Model.Solicitud.DireccionDestino</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <p>¿Desea cancelar el servicio?</p>
+                        @if (Model.Solicitud.DiferenciaEnMinutos <= 0)
+                        {
+                            <p>Se le cobrará un gasto adicional si cancela el servicio debido a que ya inició el servicio</p>
+                        }
+                        else
+                        {
+                            if (Model.Solicitud.DiferenciaEnMinutos < Model.Solicitud.TiempoEspera)
+                            {
+                                <p>Se le puede cobrar un gasto adicional si anula el servicio.</p>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    @if (Model.Solicitud.IdSituacionServicio == 2)
+    {
+        <button id="btn-cancelarservicio" class="btn btn-primary" style="width: 120px;">Cancelar</button>
+    }
+    else if (Model.Solicitud.IdSituacionServicio == 1)
+    {
+        <button id="btn-cancelarsolicitud" class="btn btn-primary" style="width: 120px;">Cancelar</button>
+    }
+    <button data-dismiss="modal" aria-label="Close" class="btn btn-default" style="width: 120px;">Salir</button>
+</div>
+<script>
+    var urlCancelService = {
+        CancelarServicio: '@Url.Action("AnularServicioPost", "Solicitud")',
+        CancelarSolicitud: '@Url.Action("CancelarPost", "Solicitud")'
+    };
+    $(document).ready(function () {
+        $('#btn-cancelarservicio').on('click', function (e) {
+            e.preventDefault();
+            fn_BloquearPantalla();
+            $.ajax({
+                url: urlCancelService.CancelarServicio,
+                data: { idServicio: $("#idCancelarServicio").val(), id: $("#ID").val() },
+                dataType:"JSON",
+                type: 'POST',
+                async: true,
+                cache: false,
+                success: function (data) {
+                    debugger;
+                    if (data.Success) {
+                        $('#modal-cancelar').modal('hide');
+                        toastr["success"]('Se canceló su servicio correctamente');
+                        window.location = '@Url.Action("IndexUsuario", "Solicitud")';
+                    } else {
+                        toastr["error"](data.Message);
+                    }
+                },
+                error: function (request, status, error) {
+                    //console.log(request);
+                    toastr["error"](request.Message);
+                    fn_DesbloquearPantalla();
+                },
+                complete: function () {
+                    fn_DesbloquearPantalla();
+                }
+            });
+        });
+
+        $('#btn-cancelarsolicitud').on('click', function (e) {
+            e.preventDefault();
+            fn_BloquearPantalla();
+            $.ajax({
+                url: urlCancelService.CancelarSolicitud,
+                data: { id: $("#idCancelarSolicitud").val(), m: '' },
+                dataType: "JSON",
+                type: 'POST',
+                async: true,
+                cache: false,
+                success: function (data) {
+                    debugger;
+                    if (data.Success) {
+                        $('#modal-cancelar').modal('hide');
+                        window.location = '@Url.Action("IndexUsuario", "Solicitud")';
+                        toastr["success"]('Se canceló su servicio correctamente');
+                    } else {
+                        toastr["error"](data.Message);
+                    }
+                },
+                error: function (request, status, error) {
+                    //console.log(request);
+                    toastr["error"](request.Message);
+                    fn_DesbloquearPantalla();
+                },
+                complete: function () {
+                    fn_DesbloquearPantalla();
+                }
+            });
+        });
+    });
+</script>
+@*<script src="~/Scripts/Solicitud/Index.js"></script>*@

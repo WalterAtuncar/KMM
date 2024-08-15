@@ -1,0 +1,71 @@
+﻿@model WebApplication.Models.ProveedorTaxiModel
+
+<style>
+    #tblMethod > tbody > tr > td{
+        border: 1px solid #d8d9db;
+    }
+</style>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel">
+        <i class="fa fa-cloud"></i>
+        <i class="fa fa-chevron-right"></i> 
+        MÉTODOS DE LOS SERVICIOS
+    </h3>
+</div>
+
+<input id="IdProveedor" type="hidden" value="@Model.Proveedor.ID" />
+
+
+
+<div class="modal-body">
+    @if (Model.ListaMetodos.Count() > 0)
+    {
+        <table class="table-gys-kom pre-scrollable" style="width:100%;" id="tblMethod">
+            <thead>
+                <tr role="row">
+                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 50px;"></th>
+                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 360px;"> Nombre</th>
+                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 200px;"> URL</th>
+                    <th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 200px;"> Método</th>
+                    @*<th class="sorting" aria-controls="sample_1" rowspan="1" colspan="1" style="width: 20px;"></th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @{int cont = 0;}
+
+                @foreach (var metodo in Model.ListaMetodos)
+                {
+                    cont += 1;
+                    <tr class="gradeX odd" role="row" style="padding-top:10px !important;">
+                        <td class="text-center">@cont</td>
+                        <td class="txtNombre">@metodo.Nombre</td>
+                        <td><input type="text" class="txtUrl" value="@metodo.URL" style="height:70% !important; width:100%;padding-left:5px; border:0px;" /></td>
+                        <td><input type="text" class="txtMetodo" value="@metodo.Metodo" style="height:70% !important;width:100%;padding-left:5px; border:0px;" /></td>
+                        <td hidden><input class="txtIdMetodoProveedorTaxi" value="@metodo.IdMetodoProveedorTaxi" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <p>NO EXISTEN SERVICIOS PARA EL PROVEEDOR SELECCIONADO.</p>
+                        </div>
+                    }
+</div>
+
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="btn-save-method" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () { $($('#tblMethod tbody tr td input')[0]).focus(); }, 100);
+    });
+</script>

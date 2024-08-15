@@ -1,0 +1,133 @@
+﻿@model WebApplication.Models.SolicitudViewModel
+<style>
+    #map-ubicacion-canvas {
+        width: 100%;
+        height: 50vh;
+    }
+</style>
+
+@{
+    string key = ViewBag.Key;
+    string icono = ViewBag.Icono;
+    string interval = ViewBag.Intervalo;
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel">
+        <i class="fa fa-car"></i>
+        <i class="fa fa-chevron-right"></i>
+        UBICACION ACTUAL
+    </h3>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <input type="hidden" id="rutaIcono" value="@icono"/>
+        <input type="hidden" id="timeInterval" value="@interval" />
+        <input type="hidden" id="idServicioProveedor" value="@Model.Solicitud.IdServicioProveedor" />
+        <div id="map-ubicacion-canvas"></div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+    </div>
+</div>
+<script>
+    var urlUbicacion = {
+        Ubicacion: '@Url.Action("GetStateService", "Solicitud")'
+    }
+</script>
+<script>
+    var _latitud = -12.0480505;
+    var _longitud = -77.10029129999998;
+
+    $(document).ready(function () {
+        $.ajax({
+            url: urlUbicacion.Ubicacion,
+            timeout: 1000,
+            data: { idServicio: $("#idServicioProveedor").val() },
+            type: 'post',
+            async: false,
+            cache: false,
+            success: function (data) {
+                //console.log(data);
+                if (data.Confirmacion) {
+                    _latitud = data.Latitud;
+                    _longitud = data.Longitud;
+                } else {
+                    toastr["warning"](data.Mensaje);
+                }
+            },
+            error: function (request, status, error) {
+                //console.log(request);
+                //toastr["error"]('ocurrio un error en el servicio');
+                fn_DesbloquearPantalla();
+            },
+            complete: function () {
+                fn_DesbloquearPantalla();
+            }
+        });
+
+        var interval = setInterval(function () {
+            ObtenerEstado($("#idServicioProveedor").val());
+        }, 11000);
+
+        $('[data-dismiss="modal"]').click(function () {
+            clearInterval(interval);
+        });
+    });
+
+    function ObtenerEstado(idservicioproveedor) {
+        $.ajax({
+            url: urlUbicacion.Ubicacion,
+            timeout: 1000,
+            data: { idServicio: idservicioproveedor },
+            type: 'post',
+            async: false,
+            cache: false,
+            success: function (data) {
+                //console.log(data);
+                if (data.Confirmacion) {
+                    _latitud = data.Latitud;
+                    _longitud = data.Longitud;
+                } else {
+                    toastr["warning"](data.Mensaje);
+                }
+            },
+            error: function (request, status, error) {
+                //console.log(request);
+                //toastr["error"]('ocurrio un error en el servicio');
+                fn_DesbloquearPantalla();
+            },
+            complete: function () {
+                fn_DesbloquearPantalla();
+            }
+        });
+
+        initMap();
+    }
+
+    function initMap() {
+        //console.log("aa");
+        var myLatLng = { lat: _latitud, lng: _longitud };
+       
+        var map = new google.maps.Map(document.getElementById('map-ubicacion-canvas'), {
+            center: myLatLng,
+            zoom: 16
+        });
+
+        var iconBase = {
+            url: window.location.protocol + $("#rutaIcono").val(),
+            scaledSize: new google.maps.Size(40, 40)
+        };
+
+        var marker = new google.maps.Marker({
+            position: myLatLng,
+            map: map,
+            icon: iconBase,
+            draggable: true
+        });
+    }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=@key&callback=initMap&libraries=places"></script>

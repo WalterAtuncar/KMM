@@ -1,0 +1,150 @@
+﻿
+@{
+    ViewBag.Title = "General";
+}
+
+<h3 class="text-left text-primary">
+    <i class="fa fa fa-bar-chart" style="color: #ee3224;"></i>
+    <i class="fa fa-chevron-right" style="color: #ee3224;"></i> GENERAL
+</h3>
+<br />
+<div class="row">
+    <div id="filtros" style="margin-top: 15px;">
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Sociedad:</label>
+                    <div class="col-sm-8 input-group-sm">
+                        @{Html.RenderAction("GetDropDown", "Sociedad", new { @default = "--SELECCIONE SOCIEDAD--" }); }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Fecha Desde:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                            <input type="text" id="FechaReporteInicioTextBox" class="form-control" />
+                            <div class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Responsable:</label>
+                    <div id="responsable" class="col-sm-8 input-group-sm">
+                        <select name="ResponsableDropDown" class="form-control">
+                            <option value="">--SELECCIONE RESPONSABLE--</option>
+                        </select>
+                        @*@{Html.RenderAction("GetDropDown", "Reporte", new { id = string.Empty }); }*@
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Fecha Hasta:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                            <input type="text" id="FechaReporteFinTextBox" class="form-control" />
+                            <div class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-4">
+                        <button id="BuscarReporte" class="btn btn-sm btn-danger" style="width: 120px;">Buscar <i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+                @*<div class="form-group">
+                        <div class="col-sm-4">
+                            <button id="btnExportar" class="btn btn-sm btn-primary" style="width: 120px;" disabled>Exportar <i class="glyphicon glyphicon-export"></i></button>
+                        </div>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+<div class="portlet light" style="height:calc(100vh - 260px) !important; border-bottom:none !important;padding: 0px;overflow: hidden;" id="content-vizor-reporte">
+    <div class="portlet-body" style="padding: 8px 20px">
+        <div class="table-scrollable">
+            <div class="alert alert-info">
+                <p>NO EXISTEN REGISTROS.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var url = {
+        VizorReporte: '@Url.Action("VizorReporte", "Reporte")',
+        GetFile: '@Url.Action("GetFile", "Reporte")',
+        
+    }
+    $(document).ready(function () {
+
+        $('select[name="SociedadDropDown"], select[name="ResponsableDropDown"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%',
+        });
+
+        $('#FechaReporteInicioTextBox').datepicker({
+            dateFormat: 'dd/mm/yyyy',
+            autoclose: true
+        });
+
+        $('#FechaReporteInicioTextBox').datepicker({
+            dateFormat: 'dd/mm/yyyy',
+            autoclose: true
+        });
+
+        $('select[name="SociedadDropDown"]').change(function () {
+            var $id = $('select[name="SociedadDropDown"]').val();
+            $.post('@Url.Action("GetDropDown", "Reporte")', { sociedad: $id },
+                function (data) {
+                    $('select[name="ResponsableDropDown"]').empty();
+                    var option = new Option("--SELECCIONE RESPONSABLE--", 0, true, true);
+                    $('select[name="ResponsableDropDown"]').append(option).trigger('change');
+                    var htmlListaBeneficiado = $(data.ListaBeneficiado);
+                    $(data.ListaBeneficiado).children('option').each(function (item, value) {
+                        option = new Option(item.Apellidos + ", " + item.Nombres, item.ID, true, true);
+                        $('select[name="ResponsableDropDown"]').append(value).trigger('change');
+                    });
+                    $('select[name="ResponsableDropDown"]').val(0).trigger('change');
+                });
+        });
+
+        $('#BuscarReporte').click(function () {
+            fn_BloquearPantalla();
+            ResponsableID = $("select[name='ResponsableDropDown'").val();
+            generarReporte(ResponsableID);
+        });
+
+    });
+
+    var generarReporte = function (id) {
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: url.VizorReporte,
+            data: { idResponsable: id },
+            beforeSend: function () {
+            },
+            success: function (form) {
+                var form = form.replace("<embed src=", "<embed src='" + url.GetFile + '?idResponsable=' + id + "'");
+                $("#content-vizor-reporte").html(form).promise().done(function () {
+                });
+                fn_DesbloquearPantalla();
+            },
+            complete: function () {
+            }
+        });
+    }
+</script>
+

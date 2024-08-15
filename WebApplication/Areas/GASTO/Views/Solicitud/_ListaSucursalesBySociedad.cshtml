@@ -1,0 +1,27 @@
+﻿<div>
+    @Html.DropDownList("ListaSucursales",
+                       new SelectList(ViewBag.ListaSucursales, "IdSucursal", "Nombre"),
+                       new { @id = "dllSucursalUsuario",
+                           @class = "form-control select2" }
+                      )
+</div>
+<script>
+    $(function () {
+        @{int count = new SelectList(ViewBag.ListaSucursales).Count();}
+        __countSucursalDisponibles = @count;
+        $('select[name="ListaSucursales"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+        $("#dllSucursalUsuario").val(idSucursalBySociedad)
+        $("#dllSucursalUsuario").trigger('change')
+
+        $('#dllSucursalUsuario').change(function () {
+            var idsociedad = $("#dllSociedad").val();
+            var idsucursal = $("#dllSucursalUsuario").val();
+            if (cargado == 1) {
+                getUsuarioSucursal(idsociedad, idsucursal);
+            }
+        });
+    })
+</script>

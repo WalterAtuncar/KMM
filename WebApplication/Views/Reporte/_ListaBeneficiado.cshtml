@@ -1,0 +1,10 @@
+﻿@model List<Data.Usuario>
+
+<select class="form-control select2 filtro" multiple = "multiple" id="listBeneficiado">
+    @foreach (var beneficiado in Model)
+    {
+        <option value="@beneficiado.ID">@beneficiado.Nombres</option>
+    }
+</select>
+
+

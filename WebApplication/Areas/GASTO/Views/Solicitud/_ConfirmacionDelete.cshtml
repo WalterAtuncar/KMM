@@ -1,0 +1,43 @@
+﻿
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+   
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>ELIMINAR SOLICITUD</h3>
+   
+
+</div>
+<div class="modal-body">
+    <input type="hidden" id="hdfIdSolicitudEliminar" value="@ViewBag.hdfIdSolicitudEliminar" />
+    <input type="hidden" id="hdfCodigoEliminar" value="@ViewBag.hdfCodigoEliminar" />
+    <br />
+
+
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+            <label class="col-sm-12">Está seguro de eliminar la Solicitud Nº @ViewBag.hdfCodigoEliminar</label>
+
+        </div>
+    </div>
+    <br />
+    <br />
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="btnEliminarSol" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i>Eliminar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cancelar</button>
+    </div>
+</div>
+</div> @*FIN MODAL*@
+
+<script>
+    $(document).ready(function () {
+        $('#btnEliminarSol').click(function (e) {
+            e.preventDefault();
+            document.getElementById("btnEliminarSol").disabled = true;
+            var id = $('#hdfIdSolicitudEliminar').val();
+            EliminarSolicitud(id);
+           
+        });
+    });
+</script>

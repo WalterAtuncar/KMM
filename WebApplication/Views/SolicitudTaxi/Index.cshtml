@@ -1,0 +1,149 @@
+﻿
+<h2 class="title" style="margin-bottom: 0">
+    <i class="fa fa-angle-right"></i>&nbsp;Listado solicitud servicio de taxi
+</h2>
+<br />
+<div class="row">
+    <div class="col-sm-12">
+        <div id="filtros">
+            <div class="col-sm-6">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Compañía:</label>
+                        <div class="col-sm-8">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">
+                                    <input type="checkbox" />
+                                </span>
+                                <select class="form-control"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Nro solicitud:</label>
+                        <div class="col-sm-8">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">
+                                    <input type="checkbox" />
+                                </span>
+                                <input type="text" id="txt-filter-solicitud" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Nro solicitud:</label>
+                        <div class="col-sm-8">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">
+                                    <input type="checkbox" />
+                                </span>
+                                <input type="text" id="txtNombrePersonal" class="form-control input-sm" required="required" />
+                                <span id="btn-show-modal-search-personal" class="input-group-addon btn btn-default" style="border:1px solid #CCCCCC">
+                                    <i class="fa fa-search"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Fecha registro desde:</label>
+                        <div class="col-sm-8">
+                            <div class="input-group input-group-sm input-group-sm date" data-provide="datepicker">
+                                <span class="input-group-addon">
+                                    <input type="checkbox" />
+                                </span>
+                                <input type="text" id="txt-filter-razonsocial" class="form-control" />
+                                <div class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Fecha registro hasta:</label>
+                        <div class="col-sm-8">
+                            <div class="input-group input-group-sm input-group-sm date" data-provide="datepicker">
+                                <span class="input-group-addon">
+                                    <input type="checkbox" />
+                                </span>
+                                <input type="text" id="txt-filter-razonsocial" class="form-control" />
+                                <div class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Centro costo afecto:</label>
+                        <div class="col-sm-8">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">
+                                    <input type="checkbox" />
+                                </span>
+                                <select class="form-control"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-sm-12">
+        <div class="text-right">
+            <a href="@Url.Action("Registrar", "Solicitud")" class="btn btn-primary">Nuevo&nbsp;&nbsp;<i class="fa fa-plus-circle"></i></a>
+            <button class="btn btn-danger">Buscar&nbsp;&nbsp;<i class="fa fa-search"></i></button>
+            @*<a href="@Url.Action("Evaluar", "SolicitudTaxi")" class="btn btn-default">Evaluar&nbsp;&nbsp;<i class="fa fa-search"></i></a>*@
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-sm-12">
+        <div class="table-responsive">
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th>Opciones</th>
+                        <th>N° Solicitud</th>
+                        <th>Situación</th>
+                        <th>Fecha registro</th>
+                        <th>Fecha servicio</th>
+                        <th>Hora servicio</th>
+                        <th>Ubicación</th>
+                        <th>Tipo destino</th>
+                        <th>Proveedor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a href="@Url.Action("Evaluar", "SolicitudTaxi")" data-toggle="tooltip" title="Evaluar">
+                                <i class="fa fa-check-square-o fa-lg text-danger"></i>
+                            </a>
+                        </td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>

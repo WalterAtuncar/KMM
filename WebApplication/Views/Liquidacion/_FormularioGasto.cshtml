@@ -1,0 +1,138 @@
+﻿@model WebApplication.Models.LiquidacionViewModel
+
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel">
+        <i class="fa fa-pencil-square-o"></i>
+        <i class="fa fa-chevron-right"></i>
+        MODIFICAR GASTOS ADICIONALES @Model.Solicitud.CodigoSolicitud
+    </h3>
+</div>
+
+    <div class="form-horizontal" style="padding-left: 80px;">
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="col-sm-5">Tarifa :</label>
+                <div class="col-sm-4">
+                    <input type="text" id="txtTarifa" style="text-align:right;" value="@Model.Solicitud.PrecioTarifa" class="form-control input-sm" onkeypress="return validarSoloNumeros(event);" disabled />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-5">Tiempo de Espera :</label>
+                <div class="col-sm-4">
+                    <input type="text" id="txtEspera" style="text-align:right;" value="@Model.Solicitud.PrecioEspera" class="form-control input-sm changegasto" onkeypress="return validarSoloNumeros(event);" autofocus />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-5">Desvio de Ruta :</label>
+                <div class="col-sm-4">
+                    <input type="text" id="txtDesvio" style="text-align:right;" value="@Model.Solicitud.PrecioDesvioRuta" class="form-control input-sm changegasto" onkeypress="return validarSoloNumeros(event);" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-5">Tiempo de Peaje :</label>
+                <div class="col-sm-4">
+                    <input type="text" id="txtPeaje" style="text-align:right;" value="@Model.Solicitud.PrecioPeaje" class="form-control input-sm changegasto" onkeypress="return validarSoloNumeros(event);" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-5">Tiempo De Estacionamiento :</label>
+                <div class="col-sm-4">
+                    <input type="text" id="txtEstacionamiento" style="text-align:right;" value="@Model.Solicitud.PrecioEstacionamiento" class="form-control input-sm changegasto" onkeypress="return validarSoloNumeros(event);" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-5">Tiempo De Desplazamiento :</label>
+                <div class="col-sm-4">
+                    <input type="text" id="txtDesplazamiento" style="text-align:right;" value="@Model.Solicitud.PrecioDesplazamiento" class="form-control input-sm changegasto" onkeypress="return validarSoloNumeros(event);" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-5">Total General :</label>
+                <div class="col-sm-4">
+                    <input type="text" id="txtGeneral" style="text-align:right;" value="@Model.Solicitud.TotalGeneral" class="form-control input-sm" onkeypress="return validarSoloNumeros(event)" disabled />
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="modal-footer">
+            <div style="float: right">
+                <button id="btn-save-gasto-edit" data-pid="@Model.Solicitud.ID" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+                <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+            </div>
+        </div>
+    </div>
+   
+
+
+<script>
+    (function () {
+        $(document).ready(function () {
+            $('.changegasto').keyup(function () { calcularGastos(); });
+
+            $('.changegasto').keypress(function (event) {
+                return isNumber(event, this)
+            });
+
+            //$('.changegasto').keypress(function () { formatDecimal($(this)); });
+            $('#btn-save-gasto-edit').click(function () {saveGastoAdicional($(this));})
+        });
+
+        var formatDecimal = function(selector, formato) {
+            if (formato == 'undefined' || formato == null) {
+                formato = 2;
+            }
+            var nuevoFormato = parseFloat(selector.val()).toFixed(formato);
+            selector.val(nuevoFormato);
+        }
+
+        var saveGastoAdicional = function (btn) {
+            fn_BloquearPantalla();
+            var id = btn.attr('data-pid');
+
+            var valueRow = $('#tbl-solicitudes-registrar').jqGrid('getRowData', id);
+            valueRow.ID = id;
+            valueRow.PrecioEsperaStr = (+$('#txtEspera').val().replace(',', '')).toFixed(2);
+            valueRow.PrecioDesvioRutaStr = (+$('#txtDesvio').val().replace(',', '')).toFixed(2);
+            valueRow.PrecioPeajeStr = (+$('#txtPeaje').val().replace(',', '')).toFixed(2);
+            valueRow.PrecioEstacionamientoStr = (+$('#txtEstacionamiento').val().replace(',', '')).toFixed(2);
+            valueRow.PrecioDesplazamientoStr = (+$('#txtDesplazamiento').val().replace(',', '')).toFixed(2);
+            valueRow.TotalGeneralStr = (+$('#txtGeneral').val().replace(',', '')).toFixed(2);
+            $('#tbl-solicitudes-registrar').jqGrid('setRowData', id, valueRow);
+
+            var totalGeneralGrid = 0;
+            var data = $("#tbl-solicitudes-registrar").jqGrid('getGridParam', 'data');
+            data.forEach(function (Row) {
+                totalGeneralGrid += parseFloat(Row.TotalGeneralStr);
+            });
+            $('#TotalGeneralLabel').html(totalGeneralGrid.toFixed(2).toString());
+            
+            $('#modal-solicitud').modal('hide');
+            fn_DesbloquearPantalla();
+        }
+
+        var calcularGastos = function () {
+            var totalTarifa = + $('#txtTarifa').val().replace(',', '');
+            var totalEspera = + $('#txtEspera').val().replace(',', '');
+            var totalDesvio = + $('#txtDesvio').val().replace(',', '');
+            var totalPeaje = + $('#txtPeaje').val().replace(',', '');
+            var totalEstacionamiento = + $('#txtEstacionamiento').val().replace(',', '');
+            var totalDesplazamiento = + $('#txtDesplazamiento').val().replace(',', '');
+            var totalGeneral = 0;
+            totalGeneral = totalTarifa + totalEspera + totalDesvio + totalPeaje + totalEstacionamiento + totalDesplazamiento;
+            if (totalDesplazamiento != 0) {
+                totalGeneral = totalEspera + totalDesvio + totalPeaje + totalEstacionamiento + totalDesplazamiento;
+            }
+            $('#txtGeneral').val(totalGeneral.toFixed(2));
+        }
+    })();
+</script>

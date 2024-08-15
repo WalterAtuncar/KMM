@@ -1,0 +1,1209 @@
+﻿@model WebApplication.Models.SolicitudViewModel
+@{
+    string key = ViewBag.Key;
+    //string key = "AIzaSyD58demU6OKJ58HqOwaOqKmjOjq3HNAVCg";
+}
+<style>
+    #map {
+        width: 100%;
+        /*height: 570px;*/
+        height: 90vh;
+    }
+
+    #tbl-precio-estimado > thead > tr > th {
+        background-color: #0E137C;
+        border: #0E137C 2px solid;
+    }
+
+    #tbl-precio-estimado > tbody {
+        border: #0E137C 2px solid;
+    }
+
+        #tbl-precio-estimado > tbody > tr > td {
+            padding: 1px;
+        }
+
+    #txt-price {
+        font-size: 1.5em;
+        font-weight: 600;
+    }
+
+    .select-width .select2-container {
+        width: 100% !important;
+    }
+
+    .datepicker-days table {
+        background-color: #fff;
+    }
+
+    #div-sol-reg-controls {
+        position: static;
+        width: auto;
+        overflow: auto;
+        /*max-height: 90vh;*/
+        max-height: 90vh;
+    }
+
+    .form-control {
+        height: 30px;
+        font-size: 12px;
+    }
+
+    select.form-control {
+        padding: 4px;
+    }
+
+    #div-beneficiados .form-control {
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+
+    .autocomplete-suggestions {
+        border: 1px solid #999;
+        background: #FFF;
+        overflow: auto;
+    }
+
+    .autocomplete-suggestion {
+        padding: 2px 5px;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .autocomplete-selected {
+        background: #F0F0F0;
+    }
+
+    .autocomplete-suggestions strong {
+        font-weight: normal;
+        color: #3399FF;
+    }
+
+    .autocomplete-group {
+        padding: 2px 5px;
+    }
+
+        .autocomplete-group strong {
+            display: block;
+            border-bottom: 1px solid #000;
+        }
+</style>
+@Html.Hidden("Solicitud", new JavaScriptSerializer().Serialize(Model.Solicitud ?? new Data.Common.Solicitud()), new { @id = "Solicitud" })
+<div class="row">
+    <input type="hidden" id="IdSolicitud" value="@Model.Solicitud.ID" />
+    <input type="hidden" id="IdTipoPago" value="@Model.Solicitud.TipoPago.ID" />
+    <input type="hidden" id="IdSituacionServicio" value="@Model.Solicitud.SituacionServicio.ID" />
+    <input type="hidden" id="IdEstadoServicioProveedor" value="@Model.Solicitud.EstadoProveedor.ID" />
+    <input hidden id="ListaBeneficiado" />
+    @if (string.IsNullOrEmpty(key))
+    {
+        <div class="alert alert-danger col-sm-12" style="margin-bottom: 0px;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <p>No existe una clave API válida para activar el Google Maps. Por favor comunicarse con el área de soporte.</p>
+        </div>
+    }
+    <div class="col-sm-9" style="padding-right:5px; padding-left:0px;">
+        <div id="map"></div>
+    </div>
+    <div class="col-sm-3" style="padding-right:0px; padding-left:0px;">
+        <div id="div-sol-reg-controls">
+            <form id="frm-sol-ed" style="overflow: hidden;">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table id="tbl-precio-estimado" class="table table-bordered table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span style="left:20px;top: 0px;position: absolute;"> <span id="spn-km">0.00</span> km</span>
+                                        Precio Estimado
+                                        <span style="right:20px;top: 0px;position: absolute;"> <span id="spn-codigo">@Model.Solicitud.Codigo</span></span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <span id="txt-price" class="text-danger">S/ <span id="spn-precio">0.00</span> </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Tipo de servicio</label>
+                        @Html.DropDownListFor(m => m.Solicitud.TipoServicio.ID, new SelectList(Model.ListaTipoServicio, "ID", "Nombre"), new { @class = "form-control input-sm filtro select2", @id = "ddlTipoServicio" })
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Tipo de destino</label>
+                        @Html.DropDownListFor(m => m.Solicitud.TipoDestino.ID, new SelectList(Model.ListaTipoDestino, "ID", "Nombre"), new { @class = "form-control input-sm filtro select2", @id = "ddlTipoDestino" })
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-location-arrow"></i>
+                            </span>
+                            @Html.TextBoxFor(m => m.Solicitud.DireccionOrigen, new { @class = "form-control input-toggle-marker", @placeholder = "Origen", @required = "" })
+                            <input type="hidden" name="OrigenLat" />
+                            <input type="hidden" name="OrigenLng" />
+                            <input type="hidden" id="hdfDireccionOrigen" />
+                        </div>
+                    </div>
+                </div>
+                <div id="sol-reg-step-1" class="sol-reg-step">
+                    <div id="div-destinos">
+
+                    </div>
+                    <div id="div-btn-add-destino" style="display: none;">
+                        <br />
+
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;&nbsp;
+                                <a href="javascript:void(0);" id="btn-add-destino">
+                                    <i class="fa fa-plus-circle fa-lg"></i> Agregar destino
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div id="sol-reg-step-2" class="sol-reg-step">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label>Centro de costo afecto</label>
+                                @Html.DropDownListFor(m => m.Solicitud.CentroCostoAfectoCodigoSap, new SelectList(Model.ListaCentroCosto, "Codigo", "Descripcion"), new { @class = "form-control input-sm filtro select2", @id = "ddlCentroCostoAfectoSap" })
+                            </div>
+                            <div class="form-group" id="div-fg-ordenservicio">
+                                <label>Órden de servicio </label>
+                                <div class="row">
+                                    <div class="col-sm-7">
+                                        <div class="input-group">
+                                            @Html.TextBoxFor(m => m.Solicitud.NroOrdenServicio, new { @class = "form-control", @id = "txtOrdenServicio", @maxlength = "12", placeholder = "Ingrese OS", @disabled = "disabled" })
+                                            <span class="input-group-addon" style="cursor:pointer" data-toggle="tooltip">
+                                                <input type="checkbox" id="idDesbloquear" />
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-sm-5" style="padding-left:0;">
+                                        <div id="div-validate-os-status">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Aprobador</label>
+                                <div id="content-ListaUsuarioCentroCosto">
+                                    @Html.Partial("_ListaUsuarioCentroCosto")
+                                </div>
+                            </div>
+                            <div class="form-group hidden" id="div-fg-nrohoras">
+                                <label>Nro de horas</label>
+                                @Html.TextBoxFor(m => m.Solicitud.CantidadHoras, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label>Motivo creación</label>
+                                @Html.DropDownListFor(m => m.Solicitud.MotivoCreacionSolicitud.ID, new SelectList(Model.ListaMotivoCreacionSolicitud, "ID", "Nombre"), new { @class = "form-control input-sm filtro select2", @id = "ddlMotivoCreacionSolicitud" })
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div id="sol-reg-step-3" class="sol-reg-step">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-2">
+                            <div id="div-fecha-servicio">
+                                <input type="hidden" name="FechaServicio" />
+                            </div>
+                            <br />
+                            <div class="input-group bootstrap-timepicker timepicker">
+                                @Html.TextBoxFor(m => m.Solicitud.HoraServicio, new { @class = "form-control input-small", @id = "txt-hora-servicio" })
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                            </div>
+                        </div>
+                        @Html.HiddenFor(m => m.Solicitud.HoraServicioEnMinutos)
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="form-horizontal">
+                            <div class="col-sm-8">
+                                <label>Beneficiados</label>
+                            </div>
+                            <div class="col-sm-4" style="padding-left: 0px;">
+                                <label>Teléfonos</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="div-beneficiados">
+                        @foreach (var beneficiado in Model.Solicitud.ListaBeneficiado)
+                        {
+                            <div class="form-horizontal rowUser">
+                                <div class="col-sm-8" style="padding-left: 0px;">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                        <input type="text" class="form-control" value="@beneficiado.NombreCompleto" disabled />
+                                    </div>
+                                </div>
+                                <div class="col-sm-4" style="padding-right: 0px; padding-left: 0px;">
+                                    <input type="text" class="form-control" value="@beneficiado.Telefono" data-toggle="tooltip" disabled />
+                                </div>
+                            </div>
+                            <br />
+                            <br />
+                        }
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label>Observaciones</label>
+                                @Html.TextAreaFor(m => m.Solicitud.Observaciones, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-sm-8 col-sm-offset-2 text-center">
+                        <button type="button" id="btn-edit-solicitud" class="btn btn-primary form-control">Modificar</button>
+                    </div>
+                </div>
+                <br />
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var __lat_edit_default = -12.0480505;
+    var __lng_edit_default = -77.10029129999998;
+    var __txt_edit_origen_id = "Solicitud_DireccionOrigen";
+    var __txt_destino_id = "txt-destino-1";
+    var __solicitud = JSON.parse($("#Solicitud").val());
+    var __current_edit_destino = 0;
+    var __directionsService;
+    var __directionsDisplay;
+    var __arrDestinosEdit = [];
+    var __arraySolicitudProveedor = [];
+    var __arrListaDestino = [];
+    var validaciones = true;
+    var validacionCentroCosto = true;
+    var validacionOrdenServicio = true;
+    var eventDisplay = false;
+
+    var __countAprobadoresDisponibles = 0;
+    var idUserAprobador = 0;
+
+    var url = {
+        ValidarOrdenServicio: '@Url.Action("ValidarOrdenServicio", "Solicitud")',
+        ValidarCentroCosto: '@Url.Action("ValidarCentroCosto", "Solicitud")',
+    };
+
+    $(document).ready(function () {
+        idUserAprobador = @ViewBag.IdUsuarioAprobador;
+        $('#idDesbloquear').change(function (e) {
+            validacionCheck = $(this).is(':checked');
+            if (validacionCheck) {
+                $('#ddlCentroCostoAfectoSap').prop("disabled", true)
+                $('#txtOrdenServicio').prop("disabled", false);
+                $('#txtOrdenServicio').focus();
+            } else {
+                $('#txtOrdenServicio').prop("disabled", true);
+                $('#txtOrdenServicio').val('');
+                $('#ddlCentroCostoAfectoSap').prop("disabled", false);
+                $('#div-validate-os-status').html('');
+            }
+        });
+        $('#txtOrdenServicio').blur(function (e) {
+            e.preventDefault();
+            if ($('#txtOrdenServicio').val() !== "") {
+                validarOrdenServicio();
+            }
+        });
+        $('#txtOrdenServicio').keyup(function (e) {
+            e.preventDefault();
+            if (e.which === 13) {
+                if ($('#txtOrdenServicio').val() !== "") {
+                    validarOrdenServicio();
+                }
+            }
+        });
+        $("#ddlCentroCostoAfectoSap").change(function () {
+            validarCentroCosto();
+        });
+        $('#btn-validate-os').change(function () {
+            var ordenServicio = $('#txtOrdenServicio').val();
+            var selector = this;
+            if (selector.checked) {
+                if (ordenServicio === "" || ordenServicio === null) {
+                    toastr["error"]("Ingrese OS a validar");
+                } else {
+                    validarOrdenServicio();
+                }
+
+            } else {
+                $('#div-validate-os-status').html('');
+            }
+        });
+        $('.select2').select2();
+        $('[data-toggle="tooltip"]').tooltip();
+        $('#txt-hora-servicio').timepicker({
+            modalBackdrop: true,
+            showMeridian: false,
+        }).on('changeTime.timepicker', function (e) {
+            var minutes = ((e.time.hours) * 60) + e.time.minutes;
+            $('input[name="HoraServicioEnMinutos"]').val(minutes);
+        });
+
+        $('#spn-km').text(__solicitud.DistanciaKilometro.toFixed(2));
+
+        if (__solicitud.TipoDestino.ID == 2) {
+            $("#div-btn-add-destino").css("display", "block");
+        }
+
+        $('#ddlTipoDestino').change(function (e) {
+            e.preventDefault();
+            if ($(this).val() == 'U') {
+                $('#div-btn-add-destino').css('display', 'none');
+            } else {
+                $('#div-btn-add-destino').css('display', 'block');
+            }
+        });
+
+        $('body').on('click', '#btn-add-destino', function (e) {
+            e.preventDefault();
+            __addDestino();
+        });
+
+        $('body').on('click', '.deleteDestino', function (e) {
+            e.preventDefault();
+            var count = $('#div-destinos').children('div').length;
+            if (count === 1) {
+                toastr["warning"]('Debe existir al menos un destino');
+            } else {
+                __deleteDestino($(this));
+            }
+        });
+
+        $('body').on('click', '#btn-edit-solicitud', function (e) {
+            e.preventDefault();
+            document.getElementById("btn-edit-solicitud").disabled = true;
+            var $frm = $('#frm-sol-ed');
+            var formParsley = $frm.parsley(__defaultParsleyForm());
+            var isValid = formParsley.validate();
+            validarCentroCostoSave(isValid);
+        });
+
+        $('#div-fecha-servicio').datepicker({
+            startDate: fecha(__solicitud.FechaServicio),
+            endDate: fecha(__solicitud.FechaServicio)
+        });
+
+        $('#div-fecha-servicio').datepicker('update', fecha(__solicitud.FechaServicio));
+
+        __displayTarifaDestino($('#' + __txt_edit_origen_id).val(), $('#div-destinos input:last').val());
+
+        __displayRuta();
+
+        getUsuarioCentroCosto($("#ddlCentroCostoAfectoSap").val());
+
+        $('select#ddlCentroCostoAfectoSap').change(function () {
+            var ceco = $("#ddlCentroCostoAfectoSap").val();
+            getUsuarioCentroCosto(ceco);
+        })
+    });
+
+    var getUsuarioCentroCosto = function (_ceco) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaAprobadores_PV", "Solicitud")',
+            type: 'POST',
+            data: { ceco: _ceco },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaUsuarioCentroCosto").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+
+    function initMap() {
+        __map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: __lat_edit_default, lng: __lng_edit_default },
+            zoom: 10
+        });
+
+        __addSearchBox(__txt_edit_origen_id);
+        __addSearchBox(__txt_destino_id);
+
+        geocoder = new google.maps.Geocoder();
+    }
+
+    function __addSearchBox(elementID, type) {
+        var input = document.getElementById(elementID);
+        var autocomplete = new google.maps.places.Autocomplete(input);
+
+        console.log(autocomplete);
+        autocomplete.bindTo('bounds', __map);
+
+        autocomplete.addListener('place_changed', function () {
+            var places = autocomplete.getPlace();
+            console.log(places);
+
+            if (!places.geometry) {
+                //console.log("No details available for input: '" + place.name + "'");
+                return;
+            }
+
+            if (places.geometry.viewport) {
+                __map.fitBounds(places.geometry.viewport);
+            } else {
+                __map.setCenter(places.geometry.location);
+                __map.setZoom(17);  // Why 17? Because it looks good.
+            }
+            var lat = places.geometry.location.lat();
+            var lng = places.geometry.location.lng();
+            eventDisplay = true;
+
+            //Mostrar ruta
+            __directionsService = new google.maps.DirectionsService;
+            __directionsDisplay = new google.maps.DirectionsRenderer({
+                draggable: true,
+                map: __map,
+            });
+
+            __directionsDisplay.addListener('directions_changed', function () {
+                __setNewAddress(__directionsDisplay.getDirections());
+            });
+
+            __map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 16
+            });
+
+            __directionsDisplay.setMap(__map);
+
+            var origen = $("#" + __txt_edit_origen_id).val();
+            var destino = $("#div-destinos input:last").val();
+
+            if (elementID == __txt_edit_origen_id) {
+                $('input[name="OrigenLat"]').val(lat);
+                $('input[name="OrigenLng"]').val(lng);
+                $("#hdfDireccionOrigen").val(origen); //bag coordenas JCEP
+
+                if (origen != "" && destino != "") {
+                    __listaDestino = [];
+                    var cantidad = $(".input-destino").length;
+                    var waypoints = [];
+
+                    __listaDestino.push({ LatitudOrigen: $('input[name="OrigenLat"]').val(), LongitudOrigen: $('input[name="OrigenLng"]').val(), DireccionOrigen: $("#" + __txt_edit_origen_id).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: 1 });
+                    $(".input-destino").each(function (index) {
+                        __listaDestino[index].LatitudDestino = $(this).attr('data-lat');
+                        __listaDestino[index].LongitudDestino = $(this).attr('data-lng');
+                        __listaDestino[index].DireccionDestino = $(this).val();
+                        if (index < cantidad - 1) {
+                            __listaDestino.push({ LatitudOrigen: $(this).attr('data-lat'), LongitudOrigen: $(this).attr('data-lng'), DireccionOrigen: $(this).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: index + 2 });
+                            //waypoints.push($(this).val());
+                            waypoints.push($(this).attr('data-hdfNameOrigin')); //bag coordenas JCEP
+                        }
+                    });
+                    __calculateAndDisplayRoute(origen, destino, waypoints);
+                } else if (destino == "") {
+                    __setMarker(lat, lng, elementID);
+                    __setAddressByLatByLng(lat, lng, elementID);
+                }
+            } else {  //bag coordenas JCEP
+                $('#' + elementID).attr('data-hdfNameOrigin', destino);
+            }
+
+            $('#' + elementID).attr('data-lat', lat);
+            $('#' + elementID).attr('data-lng', lng);
+
+            __listaDestino = [];
+
+            if ($('input[name="OrigenLat"]').val() != "") {
+                var cantidad = $(".input-destino").length;
+                var waypoints = [];
+
+                __listaDestino.push({ LatitudOrigen: $('input[name="OrigenLat"]').val(), LongitudOrigen: $('input[name="OrigenLng"]').val(), DireccionOrigen: $("#" + __txt_edit_origen_id).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: 1 });
+                $(".input-destino").each(function (index) {
+                    __listaDestino[index].LatitudDestino = $(this).attr('data-lat');
+                    __listaDestino[index].LongitudDestino = $(this).attr('data-lng');
+                    __listaDestino[index].DireccionDestino = $(this).val();
+                    if (index < cantidad - 1) {
+                        __listaDestino.push({ LatitudOrigen: $(this).attr('data-lat'), LongitudOrigen: $(this).attr('data-lng'), DireccionOrigen: $(this).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: index + 2 });
+                        //waypoints.push($(this).val());
+                        waypoints.push($(this).attr('data-hdfNameOrigin'));
+                    }
+                });
+
+                if (origen != "" && destino != "") {
+                    __calculateAndDisplayRoute(origen, destino, waypoints);
+                }
+            }
+        });
+    };
+
+    function __calculateAndDisplayRoute(origen, destino, waypoints) {
+        var waypts = [];
+        var checkboxArray = waypoints;
+        for (var i = 0; i < checkboxArray.length; i++) {
+            waypts.push({
+                location: checkboxArray[i],
+                stopover: true
+            });
+        }
+
+        __directionsService.route({
+            //origin: origen,
+            origin: $("#hdfDireccionOrigen").val(), //bag coordenas JCEP
+            destination: destino,
+            waypoints: waypts,
+            optimizeWaypoints: true,
+            travelMode: 'DRIVING'
+        }, function (response, status) {
+            if (status === 'OK') {
+                __directionsDisplay.setDirections(response);
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+    }
+
+    var __displayRuta = function () {
+        var listaDestino = __solicitud.ListaDestino;
+        __arrListaDestino = __solicitud.ListaDestino;
+        var length = listaDestino.length;
+        var origen, destino, waypoints = [], precio = 0.00;
+        for (var i = 0; i < length; i++) {
+            var lat, lng, dir, txt_destino_id;
+            __current_edit_destino++;
+            if (i == 0) {
+                origen = listaDestino[i].DireccionOrigen;
+                lat = listaDestino[i].LatitudOrigen;
+                lng = listaDestino[i].LongitudOrigen;
+                dir = listaDestino[i].DireccionOrigen;
+                $('#' + __txt_edit_origen_id).attr('data-lat', lat);
+                $('#' + __txt_edit_origen_id).attr('data-lng', lng);
+                $('input[name="OrigenLat"]').val(lat);
+                $('input[name="OrigenLng"]').val(lng);
+            }
+            if (i == length - 1) {
+                destino = listaDestino[i].DireccionDestino;
+            } else {
+                waypoints.push(listaDestino[i].DireccionDestino);
+            }
+            lat = listaDestino[i].LatitudDestino;
+            lng = listaDestino[i].LongitudDestino;
+            dir = listaDestino[i].DireccionDestino;
+            txt_destino_id = 'txt-destino-' + (i + 1);
+            var html = '<div class="row" style="margin-top:15px;"><div class="col-sm-12">'
+                        + '<div class="input-group"><span class="input-group-addon"><i class="fa fa-map-marker"></i></span>'
+                        + '<input type="text" id="' + txt_destino_id + '" class="form-control input-toggle-marker input-destino" placeholder="Destino ' + (i + 1) + '" data-lat="' + lat + '" data-lng="' + lng + '" value="' + dir + '" required="" />'
+                        + '<a href="javacript(0);" class="input-group-addon deleteDestino"><i class="fa fa-remove"></i></a>'
+                        + '</div></div></div>'
+            $('#div-destinos').append(html);
+            __addSearchBox(txt_destino_id);
+            precio += listaDestino[i].Precio;
+        }
+        $("#spn-precio").text(precio.toFixed(2));
+
+        __directionsService = new google.maps.DirectionsService;
+        __directionsDisplay = new google.maps.DirectionsRenderer({
+            draggable: true,
+            map: __map
+        });
+
+        __directionsDisplay.setMap(__map);
+
+        __directionsDisplay.addListener('directions_changed', function () {
+            __setNewAddress(__directionsDisplay.getDirections());
+            __displayTarifaDestino(origen, destino);
+        });
+
+        __calculateAndDisplayRoute(origen, destino, waypoints)
+    }
+
+    function __setNewAddress(result) {
+        var origen = $("#" + __txt_edit_origen_id).val();
+        var destino = $("#div-destinos input:last").val();
+        var cantidad = $(".input-destino").length;
+        var address = [];
+        address.push({ id: __txt_edit_origen_id, val: origen });
+        $(".input-destino").each(function (index) {
+            if (index < cantidad - 1) {
+                address.push({ id: $(this).attr("id"), val: $(this).val() });
+            }
+        });
+        address.push({ id: $("#div-destinos input:last").attr("id"), val: destino });
+        var waypoints = result.routes[0];
+        var __waypoints = [];
+        for (var i = 0; i < waypoints.legs.length; i++) {
+            if (waypoints.legs[i].start_address != address[i].val) {
+                $('#' + address[i].id).val(waypoints.legs[i].start_address);
+                $('#' + address[i].id).attr('data-lat', waypoints.legs[i].start_location.lat());
+                $('#' + address[i].id).attr('data-lng', waypoints.legs[i].start_location.lng());
+            }
+            if (i == waypoints.legs.length - 1) {
+                if (waypoints.legs[i].end_address != address[i + 1].val) {
+                    $('#' + address[i + 1].id).val(waypoints.legs[i].end_address);
+                    $('#' + address[i + 1].id).attr('data-lat', waypoints.legs[i].end_location.lat());
+                    $('#' + address[i + 1].id).attr('data-lng', waypoints.legs[i].end_location.lng());
+                }
+            }
+        }
+        if (origen != "" && destino != "") {
+            fn_BloquearPantalla();
+
+            __listaDestino = [];
+            __listaDestino.push({ LatitudOrigen: $('#' + address[0].id).attr('data-lat'), LongitudOrigen: $('#' + address[0].id).attr('data-lng'), DireccionOrigen: $("#" + __txt_edit_origen_id).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: 1 });
+            $(".input-destino").each(function (index) {
+                __listaDestino[index].LatitudDestino = $(this).attr('data-lat');
+                __listaDestino[index].LongitudDestino = $(this).attr('data-lng');
+                __listaDestino[index].DireccionDestino = $(this).val();
+                if (index < cantidad - 1) {
+                    __listaDestino.push({ LatitudOrigen: $(this).attr('data-lat'), LongitudOrigen: $(this).attr('data-lng'), DireccionOrigen: $(this).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: index + 2 });
+                }
+            });
+
+            $.ajax({
+                url: '@Url.Action("TarifaPost", "Solicitud")',
+                type: 'POST',
+                data: { TipoServicioID: $("#ddlTipoServicio").val(), ListaDestino: __listaDestino },
+                cache: false,
+                async: true,
+                success: function (data) {
+                    //console.log(data);
+                    if (data.result.length > 0) {
+                        __arraySolicitudProveedor = data.result;
+                        $("#spn-precio").text(data.operation.ObjectResult.Total.toFixed(2));
+                        $("#spn-km").text(data.operation.ObjectResult.DistanciaKilometro.toFixed(2));
+                        fn_DesbloquearPantalla();
+                    } else {
+                        $("#spn-precio").text(0.00);
+                        $("#spn-km").text(0.00);
+                        fn_DesbloquearPantalla();
+                        toastr["info"]("No existe una tarifa para esta ruta");
+                    }
+                }
+            });
+        }
+    }
+
+    var __addDestino = function () {
+        var ultimo = $("#div-destinos input:last").val();
+        if (ultimo == "") {
+            toastr["info"]("Debe ingresar un destino para agregar otro");
+        } else {
+            __current_edit_destino++;
+            var txt_destino_id = 'txt-destino-' + __current_edit_destino;
+            var html = '<div class="row" style="margin-top:15px;"><div class="col-sm-12">'
+                        + '<div class="input-group"><span class="input-group-addon"><i class="fa fa-map-marker"></i></span>'
+                        + '<input type="text" id="' + txt_destino_id + '" class="form-control input-toggle-marker input-destino" placeholder="Destino ' + __current_edit_destino + '" required="" />'
+                        + '<a href="javascript(0);" class="input-group-addon deleteDestino"><i class="fa fa-remove"></i></a>'
+                        + '</div></div></div>';
+            $('#div-destinos').append(html);
+            __addSearchBox(txt_destino_id);
+        }
+    }
+
+    var __deleteDestino = function (element) {
+        __current_edit_destino--;
+        element.parent().parent().parent().remove();
+
+        __map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 16
+        });
+
+        //Mostrar ruta
+        __directionsService = new google.maps.DirectionsService;
+        __directionsDisplay = new google.maps.DirectionsRenderer({
+            draggable: true,
+            map: __map
+        });
+
+        __directionsDisplay.setMap(__map);
+
+        __directionsDisplay.addListener('directions_changed', function () {
+            __setNewAddress(__directionsDisplay.getDirections());
+        });
+
+        var origen = $("#" + __txt_edit_origen_id).val();
+        var destino = $("#div-destinos input:last").val();
+        var cantidad = $(".input-destino").length;
+        var waypoints = [], __listaDestino = [];
+
+        $(".input-destino").each(function (index) {
+            if (index < cantidad - 1) {
+                waypoints.push($(this).val());
+            }
+        });
+
+        __displayTarifaDestino(origen, destino);
+
+        __calculateAndDisplayRoute(origen, destino, waypoints);
+    }
+
+    var getListaSolicitudProveedorEdit = function (e) {
+        var SolicitudProveedorTaxi = function () { };
+        var listaSolicitudProveedorTaxi = new Array();
+        $.each(__arraySolicitudProveedor, function () {
+            var solicitudProveedorTaxi = new SolicitudProveedorTaxi();
+            solicitudProveedorTaxi.ProveedorTaxiID = this.IdProveedor;
+            solicitudProveedorTaxi.PrecioServicio = this.Total.toFixed(2);
+            listaSolicitudProveedorTaxi.push(solicitudProveedorTaxi);
+        });
+        return listaSolicitudProveedorTaxi;
+    }
+
+    var getListaDestinoEdit = function (e) {
+        var Destino = function () { };
+        var listaDestino = new Array();
+        $.each(__arraySolicitudProveedor, function (i, obj) {
+            $.each(this.ListaDestino, function (i, objDestino) {
+                var destino = new Destino();
+                destino.IdProveedor = obj.IdProveedor;
+                destino.LatitudOrigen = objDestino.LatitudOrigen;
+                destino.LongitudOrigen = objDestino.LongitudOrigen;
+                destino.LatitudDestino = objDestino.LatitudDestino;
+                destino.LongitudDestino = objDestino.LongitudDestino;
+                destino.ZonaOrigen = objDestino.ZonaOrigen;
+                destino.ZonaDestino = objDestino.ZonaDestino;
+                destino.DireccionOrigen = objDestino.DireccionOrigen;
+                destino.NumeroDireccionOrigen = objDestino.NumeroDireccionOrigen;
+                destino.DireccionDestino = objDestino.DireccionDestino;
+                destino.NumeroDireccionDestino = objDestino.NumeroDireccionDestino;
+                destino.DistanciaDestinoKilometro = objDestino.DistanciaDestinoKilometro;
+                destino.Precio = objDestino.Precio.toFixed(2);
+                listaDestino.push(destino);
+            });
+        });
+        return listaDestino;
+    }
+
+    var validarOrdenServicio = function (e) {
+        validacionOrdenServicio = true;
+        fn_BloquearPantalla();
+        var ordenServicio = $('#txtOrdenServicio').val();
+        $.ajax({
+            url: url.ValidarOrdenServicio,
+            type: 'POST',
+            data: { ordenServicio: ordenServicio },
+            cache: false,
+            async: false,
+            success: function (data) {
+                //console.log(data);
+                if (data.Success) {
+                    validacionOrdenServicio = true;
+                    $('#ddlCentroCostoAfectoSap').val(data.ObjectResult.KOSTV);
+                    $('#ddlCentroCostoAfectoSap').trigger('change')
+                    getUsuarioCentroCosto(data.ObjectResult.KOSTV)
+                    $('#div-validate-os-status').html('<i class="fa fa-check fa-lg text-success"></i><label style="font-size: 11px;" class = "text-success">Liberada</label>');
+                    fn_DesbloquearPantalla();
+                } else {
+                    validacionOrdenServicio = false;
+                    toastr["error"](data.Message);
+                    $('#div-validate-os-status').html('<i class="fa fa-times fa-lg text-danger"></i><label style="font-size: 11px;" class = "text-danger">' + data.Message + '</label>');
+                    $("#btn-validate-os").prop('checked', false);
+                    fn_DesbloquearPantalla();
+                }
+            }
+        });
+    }
+
+    var validarCentroCosto = function (e) {
+        fn_BloquearPantalla();
+        validacionCentroCosto = true;
+        var centroCosto = $('#ddlCentroCostoAfectoSap').val();
+        var ordenServicio = $('#txtOrdenServicio').val()
+        $.ajax({
+            url: url.ValidarCentroCosto,
+            type: 'POST',
+            data: { codigoCentroCosto: centroCosto },
+            cache: false,
+            async: false,
+            success: function (data) {
+                if (data.Success) {
+                    $('#ddlCentroCostoAfectoSap').prop("disabled", true)
+                    $('#txtOrdenServicio').removeAttr('disabled')
+                    if (ordenServicio == "") {
+                        validaciones = false;
+                        $('#idDesbloquear').prop('checked', true);
+                        toastr["info"]("Debe ingresar una OS");
+                        setTimeout(function () {
+                            $('#txtOrdenServicio').focus();
+                        }, 100);
+                    } else {
+                        validacionCentroCosto = true;
+                    }
+
+                } else {
+                    $('#ddlCentroCostoAfectoSap').prop("disabled", false)
+                    validacionCentroCosto = true;
+                }
+
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+    var validarCentroCostoSave = function (isValid) {
+        validacionCentroCosto = true;
+        var centroCosto = document.getElementById('ddlCentroCostoAfectoSap').value;
+        var ordenServicio = document.getElementById('txtOrdenServicio').value;
+        $.ajax({
+            url: url.ValidarCentroCosto,
+            type: 'POST',
+            data: { codigoCentroCosto: centroCosto },
+            cache: false,
+            dataType: false,
+            async: true,
+            success: function (data) {
+                if (data.Success) {
+                    document.getElementById("ddlCentroCostoAfectoSap").disabled = true;
+                    document.getElementById("txtOrdenServicio").disabled = false;
+                    if (ordenServicio == "") {
+                        validaciones = false;
+                        $('#idDesbloquear').prop('checked', true);
+                        toastr["info"]("Debe ingresar una OS");
+                        setTimeout(function () {
+                            $('#txtOrdenServicio').focus();
+                        }, 100);
+                    } else {
+                        validacionCentroCosto = true;
+                    }
+
+                } else {
+                    document.getElementById("ddlCentroCostoAfectoSap").disabled = false;
+                    validacionCentroCosto = false;
+                }
+                var LengthNuevo = 0;
+                var LengthAnterior = 0;
+                var mensaje = "";
+                var result = false;
+                var diferente = false;
+                var __arrDestinosNuevo = getListaDestinoEdit();
+
+                //Continuar con el flujo principal
+                if (validacionCentroCosto) {
+
+                    var ordenServicio = document.getElementById('txtOrdenServicio').value;
+
+                    validarOrdenServicio();
+                    if (isValid && validacionOrdenServicio) {
+                        $('.input-destino').each(function () {
+                            var $input = $(this);
+                            __arrDestinosEdit.push({
+                                Lat: $input.attr('data-lat'),
+                                Lng: $input.attr('data-lng'),
+                                Direccion: $input.val()
+                            });
+                        });
+
+                        if (__arrDestinosEdit.length) {
+                            for (var i_d = 0; i_d < __arrDestinosEdit.length; i_d++) {
+                                __arrDestinosEdit[i_d].ZonaOrigen = 0;//__objTarifaProveedor.ZonaOrigen;
+                                __arrDestinosEdit[i_d].ZonaDestino = 0;//__objTarifaProveedor.ZonaDestino;
+                                __arrDestinosEdit[i_d].DistanciaKm = 0;//__objTarifaProveedor.Distancia.replace('km', '').trim();
+                            }
+                        }
+
+                        LengthNuevo = __arrDestinosNuevo.length - 1;
+                        LengthAnterior = __arrListaDestino.length;
+                        mensaje = "";
+                        result = false;
+                        diferente = false;
+
+                        if (LengthNuevo != LengthAnterior) {
+                            result = confirm("Usted esta cambiando la ruta inicial, ¿desea continuar?.");
+                            if (result == false) {
+                                fn_DesbloquearPantalla();
+                                document.getElementById("btn-edit-solicitud").disabled = false;
+                                return false;
+                            }
+                        }
+
+                        for (var k = 0; k < LengthNuevo; k++) {
+                            if (__arrListaDestino[k].DireccionOrigen != __arrDestinosNuevo[k].DireccionOrigen) {
+                                diferente = true;
+                            }
+                            if (__arrListaDestino[k].DireccionDestino != __arrDestinosNuevo[k].DireccionDestino) {
+                                diferente = true;
+                            }
+                        }
+
+                        if (diferente == true) {
+                            result = confirm("Usted esta cambiando la ruta inicial, ¿desea continuar?.");
+                            if (result == false) {
+                                document.getElementById("btn-edit-solicitud").disabled = false;
+                                return false;
+                            }
+                        }
+
+                        //
+                        if (__countAprobadoresDisponibles >= 0) {
+                            idUserAprobador = parseInt($('select[name="listaAprobadores"]').val());
+                            if (idUserAprobador == 0 || idUserAprobador == '' || idUserAprobador == '0' || isNaN(idUserAprobador)) {
+                                toastr["warning"]('Debe seleccionar un aprobador.');
+                                document.getElementById("btn-edit-solicitud").disabled = false;
+                                return;
+                            }
+                        }
+                        //
+
+                        var arreglo = $('input[name="FechaServicio"]').val().split("/");
+                        var fechaFinal = arreglo[1] + "/" + arreglo[0] + "/" + arreglo[2];
+
+                        var element = {
+                            ID: document.getElementById('IdSolicitud').value,
+                            SituacionServicio: 'R',
+                            IdTipoPago: $('#IdTipoPago').val(),
+                            IdTipoServicio: $('#ddlTipoServicio').val(),
+                            IdTipoDestino: $('#ddlTipoDestino').val(),
+                            IdSituacionServicio: $('#IdSituacionServicio').val(),
+                            IdEstadoServicioProveedor: $('#IdEstadoServicioProveedor').val(),
+                            TipoServicio: $('#ddlTipoServicio').val(),
+                            TipoDestino: $('#ddlTipoDestino').val(),
+                            TipoPago: $('#IdTipoPago').val(),
+                            FechaServicio: fechaFinal + ' ' + $('#txt-hora-servicio').val(),
+                            HoraServicioEnMinutos: $('input[name="HoraServicioEnMinutos"]').val(),
+                            CentroCostoAfectoCodigoSap: $('#ddlCentroCostoAfectoSap').val(),
+                            NroOrdenServicio: $('input[name="Solicitud.NroOrdenServicio"]').val(),
+                            IdMotivoCreacionSolicitud: $('#ddlMotivoCreacionSolicitud').val(),
+                            CantidadHoras: $('input[name="CantidadHoras"]').val(),
+                            CategoriaProductoID: $('select[name="CategoriaProductoID"]').val(),
+                            CantidadProductos: $('input[name="CantidadProductos"]').val(),
+                            OrigenLat: $('input[name="OrigenLat"]').val(),
+                            OrigenLng: $('input[name="OrigenLng"]').val(),
+                            OrigenDireccion: $('#' + __txt_edit_origen_id).val(),
+                            DestinoServicio: __arrDestinosEdit,
+                            SolicitudProveedorTaxi: getListaSolicitudProveedorEdit(),
+                            Observaciones: $('textarea[name="Solicitud.Observaciones"]').val(),
+                            TotalServicio: $('#spn-precio').text(),
+                            DistanciaKilometro: $('#spn-km').text()
+                        };
+
+                        if (parseFloat($('#spn-precio').text()) > 0.00) {
+                            $.ajax({
+                                url: '@Url.Action("EditarPost", "Solicitud")',
+                                type: 'POST',
+                                data: { element: element, listaDestino: getListaDestinoEdit(), listaTarifa: __arraySolicitudProveedor, idAprobador: idUserAprobador},
+                                cache: false,
+                                async: true,
+                                dataType:'JSON',
+                                beforeSend: function () {
+                                    fn_BloquearPantalla();
+                                },
+                                success: function (data) {
+                                    if (data.Success) {
+                                        window.location = '@Url.Action("IndexUsuario", "Solicitud")?upd=true';
+                                    } else {
+                                        fn_DesbloquearPantalla();
+                                        f["error"](data.Message);
+                                        //toastr["error"]('Ocurrio un error inesperado');
+                                        $("#btn-edit-solicitud").prop("disabled", false);
+                                    }
+                                },
+                                complete: function () {
+                                    fn_DesbloquearPantalla();
+                                }
+                            });
+                        }
+                        else {
+                            fn_DesbloquearPantalla();
+                            document.getElementById("btn-edit-solicitud").disabled = false;
+                            toastr["warning"]('No existe una tarifa para esta solicitud');
+                        }
+                    }
+                    else {
+                        fn_DesbloquearPantalla();
+                        document.getElementById("btn-edit-solicitud").disabled = false;
+                    }
+                }
+                else {
+                    if (isValid) {
+                        $('.input-destino').each(function () {
+                            var $input = $(this);
+                            __arrDestinosEdit.push({
+                                Lat: $input.attr('data-lat'),
+                                Lng: $input.attr('data-lng'),
+                                Direccion: $input.val()
+                            });
+                        });
+
+                        if (__arrDestinosEdit.length) {
+                            for (var i_d = 0; i_d < __arrDestinosEdit.length; i_d++) {
+                                __arrDestinosEdit[i_d].ZonaOrigen = 0;//__objTarifaProveedor.ZonaOrigen;
+                                __arrDestinosEdit[i_d].ZonaDestino = 0;//__objTarifaProveedor.ZonaDestino;
+                                __arrDestinosEdit[i_d].DistanciaKm = 0;//__objTarifaProveedor.Distancia.replace('km', '').trim();
+                            }
+                        }
+
+                        LengthNuevo = __arrDestinosNuevo.length - 1;
+                        LengthAnterior = __arrListaDestino.length;
+                        mensaje = "";
+                        result = false;
+                        diferente = false;
+
+                        if (LengthNuevo != LengthAnterior) {
+                            result = confirm("Usted esta cambiando la ruta inicial, ¿desea continuar?.");
+                            if (result == false) {
+                                document.getElementById("btn-edit-solicitud").disabled = false;
+                                return false;
+                            }
+                        }
+
+                        for (var k = 0; k < LengthNuevo; k++) {
+                            if (__arrListaDestino[k].DireccionOrigen != __arrDestinosNuevo[k].DireccionOrigen) {
+                                diferente = true;
+                            }
+                            if (__arrListaDestino[k].DireccionDestino != __arrDestinosNuevo[k].DireccionDestino) {
+                                diferente = true;
+                            }
+                        }
+
+                        if (diferente == true) {
+                            result = confirm("Usted esta cambiando la ruta inicial, ¿desea continuar?.");
+                            if (result == false) {
+                                document.getElementById("btn-edit-solicitud").disabled = false;
+                                return false;
+                            }
+                        }
+
+                        //
+                        if (__countAprobadoresDisponibles >= 0) {
+                            idUserAprobador = parseInt($('select[name="listaAprobadores"]').val());
+                            if (idUserAprobador == 0 || idUserAprobador == '' || idUserAprobador == '0' || isNaN(idUserAprobador)) {
+                                toastr["warning"]('Debe seleccionar un aprobador.');
+                                document.getElementById("btn-edit-solicitud").disabled = false;
+                                return;
+                            }
+                        }
+                        //
+
+                        var arreglo = $('input[name="FechaServicio"]').val().split("/");
+                        var fechaFinal = arreglo[1] + "/" + arreglo[0] + "/" + arreglo[2];
+
+                        var element = {
+                            ID: document.getElementById('IdSolicitud').value,
+                            SituacionServicio: 'R',
+                            IdTipoPago: $('#IdTipoPago').val(),
+                            IdTipoServicio: $('#ddlTipoServicio').val(),
+                            IdTipoDestino: $('#ddlTipoDestino').val(),
+                            IdSituacionServicio: $('#IdSituacionServicio').val(),
+                            IdEstadoServicioProveedor: $('#IdEstadoServicioProveedor').val(),
+                            TipoServicio: $('#ddlTipoServicio').val(),
+                            TipoDestino: $('#ddlTipoDestino').val(),
+                            TipoPago: $('#IdTipoPago').val(),
+                            FechaServicio: fechaFinal + ' ' + $('#txt-hora-servicio').val(),
+                            HoraServicioEnMinutos: $('input[name="HoraServicioEnMinutos"]').val(),
+                            CentroCostoAfectoCodigoSap: $('#ddlCentroCostoAfectoSap').val(),
+                            NroOrdenServicio: $('input[name="Solicitud.NroOrdenServicio"]').val(),
+                            IdMotivoCreacionSolicitud: $('#ddlMotivoCreacionSolicitud').val(),
+                            CantidadHoras: $('input[name="CantidadHoras"]').val(),
+                            CategoriaProductoID: $('select[name="CategoriaProductoID"]').val(),
+                            CantidadProductos: $('input[name="CantidadProductos"]').val(),
+                            OrigenLat: $('input[name="OrigenLat"]').val(),
+                            OrigenLng: $('input[name="OrigenLng"]').val(),
+                            OrigenDireccion: $('#' + __txt_edit_origen_id).val(),
+                            DestinoServicio: __arrDestinosEdit,
+                            SolicitudProveedorTaxi: getListaSolicitudProveedorEdit(),
+                            Observaciones: $('textarea[name="Solicitud.Observaciones"]').val(),
+                            TotalServicio: $('#spn-precio').text(),
+                            DistanciaKilometro: $('#spn-km').text()
+                        };
+
+                        if (parseFloat($('#spn-precio').text()) > 0.00) {
+                            $.ajax({
+                                url: '@Url.Action("EditarPost", "Solicitud")',
+                                type: 'POST',
+                                data: { element: element, listaDestino: getListaDestinoEdit(), listaTarifa: __arraySolicitudProveedor, idAprobador: idUserAprobador },
+                                cache: false,
+                                async: true,
+                                beforeSend: function () {
+                                    fn_BloquearPantalla();
+                                },
+                                dataType:'JSON',
+                                success: function (data) {
+                                    if (data.Success) {
+                                        window.location = '@Url.Action("IndexUsuario", "Solicitud")?upd=true';
+                                    } else {
+                                        fn_DesbloquearPantalla();
+                                        toastr["error"](data.Message);
+                                        document.getElementById("btn-edit-solicitud").disabled = false;
+                                    }
+                                },
+                                complete: function () {
+                                    fn_DesbloquearPantalla();
+                                }
+                            });
+                        }
+                        else {
+                            fn_DesbloquearPantalla();
+                            document.getElementById("btn-edit-solicitud").disabled = false;
+                            toastr["warning"]('No existe una tarifa para esta solicitud');
+                        }
+                    }
+                    else {
+                        fn_DesbloquearPantalla();
+                        document.getElementById("btn-edit-solicitud").disabled = false;
+                    }
+                }
+            }
+        });
+    }
+
+    function __displayTarifaDestino(origen, destino) {
+        if (origen != "" && destino != "") {
+            var __listaDestino = [];
+            var cantidad = $(".input-destino").length;
+            __listaDestino.push({ LatitudOrigen: $('input[name="OrigenLat"]').val(), LongitudOrigen: $('input[name="OrigenLng"]').val(), DireccionOrigen: $("#" + __txt_edit_origen_id).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: 1 });
+            $(".input-destino").each(function (index) {
+                __listaDestino[index].LatitudDestino = $(this).attr('data-lat');
+                __listaDestino[index].LongitudDestino = $(this).attr('data-lng');
+                __listaDestino[index].DireccionDestino = $(this).val();
+                if (index < cantidad - 1) {
+                    __listaDestino.push({ LatitudOrigen: $(this).attr('data-lat'), LongitudOrigen: $(this).attr('data-lng'), DireccionOrigen: $(this).val(), LatitudDestino: 0, LongitudDestino: 0, DireccionDestino: "", Orden: index + 2 });
+                }
+            });
+
+            @*fn_BloquearPantalla();
+
+            $.ajax({
+                url: '@Url.Action("TarifaPost", "Solicitud")',
+                type: 'POST',
+                data: { TipoServicioID: $("#ddlTipoServicio").val(), ListaDestino: __listaDestino },
+                cache: false,
+                async: true,
+                success: function (data) {
+                    console.log(data);
+                    if (data.result.length > 0) {
+                        __arraySolicitudProveedor = data.result;
+                        $("#spn-precio").text(data.operation.ObjectResult.Total.toFixed(2));
+                        $("#spn-km").text(data.operation.ObjectResult.DistanciaKilometro.toFixed(2));
+                        fn_DesbloquearPantalla();
+                    } else {
+                        $("#spn-precio").text(0.00);
+                        $("#spn-km").text(0.00);
+                        fn_DesbloquearPantalla();
+                        toastr["info"]("No existe una tarifa para esta ruta");
+                    }
+                }
+            });*@
+        }
+    }
+
+    var fecha = function (e) {
+        var d = __solicitud.FechaServicioStr.split("/");
+        var date = d[1] + "-" + d[0] + "-" + d[2];
+        return date;
+    }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=@key&libraries=places&callback=initMap"></script>

@@ -1,0 +1,162 @@
+﻿@model WebApplication.Areas.GASTO.Models.DelegacionesViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel">
+        <i class="fa fa-list"></i>
+        <i class="fa fa-chevron-right"></i>
+        DELEGACIONES 
+    </h3>
+</div>
+<input type="hidden" id="hdfIdUsuarioDelegador" value="@Model.IdUsuario" />
+<div class="modal-body" id="modalDelegaciones">
+    <div class="row">
+        <div id="filtros">
+            <div class="col-sm-6">
+                <div class="form-horizontal">
+                    <div class="form-horizontal  rowUser">
+                        <div class="form-group" style="margin-bottom: 0px">
+                            <label class="col-sm-10"><span style="font-weight:bold;font-size:12px;">Usuario:</span> <span style="font-weight:normal;font-size:11px;"> @Model.Delegador </span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+            <div id="filtros">
+                <div style="padding-left:15px;">
+                    <button id="btnAgregarDelegacion" class="btn btn-primary btn-sm" style="width:150px;"><i class="fa fa-plus-circle"></i> Nueva Delegación</button>
+                </div>
+            </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="div-tbl-Delegaciones" class="table-responsive">
+                <table id="jqGridDelegaciones" class="table-gys-kom"></table>
+                <div id="jqControlsDelegaciones">
+                </div>
+            </div>
+        </div>
+    </div>
+    </br>
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cerrar</button>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+     
+        $('#btnAgregarDelegacion').click(function (e) {
+            var id = 0;
+            abrirModalDelegar(id);
+        });
+        $('body').on('click', "#btn-revocar", function (e) {
+            e.preventDefault();
+            var id = $(this).attr('data-id');
+            abrirModalRevocar(id);
+        });
+        $('body').on('click', "#btn-editar-delegar", function (e) {
+            e.preventDefault();
+            var id = $(this).attr('data-id');
+            abrirModalDelegar(id);
+        });
+      
+
+        
+        paginadodelegacion();
+        var anchoventana = parseInt($(window).width());
+        var anchomodal = (anchoventana - parseInt(anchoventana * 0.1)) - 320;
+        $("#jqGridDelegaciones").setGridWidth(anchomodal);
+
+    });
+
+    function paginadodelegacion() {
+        $("#jqGridDelegaciones").jqGrid({
+            url: getURLGetDelegaciones(),
+            datatype: 'JSON',
+            mtype: 'GET',
+            colNames: ['Delegado a', 'Desde', 'Hasta', 'Estado','Comentarios', 'Fecha Asignación', 'Fecha Revocación', 'Principal','Acción'],
+            colModel: [
+                { key: false, name: 'Delegado', index: 'Delegado', width: "220", align: 'center' },
+                { key: false, name: 'FechaDesdeStr', index: 'FechaDesdeStr', width: "65", align: 'center' },
+                { key: false, name: 'FechaHastaStr', index: 'FechaHastaStr', width: "65", align: 'center' },
+                { key: false, name: 'DescripcionEstado', index: 'DescripcionEstado', width: "100", align: 'center' },
+                { key: false, name: 'Comentarios', index: 'Comentarios', width: "120", align: 'center' },
+                { key: false, name: 'FechaAsignacionStr', index: 'FechaAsignacionStr', width: "65", align: 'center' },
+                { key: false, name: 'FechaRevocacionStr', index: 'FechaRevocacionStr', width: "65", align: 'center' },
+                { key: false, name: 'EsPrincipal', index: 'EsPrincipal', width: "65", align: 'center' },
+                {
+                    key: true,
+                    name: 'ID',
+                    index: 'ID',
+                    align: 'center',
+                    width: '60px',
+                    fixed: true,
+                    formatter: formatoAccion,
+                    formatoptions: { Keys: false }
+                },
+            ],
+            pager: $('#jqControlsDelegaciones'),
+            rowNum: 10,
+            rowList: [10, 20, 30, 40, 50],
+            height: '100%',
+            viewrecords: true,
+            jsonReader: {
+                root: "rows",
+                page: "page",
+                total: "total",
+                records: "records",
+                repeatitems: false,
+            },
+            autowidth: true,
+            cmTemplate: { sortable: false },
+            loadComplete: function (data) {
+            },
+        });
+    }
+
+    
+
+    function getURLGetDelegaciones() {
+        var IdUsuario = $('#hdfIdUsuarioDelegador').val();
+        return url.GetListDelegaciones + '?IdUsuario=' + IdUsuario;
+    }
+    function formatoAccion(cellvalue, options, rowObject) {
+        var result = '';
+        if (rowObject.Estado == 1 ) {
+            result += '<a href="javascript(0);" id="btn-editar-delegar" data-id ="' + cellvalue + '"  class="glyphicon glyphicon-pencil" title="Editar"></a>' + '&nbsp;&nbsp;';
+        }
+        result += '<a href="javascript(0);" id="btn-revocar" data-id ="' + cellvalue + '"  class="glyphicon glyphicon-share" title="Revocar"></a>' + '&nbsp;&nbsp;';
+        return result;
+    }
+    
+
+    function abrirModalDelegar(id) {
+        fn_BloquearPantalla();
+        $('#modal-detalle-delegacion .modal-content').empty();
+        $('#modal-detalle-delegacion .modal-content').load(url.RegistroDelegar, { id: id }, function () {
+            $("#modal-detalle-delegacion").modal({ show: true, backdrop: 'static', keyboard: true });
+            fn_DesbloquearPantalla();
+        });
+    }
+    function abrirModalRevocar(id) {
+        fn_BloquearPantalla();
+        $('#modal-detalle-revocacion .modal-content').empty();
+        $('#modal-detalle-revocacion .modal-content').load(url.ConfirmarRevocar, { id: id }, function () {
+            $("#modal-detalle-revocacion").modal({ show: true, backdrop: 'static', keyboard: true });
+            fn_DesbloquearPantalla();
+        });
+    }
+
+    
+
+</script>
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+
+

@@ -1,0 +1,1013 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Net.Compilers.2.4.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.4.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F2353241-48FE-4FE0-B93E-C6B8F97AA7D2}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebApplication</RootNamespace>
+    <AssemblyName>WebApplication</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
+    <WebGreaseLibPath>..\packages\WebGrease.1.5.2\lib</WebGreaseLibPath>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=6.2.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.6.2.2\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.Cryptography.2.2.1\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus, Version=4.5.3.1, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPPlus.4.5.3.1\lib\net40\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.1, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13.1\lib\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="MailKit, Version=4.3.0.0, Culture=neutral, PublicKeyToken=4e064fe7c44a8f1b, processorArchitecture=MSIL">
+      <HintPath>..\packages\MailKit.4.3.0\lib\net47\MailKit.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=5.0.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Data, Version=5.0.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\EnterpriseLibrary.Data.5.0.505.0\lib\NET35\Microsoft.Practices.EnterpriseLibrary.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.2.1.505.0\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.2.1.505.0\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Interception.2.1.505.0\lib\NET35\Microsoft.Practices.Unity.Interception.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception.Configuration, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Interception.2.1.505.0\lib\NET35\Microsoft.Practices.Unity.Interception.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.2015.12.0.2.2403\lib\net40\Microsoft.ReportViewer.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.DataVisualization, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.2015.12.0.2.2403\lib\net40\Microsoft.ReportViewer.DataVisualization.DLL</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Design, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.2015.12.0.2.2403\lib\net40\Microsoft.ReportViewer.Design.DLL</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.ProcessingObjectModel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.2015.12.0.2.2403\lib\net40\Microsoft.ReportViewer.ProcessingObjectModel.DLL</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebDesign, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.2015.12.0.2.2403\lib\net40\Microsoft.ReportViewer.WebDesign.DLL</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.2015.12.0.2.2403\lib\net40\Microsoft.ReportViewer.WebForms.DLL</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportViewer.2015.12.0.2.2403\lib\net40\Microsoft.ReportViewer.WinForms.DLL</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SqlServer.Types.14.0.1016.290\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.VisualStudio.UnitTesting.11.0.50727.1\lib\net45\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.VisualStudio.TestPlatform.14.0.0.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.VisualStudio.TestPlatform.14.0.0.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="MimeKit, Version=4.3.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
+      <HintPath>..\packages\MimeKit.4.3.0\lib\net47\MimeKit.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject, Version=3.3.4.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.3.4\lib\net45\Ninject.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Extensions.Conventions, Version=3.3.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Extensions.Conventions.3.3.0\lib\net45\Ninject.Extensions.Conventions.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Extensions.Factory, Version=3.3.2.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Extensions.Factory.3.3.2\lib\net45\Ninject.Extensions.Factory.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Web.Common, Version=3.3.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Web.Common.3.3.0\lib\net45\Ninject.Web.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Web.Common.WebHost, Version=3.3.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Web.Common.WebHost.3.3.0\lib\net45\Ninject.Web.Common.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject.Web.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.MVC5.3.3.0\lib\net45\Ninject.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.3.0.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NPOI.2.3.0\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.6.0\lib\net45\Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.Sinks.Console, Version=3.1.1.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.Console.3.1.1\lib\net45\Serilog.Sinks.Console.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.File.4.0.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Formats.Asn1, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Formats.Asn1.7.0.0\lib\net462\System.Formats.Asn1.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.4\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease, Version=1.5.2.14234, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Web.Infrastructure">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\GASTO\Scripts\AprobacionJefes\Index.js" />
+    <Content Include="Areas\GASTO\Scripts\AprobacionJefes\_BuscarSolicitudExteriorModal.js" />
+    <Content Include="Areas\GASTO\Scripts\AprobacionJefes\_FormularioDetallaGasto.js" />
+    <Content Include="Areas\GASTO\Scripts\ContabilidadSolicitudes\Index.js" />
+    <Content Include="Areas\GASTO\Scripts\ContabilidadSolicitudes\_FormularioDetallaGasto.js" />
+    <Content Include="Areas\GASTO\Scripts\Delegacion\Index.js" />
+    <Content Include="Areas\GASTO\Scripts\DetRendicionSolicitud\DetRendicionSolicitud.js" />
+    <Content Include="Areas\GASTO\Scripts\Maestros\Index - Copy.js" />
+    <Content Include="Areas\GASTO\Scripts\Maestros\Index.js" />
+    <Content Include="Areas\GASTO\Scripts\ReporteGastos\Index.js" />
+    <Content Include="Areas\GASTO\Scripts\Solicitud\Index.js" />
+    <Content Include="Areas\GASTO\Scripts\Solicitud\_FormularioDetallaGasto.js" />
+    <Content Include="Areas\GASTO\Scripts\Solicitud\_Formulario.js" />
+    <Content Include="Content\css\bootstrap-theme.min.css" />
+    <Content Include="Content\css\bootstrap.css" />
+    <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\css\custom.css" />
+    <Content Include="Content\css\daterangepicker.css" />
+    <Content Include="Content\css\font-awesome.min.css" />
+    <Content Include="Content\FileInput\css\fileinput.css" />
+    <Content Include="Content\FileInput\css\fileinput.min.css" />
+    <Content Include="Content\FileInput\img\loading-sm.gif" />
+    <Content Include="Content\FileInput\img\loading.gif" />
+    <Content Include="Content\FileInput\js\fileinput.js" />
+    <Content Include="Content\FileInput\js\fileinput.min.js" />
+    <Content Include="Content\FileInput\js\locales\ar.js" />
+    <Content Include="Content\FileInput\js\locales\bg.js" />
+    <Content Include="Content\FileInput\js\locales\ca.js" />
+    <Content Include="Content\FileInput\js\locales\cr.js" />
+    <Content Include="Content\FileInput\js\locales\cz.js" />
+    <Content Include="Content\FileInput\js\locales\da.js" />
+    <Content Include="Content\FileInput\js\locales\de.js" />
+    <Content Include="Content\FileInput\js\locales\el.js" />
+    <Content Include="Content\FileInput\js\locales\es.js" />
+    <Content Include="Content\FileInput\js\locales\fa.js" />
+    <Content Include="Content\FileInput\js\locales\fi.js" />
+    <Content Include="Content\FileInput\js\locales\fr.js" />
+    <Content Include="Content\FileInput\js\locales\hu.js" />
+    <Content Include="Content\FileInput\js\locales\id.js" />
+    <Content Include="Content\FileInput\js\locales\it.js" />
+    <Content Include="Content\FileInput\js\locales\ja.js" />
+    <Content Include="Content\FileInput\js\locales\LANG.js" />
+    <Content Include="Content\FileInput\js\locales\nl.js" />
+    <Content Include="Content\FileInput\js\locales\pl.js" />
+    <Content Include="Content\FileInput\js\locales\pt-BR.js" />
+    <Content Include="Content\FileInput\js\locales\pt.js" />
+    <Content Include="Content\FileInput\js\locales\ro.js" />
+    <Content Include="Content\FileInput\js\locales\ru.js" />
+    <Content Include="Content\FileInput\js\locales\sk.js" />
+    <Content Include="Content\FileInput\js\locales\th.js" />
+    <Content Include="Content\FileInput\js\locales\tr.js" />
+    <Content Include="Content\FileInput\js\locales\uk.js" />
+    <Content Include="Content\FileInput\js\locales\zh-TW.js" />
+    <Content Include="Content\FileInput\js\locales\zh.js" />
+    <Content Include="Content\FileInput\js\plugins\canvas-to-blob.js" />
+    <Content Include="Content\FileInput\js\plugins\canvas-to-blob.min.js" />
+    <Content Include="Content\FileInput\js\plugins\purify.js" />
+    <Content Include="Content\FileInput\js\plugins\purify.min.js" />
+    <Content Include="Content\FileInput\js\plugins\sortable.js" />
+    <Content Include="Content\FileInput\js\plugins\sortable.min.js" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\img\access_denied.png" />
+    <Content Include="Content\img\Amazonia_logo.png" />
+    <Content Include="Content\img\Banner Mod. - Sistema-de-taxiV1.png" />
+    <Content Include="Content\img\gif-loading.gif" />
+    <Content Include="Content\img\Banner Mod. - Sistema-de-taxi.png" />
+    <Content Include="Content\img\komatsu_maquinaria.gif" />
+    <Content Include="Content\img\Logo\Logo-taxi01.png" />
+    <Content Include="Content\img\Logo\logo-taxi2.png" />
+    <Content Include="Content\img\Logo\logo-taxi3.png" />
+    <Content Include="Content\img\Logo\Logo-taxi4.png" />
+    <Content Include="Content\img\Logo\Logo.png" />
+    <Content Include="Content\img\Logo\Sistema-de-taxi4.png" />
+    <Content Include="Content\img\Logo\solicitud-de-taxi-v2-05-01.png" />
+    <Content Include="Content\img\Logo\solicitud-de-taxi-v2-05.png" />
+    <Content Include="Content\img\silueta.jpg" />
+    <Content Include="Content\img\Sistema-de-taxi.png" />
+    <Content Include="Content\img\taxi.png" />
+    <Content Include="Content\js\daterangepicker.min.js" />
+    <Content Include="Content\js\jquery-1.12.4.js" />
+    <Content Include="Content\js\moment.min.js" />
+    <Content Include="Content\js\xlsx.full.min.js" />
+    <Content Include="Content\plugins\bootstrap-confirmation\bootstrap-confirmation.min.js" />
+    <Content Include="Content\plugins\autocomplete\jquery.autocomplete.min.js" />
+    <Content Include="Content\plugins\bootstrap-multiselect\css\bootstrap-multiselect.css" />
+    <Content Include="Content\plugins\bootstrap-multiselect\js\bootstrap-multiselect.js" />
+    <Content Include="Content\plugins\bootstrap-responsive-tabs\bootstrap-responsive-tabs.css" />
+    <Content Include="Content\plugins\bootstrap-responsive-tabs\bootstrap-responsive-tabs.js" />
+    <Content Include="Content\plugins\flot\base64.js" />
+    <Content Include="Content\plugins\flot\canvas2image.js" />
+    <Content Include="Content\plugins\flot\excanvas.min.js" />
+    <Content Include="Content\plugins\flot\jquery.colorhelpers.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.axislabels.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.canvas.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.categories.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.crosshair.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.errorbars.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.fillbetween.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.image.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.labels.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.navigate.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.pie.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.resize.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.saveAsImage.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.selection.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.stack.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.symbol.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.threshold.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.tickrotor.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.time.min.js" />
+    <Content Include="Content\plugins\flot\jquery.flot.valuelabels.js" />
+    <Content Include="Content\plugins\flot\jquery.js" />
+    <Content Include="Content\plugins\html2canvas\html2canvas.min.js" />
+    <Content Include="Content\plugins\jqGrid\css\images\bx-controls.png" />
+    <Content Include="Content\plugins\jqGrid\css\images\bx_loader.gif" />
+    <Content Include="Content\plugins\jqGrid\css\images\controls-slider.png" />
+    <Content Include="Content\plugins\jqGrid\css\images\controls.png" />
+    <Content Include="Content\plugins\jqGrid\css\images\gif-loading.gif" />
+    <Content Include="Content\plugins\jqGrid\css\images\loading.gif" />
+    <Content Include="Content\plugins\jqGrid\css\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\plugins\jqGrid\css\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\plugins\jqGrid\css\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\plugins\jqGrid\css\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\plugins\jqGrid\css\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\plugins\jqGrid\css\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\css\main.css" />
+    <Content Include="Content\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\img\bgsistemataxi.jpg" />
+    <Content Include="Content\img\kmmpcummins.png" />
+    <Content Include="Content\img\Komatsu-Sistema-de-Taxi_03.png" />
+    <Content Include="Content\img\Komatsu-Sistema-de-Taxi_07.png" />
+    <Content Include="Content\img\Komatsu-Web-de-Seguridad-2_03.png" />
+    <Content Include="Content\img\Komatsu-Web-de-Seguridad-2_05.png" />
+    <Content Include="Content\img\Komatsu-Web-de-Seguridad-2_07.png" />
+    <Content Include="Content\img\Komatsu-Web-de-Seguridad-2_09.png" />
+    <Content Include="Content\img\Komatsu-Web-de-Seguridad-2_11.png" />
+    <Content Include="Content\img\Komatsu-Web-de-Seguridad-2_13.png" />
+    <Content Include="Content\img\Komatsu_03.png" />
+    <Content Include="Content\img\Komatsu_05.png" />
+    <Content Include="Content\img\kom_back_internas.jpg" />
+    <Content Include="Content\js\app.js" />
+    <Content Include="Content\js\bootstrap.min.js" />
+    <Content Include="Content\js\custom.js" />
+    <Content Include="Content\js\jquery-1.11.2.min.js" />
+    <Content Include="Content\js\jquery.validate.min.js" />
+    <Content Include="Content\js\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Content\js\modernizr-2.8.3.min.js" />
+    <Content Include="Content\plugins\bootstrap-datepicker\bootstrap-datepicker.es.min.js" />
+    <Content Include="Content\plugins\bootstrap-datepicker\bootstrap-datepicker.min.css" />
+    <Content Include="Content\plugins\bootstrap-datepicker\bootstrap-datepicker.min.js" />
+    <Content Include="Content\plugins\bootstrap-timepicker\bootstrap-timepicker.min.css" />
+    <Content Include="Content\plugins\bootstrap-timepicker\bootstrap-timepicker.min.js" />
+    <Content Include="Content\plugins\form-parsley\es.js" />
+    <Content Include="Content\plugins\form-parsley\parsley.min.js" />
+    <Content Include="Content\plugins\jqGrid\css\jquery-ui.min.css" />
+    <Content Include="Content\plugins\jqGrid\css\ui.jqgrid.css" />
+    <Content Include="Content\plugins\jqGrid\js\grid.locale-en.js" />
+    <Content Include="Content\plugins\jqGrid\js\jquery.jqGrid.js" />
+    <Content Include="Content\plugins\jqGrid\js\jquery.jqGrid.min.js" />
+    <Content Include="Content\plugins\msgBox\jquery.msgBox.js" />
+    <Content Include="Content\plugins\select2\select2.css" />
+    <Content Include="Content\plugins\select2\select2.js" />
+    <Content Include="Content\plugins\select2\select2.min.css" />
+    <Content Include="Content\plugins\select2\select2.min.js" />
+    <Content Include="Content\plugins\starrr\starrr.js" />
+    <Content Include="Content\plugins\toastr\toastr.css" />
+    <Content Include="Content\plugins\toastr\toastr.js" />
+    <Content Include="Content\plugins\toastr\toastr.min.css" />
+    <Content Include="Content\plugins\toastr\toastr.min.js" />
+    <Content Include="Content\plugins\Utilitario\jquery.blockUI.js" />
+    <Content Include="Content\plugins\Utilitario\Utilitario.js" />
+    <Content Include="Content\plugins\xlsx\xlsx.js" />
+    <Content Include="Global.asax">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\CentroCosto\Index.js" />
+    <Content Include="Scripts\Liquidacion\Index.js" />
+    <Content Include="Scripts\Liquidacion\Registrar.js" />
+    <Content Include="Scripts\Liquidacion\_BuscarSolicitudModal.js" />
+    <Content Include="Scripts\Liquidacion\_Liquidar.js" />
+    <Content Include="Scripts\Perfil\Index.js" />
+    <Content Include="Scripts\Proveedor\Index.js" />
+    <Content Include="Scripts\Reporte\Index.js" />
+    <Content Include="Scripts\Solicitud\Index.js" />
+    <Content Include="Scripts\Solicitud\Solicitud.js" />
+    <Content Include="Scripts\User\Index.js" />
+    <Content Include="SqlServerTypes\readme.htm" />
+    <Content Include="SqlServerTypes\x64\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x64\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppCode\CustomIdentity.cs" />
+    <Compile Include="AppCode\CustomPrincipal.cs" />
+    <Compile Include="AppCode\ExcelExportHelper.cs" />
+    <Compile Include="AppCode\ExcelLiquidacion.cs" />
+    <Compile Include="AppCode\Mail.cs" />
+    <Compile Include="AppCode\Util.cs" />
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\NinjectWebCommon.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Areas\GASTO\Controllers\ContabilidadSolicitudesController.cs" />
+    <Compile Include="Areas\GASTO\Controllers\AprobacionJefesController.cs" />
+    <Compile Include="Areas\GASTO\Controllers\BaseController.cs" />
+    <Compile Include="Areas\GASTO\Controllers\CentroCostoController.cs" />
+    <Compile Include="Areas\GASTO\Controllers\DelegacionController.cs" />
+    <Compile Include="Areas\GASTO\Controllers\MaestrosController.cs" />
+    <Compile Include="Areas\GASTO\Controllers\ReporteGastoController.cs" />
+    <Compile Include="Areas\GASTO\Controllers\SolicitudController.cs" />
+    <Compile Include="Areas\GASTO\GASTOAreaRegistration.cs" />
+    <Compile Include="Areas\GASTO\Models\ConfiguracionesViewModel.cs" />
+    <Compile Include="Areas\GASTO\Models\DetalleSolicitudViewModel.cs" />
+    <Compile Include="Areas\GASTO\Models\SolicitudCambioEstado.cs" />
+    <Compile Include="Areas\GASTO\Models\SolicitudAprobarSapViewModel.cs" />
+    <Compile Include="Areas\GASTO\Models\SociedadSucursalViewModel.cs" />
+    <Compile Include="Areas\GASTO\Models\DelegacionesViewModel.cs" />
+    <Compile Include="Areas\GASTO\Models\UsuarioAprobadorViewModel.cs" />
+    <Compile Include="Areas\GASTO\Models\UsuarioSucursalViewModel.cs" />
+    <Compile Include="Areas\GASTO\Models\ViewModelMaestros.cs" />
+    <Compile Include="Areas\GASTO\Models\ViewModelHistorialLogs.cs" />
+    <Compile Include="Areas\GASTO\Models\SolicitudViewModel.cs" />
+    <Compile Include="Areas\GASTO\Report\DataSet\ReportDetalleRendicion.cs">
+      <DependentUpon>ReportDetalleRendicion.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\GASTO\Report\DataSet\ReportDetalleRendicion.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportDetalleRendicion.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\GASTO\Report\DataSet\ReporteAuditoria.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReporteAuditoria.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\GASTO\Report\DataSet\ReporteGastoDetallado.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReporteGastoDetallado.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\GASTO\Report\DataSet\ReporteRepresentacion.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReporteRepresentacion.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="BD_KMMP_TAXI07082018DataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BD_KMMP_TAXI07082018DataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="BD_KMMP_TAXI_05092022DataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BD_KMMP_TAXI_05092022DataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\AuthorizationController.cs" />
+    <Compile Include="Controllers\CentroCostoController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LiquidacionController.cs" />
+    <Compile Include="Controllers\LiquidacionEstadoController.cs" />
+    <Compile Include="Controllers\MotivoCreacionSolicitudController.cs" />
+    <Compile Include="Controllers\PaginadoController.cs" />
+    <Compile Include="Controllers\PerfilController.cs" />
+    <Compile Include="Controllers\ProveedorController.cs" />
+    <Compile Include="Controllers\ReporteController.cs" />
+    <Compile Include="Controllers\SituacionServicioController.cs" />
+    <Compile Include="Controllers\SociedadController.cs" />
+    <Compile Include="Controllers\SolicitudController.cs" />
+    <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Controllers\TipoDestinoController.cs" />
+    <Compile Include="Controllers\TipoServicioController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Models\ActualizarCentroCostoSolicitudModel.cs" />
+    <Compile Include="Models\CancelarLiquidacionModel.cs" />
+    <Compile Include="Models\CentroCostoViewModel.cs" />
+    <Compile Include="Models\EvaluarViewModel.cs" />
+    <Compile Include="Models\GuardarLiquidacionModel.cs" />
+    <Compile Include="Models\LiquidacionViewModel.cs" />
+    <Compile Include="Models\LiquidarModel.cs" />
+    <Compile Include="Models\PaginaViewModel.cs" />
+    <Compile Include="Models\PerfilViewModel.cs" />
+    <Compile Include="Models\ProveedorTaxiModel.cs" />
+    <Compile Include="Models\ReporteAuditoriaViewModel.cs" />
+    <Compile Include="Models\ReporteViewModel.cs" />
+    <Compile Include="Models\SolicitudViewModel.cs" />
+    <Compile Include="Models\UserModel.cs" />
+    <Compile Include="Models\UserViewModel.cs" />
+    <Compile Include="Models\UsuarioViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Report\DataSet\ReportGastoTotalDS.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportGastoTotalDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Report\DataSet\ReportHomeDS.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportHomeDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Report\DataSet\ReportLiquidacionDetalle.cs">
+      <DependentUpon>ReportLiquidacionDetalle.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Report\DataSet\ReportLiquidacionDetalle.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportLiquidacionDetalle.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Report\DataSet\ReportLiquidacionDS.cs">
+      <DependentUpon>ReportLiquidacionDS.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Report\DataSet\ReportLiquidacionDS.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReportLiquidacionDS.xsd</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="SqlServerTypes\Loader.cs" />
+    <Compile Include="STS\RedirectResultTo.cs" />
+    <Compile Include="STS\STSAcceso.cs" />
+    <Compile Include="STS\STSAuthorization.cs" />
+    <Compile Include="STS\STSUrl.cs" />
+    <Compile Include="Util\UtilSession.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\web.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Content\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Views\SolicitudTaxi\Index.cshtml" />
+    <Content Include="Views\SolicitudTaxi\Create.cshtml" />
+    <Content Include="Views\SolicitudTaxi\Evaluar.cshtml" />
+    <Content Include="Views\Solicitud\Index.cshtml" />
+    <Content Include="Views\Solicitud\Registrar.cshtml" />
+    <Content Include="Views\Shared\_DropDown.cshtml" />
+    <Content Include="Views\Solicitud\Registrar01.cshtml" />
+    <Content Include="Views\Solicitud\Registrar02.cshtml" />
+    <Content Include="Views\Test\Map1.cshtml" />
+    <Content Include="Views\Solicitud\Evaluar.cshtml" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Views\Home\Inicio.cshtml" />
+    <Content Include="Views\Solicitud\IndexUsuario.cshtml" />
+    <Content Include="Views\Solicitud\View.cshtml" />
+    <Content Include="Views\Proveedor\Index.cshtml" />
+    <Content Include="Views\Perfil\Index.cshtml" />
+    <Content Include="Views\Perfil\_Formulario.cshtml" />
+    <Content Include="Views\Perfil\_ListPagina.cshtml" />
+    <Content Include="Views\Proveedor\_Formulario.cshtml" />
+    <Content Include="Views\CentroCosto\Index.cshtml" />
+    <Content Include="Views\Users\Index.cshtml" />
+    <Content Include="Views\Users\_Formulario.cshtml" />
+    <Content Include="Views\Proveedor\_ListMethod.cshtml" />
+    <Content Include="Views\Liquidacion\Index.cshtml" />
+    <Content Include="Views\Liquidacion\Registrar.cshtml" />
+    <Content Include="Views\Solicitud\_Detalle.cshtml" />
+    <Content Include="Views\Liquidacion\_BuscarSolicitudModal.cshtml" />
+    <Content Include="Views\Liquidacion\_Liquidar.cshtml" />
+    <Content Include="Views\Reporte\Index.cshtml" />
+    <Content Include="Views\Reporte\GastoTotal.cshtml" />
+    <Content Include="Views\Reporte\DetalleGastoTotal.cshtml" />
+    <Content Include="Views\Reporte\Penalidad.cshtml" />
+    <Content Include="Views\Reporte\ComparacionMensual.cshtml" />
+    <Content Include="Views\CentroCosto\_Formulario.cshtml" />
+    <Content Include="Views\Reporte\ListaResponsable.cshtml" />
+    <Content Include="Report\DataSet\ReportHomeDS.xsc">
+      <DependentUpon>ReportHomeDS.xsd</DependentUpon>
+    </Content>
+    <Content Include="Report\DataSet\ReportGastoTotalDS.xsc">
+      <DependentUpon>ReportGastoTotalDS.xsd</DependentUpon>
+    </Content>
+    <Content Include="Areas\GASTO\Views\web.config" />
+    <Content Include="Areas\GASTO\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\GASTO\Views\Shared\_DropDown.cshtml" />
+    <Content Include="Areas\GASTO\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListaUsuarioCentroCosto.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\Index.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\Registrar.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_Formulario.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListHistorialEstadosSolicitud.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_Attachment.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\Index.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_ListaUsuarioCentroCosto.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_ListaCentroCosto.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_Confirmacion.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_BuscarSolicitudExteriorModal.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_TerminosCondiciones.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_FormularioDetalle.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_Confirmacion.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_ListaCentroCosto.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_ListaUsuarioCentroCosto.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\Index.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_FormularioDetalle.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_FormularioDetalle.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_ListHistorialEstadosSolicitud.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_ListHistorialEstadosSolicitud.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_ConfirmacionRechazo.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListaBeneficiario.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListDetalleRendicionGastos.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ConfirmacionDeleteDetalleGasto.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListaEstadosPorTipo.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_ListaEstadosPorTipo.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_ListaEstadosPorTipo.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListaImpuestos.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_ListDetalleRendicionGastos.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_ListaImpuestos.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_FormularioDetalleGasto.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_ConfirmacionDeleteDetalleGasto.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_ListDetalleRendicionGastos.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_ListaImpuestos.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_FormularioDetalleGasto.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_ConfirmacionDeleteDetalleGasto.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListaCuentasBancarias.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListaPais.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ConfirmacionDelete.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_ConfirmacionCambioEstado.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_ConfirmacionRechazo.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_AttachmentDetalleGasto.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_AttachmentDetalleGasto.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_AttachmentDetalleGasto.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_FormularioDetalleGasto.cshtml" />
+    <Content Include="Areas\GASTO\Report\DataSet\ReportDetalleRendicion.xsc">
+      <DependentUpon>ReportDetalleRendicion.xsd</DependentUpon>
+    </Content>
+    <None Include="Areas\GASTO\Report\DataSet\ReportDetalleRendicion.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>ReportDetalleRendicion.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Areas\GASTO\Report\DataSet\ReportDetalleRendicion.xss">
+      <DependentUpon>ReportDetalleRendicion.xsd</DependentUpon>
+    </Content>
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListaUsuarioSucursal.cshtml" />
+    <Content Include="Areas\GASTO\Views\Maestros\Index.cshtml" />
+    <Content Include="Areas\GASTO\Views\Maestros\_ListDetalleMaestro10.cshtml" />
+    <Content Include="Areas\GASTO\Views\Maestros\_FormularioTabla10.cshtml" />
+    <Content Include="Areas\GASTO\Views\Maestros\_ListDetalleMaestro21.cshtml" />
+    <Content Include="Areas\GASTO\Views\Maestros\_FormularioTabla21.cshtml" />
+    <Content Include="Areas\GASTO\Views\Maestros\_ListaSucursales.cshtml" />
+    <Content Include="Areas\GASTO\Views\Maestros\_ListDetalleMaestro20.cshtml" />
+    <Content Include="Areas\GASTO\Views\Maestros\_FormularioTabla20.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListaSucursales.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListaCentroCosto.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListaCentroCostoRendicion.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_ListaCentroCostoRendicion.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_ListaCentroCostoRendicion.cshtml" />
+    <Content Include="Areas\GASTO\Views\Maestros\_FormularioTabla22.cshtml" />
+    <Content Include="Areas\GASTO\Views\Maestros\_ListDetalleMaestro22.cshtml" />
+    <Content Include="Areas\GASTO\Views\Maestros\_ListaCentroCosto.cshtml" />
+    <Content Include="Areas\GASTO\Views\Maestros\_ListaAprobador.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\_ListaGrillaDetalleRendicion.cshtml" />
+    <Content Include="Areas\GASTO\Views\ContabilidadSolicitudes\Index - Copy.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\Index - Copy.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_ListaDelegaciones.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_ConfirmacionRevocar.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_FormularioDelegar.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_Confirmacion.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListSolicitudesDelegadas.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListaEstadosPorTipoSD.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListDetalleRendicionGastosSD.cshtml" />
+    <Content Include="Areas\GASTO\Views\Solicitud\_ListaSucursalesBySociedad.cshtml" />
+    <Content Include="libman.json" />
+    <Content Include="BD_KMMP_TAXI07082018DataSet.xsc">
+      <DependentUpon>BD_KMMP_TAXI07082018DataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="Areas\GASTO\Views\Delegacion\Index.cshtml" />
+    <Content Include="Areas\GASTO\Views\Delegacion\_ListaCentroCosto.cshtml" />
+    <Content Include="Areas\GASTO\Views\Delegacion\_ListaEstadosPorTipo.cshtml" />
+    <Content Include="Areas\GASTO\Views\Delegacion\_Confirmacion.cshtml" />
+    <Content Include="Areas\GASTO\Views\ReporteGasto\Index.cshtml" />
+    <Content Include="Areas\GASTO\Report\DataSet\ReporteAuditoria.xsc">
+      <DependentUpon>ReporteAuditoria.xsd</DependentUpon>
+    </Content>
+    <None Include="Areas\GASTO\Report\DataSet\ReporteAuditoria.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>ReporteAuditoria.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Areas\GASTO\Report\DataSet\ReporteAuditoria.xss">
+      <DependentUpon>ReporteAuditoria.xsd</DependentUpon>
+    </Content>
+    <Content Include="Areas\GASTO\Report\DataSet\ReporteRepresentacion.xsc">
+      <DependentUpon>ReporteRepresentacion.xsd</DependentUpon>
+    </Content>
+    <Content Include="Areas\GASTO\Report\DataSet\ReporteGastoDetallado.xsc">
+      <DependentUpon>ReporteGastoDetallado.xsd</DependentUpon>
+    </Content>
+    <None Include="Areas\GASTO\Report\DataSet\ReporteGastoDetallado.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>ReporteGastoDetallado.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Areas\GASTO\Report\DataSet\ReporteGastoDetallado.xss">
+      <DependentUpon>ReporteGastoDetallado.xsd</DependentUpon>
+    </Content>
+    <None Include="Areas\GASTO\Report\DataSet\ReporteRepresentacion.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>ReporteRepresentacion.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Areas\GASTO\Report\DataSet\ReporteRepresentacion.xss">
+      <DependentUpon>ReporteRepresentacion.xsd</DependentUpon>
+    </Content>
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\ConfirmacionAP_.cshtml" />
+    <Content Include="Areas\GASTO\Views\AprobacionJefes\_ConfirmacionCambioEstado.cshtml" />
+    <None Include="BD_KMMP_TAXI07082018DataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BD_KMMP_TAXI07082018DataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="BD_KMMP_TAXI07082018DataSet.xss">
+      <DependentUpon>BD_KMMP_TAXI07082018DataSet.xsd</DependentUpon>
+    </Content>
+    <Content Include="BD_KMMP_TAXI_05092022DataSet.xsc">
+      <DependentUpon>BD_KMMP_TAXI_05092022DataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="BD_KMMP_TAXI_05092022DataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>BD_KMMP_TAXI_05092022DataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="BD_KMMP_TAXI_05092022DataSet.xss">
+      <DependentUpon>BD_KMMP_TAXI_05092022DataSet.xsd</DependentUpon>
+    </Content>
+    <None Include="Properties\PublishProfiles\TEST.pubxml" />
+    <None Include="Report\DataSet\ReportGastoTotalDS.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>ReportGastoTotalDS.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Report\DataSet\ReportGastoTotalDS.xss">
+      <DependentUpon>ReportGastoTotalDS.xsd</DependentUpon>
+    </Content>
+    <None Include="Report\DataSet\ReportHomeDS.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>ReportHomeDS.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Report\DataSet\ReportHomeDS.xss">
+      <DependentUpon>ReportHomeDS.xsd</DependentUpon>
+    </Content>
+    <Content Include="Views\Solicitud\_Ubicacion.cshtml" />
+    <Content Include="Views\Solicitud\_ListSolicitudDetalle.cshtml" />
+    <Content Include="Views\Solicitud\_ListGastoAdicional.cshtml" />
+    <Content Include="Views\Solicitud\_DatosServicio.cshtml" />
+    <Content Include="Views\Solicitud\_DatosConductor.cshtml" />
+    <Content Include="Views\Solicitud\_SolicitudCalificacion.cshtml" />
+    <Content Include="Views\Solicitud\_InputListBeneficiado.cshtml" />
+    <Content Include="Views\Solicitud\_Tracking.cshtml" />
+    <Content Include="Views\Solicitud\_Recorrido.cshtml" />
+    <Content Include="Views\Solicitud\_CancelarServicio.cshtml" />
+    <Content Include="Views\Solicitud\_ListBeneficiado.cshtml" />
+    <Content Include="Views\Reporte\General.cshtml" />
+    <Content Include="Views\Reporte\Detallado.cshtml" />
+    <Content Include="Views\Reporte\_ListaBeneficiado.cshtml" />
+    <Content Include="Report\DataSet\ReportLiquidacionDS.xsc">
+      <DependentUpon>ReportLiquidacionDS.xsd</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Report\DataSet\ReportLiquidacionDetalle.xsc">
+      <DependentUpon>ReportLiquidacionDetalle.xsd</DependentUpon>
+    </Content>
+    <None Include="Report\DataSet\ReportLiquidacionDetalle.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>ReportLiquidacionDetalle.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Report\DataSet\ReportLiquidacionDetalle.xss">
+      <DependentUpon>ReportLiquidacionDetalle.xsd</DependentUpon>
+    </Content>
+    <None Include="Report\DataSet\ReportLiquidacionDS.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>ReportLiquidacionDS.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Content Include="Report\DataSet\ReportLiquidacionDS.xss">
+      <DependentUpon>ReportLiquidacionDS.xsd</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\Proveedor\_Credenciales.cshtml" />
+    <Content Include="Views\CentroCosto\_DllPartail.cshtml" />
+    <Content Include="Views\Liquidacion\_DescargarDocumentosPopUp.cshtml" />
+    <Content Include="Views\Solicitud\Editar.cshtml" />
+    <Content Include="Views\Liquidacion\_LiquidacionDetalle.cshtml" />
+    <Content Include="Views\Liquidacion\_InputList.cshtml" />
+    <Content Include="Views\Reporte\_ListaSolicitud.cshtml" />
+    <Content Include="Views\Liquidacion\_EditNegociable.cshtml" />
+    <Content Include="Views\Liquidacion\_Attachment.cshtml" />
+    <Content Include="Views\Reporte\_VizorReporte.cshtml" />
+    <Content Include="Views\Liquidacion\_SolicitudDetalle.cshtml" />
+    <Content Include="Views\Liquidacion\_FormularioGasto.cshtml" />
+    <Content Include="Views\Error\Unauthorized.cshtml" />
+    <Content Include="Views\Reporte\_ListaCentroCosto.cshtml" />
+    <Content Include="Views\Solicitud\_ListaUsuarioCentroCosto.cshtml" />
+    <Content Include="Views\Shared\_LayoutGasto.cshtml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\ExcelTEMP\" />
+    <Folder Include="Areas\GASTO\Views\Base\" />
+    <Folder Include="Areas\GASTO\Views\Solicitud\FilesDetallesGastos\" />
+    <Folder Include="FileLiquidaciones\" />
+    <Folder Include="FilesCotizacionSolicitudes\" />
+    <Folder Include="FilesDetallesGastos\" />
+    <Folder Include="Log\" />
+    <Folder Include="References\" />
+    <Folder Include="ReportLiquidaciones\" />
+    <Folder Include="Views\Authorization\" />
+    <Folder Include="Views\Base\" />
+    <Folder Include="Views\LiquidacionEstado\" />
+    <Folder Include="Views\Paginado\" />
+    <Folder Include="Views\SituacionServicio\" />
+    <Folder Include="Views\Sociedad\" />
+    <Folder Include="Views\TipoDestino\" />
+    <Folder Include="Views\TipoServicio\" />
+    <Folder Include="Views\WebApi\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj">
+      <Project>{1a9af656-7a6b-4a30-9d2e-58e71fcec290}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GASTO.BusinessLogic\GASTO.BusinessLogic.csproj">
+      <Project>{589c5fe9-c86f-47e7-9310-29b4fe56b28b}</Project>
+      <Name>GASTO.BusinessLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GASTO.Domain\GASTO.Domain.csproj">
+      <Project>{1cdd07c6-87c5-4a51-90f0-6215a114465d}</Project>
+      <Name>GASTO.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GASTO.Service.Logic.Contract\GASTO.Service.Logic.Contract.csproj">
+      <Project>{84A4DB09-9385-49AE-AA47-4A58E5A10A5F}</Project>
+      <Name>GASTO.Service.Logic.Contract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GASTO.Service.Logic\GASTO.Service.Logic.csproj">
+      <Project>{7CB86E71-3544-4054-B6D0-B0345052132B}</Project>
+      <Name>GASTO.Service.Logic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GASTO.Service\GASTO.Service.csproj">
+      <Project>{be466200-ec59-40ed-a546-8a0c89323fd5}</Project>
+      <Name>GASTO.Service</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Komatsu.SistemaTaxis.BusinessEntities\Komatsu.SistemaTaxis.BusinessEntities.csproj">
+      <Project>{d0ffe386-b1ce-442a-92d9-2155cc6108bd}</Project>
+      <Name>Komatsu.SistemaTaxis.BusinessEntities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Komatsu.SistemaTaxis.BusinessLogic\Komatsu.SistemaTaxis.BusinessLogic.csproj">
+      <Project>{d9a5ad87-3702-45cd-ae09-365d164a0b3b}</Project>
+      <Name>Komatsu.SistemaTaxis.BusinessLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service.Logic.Contract\Service.Logic.Contract.csproj">
+      <Project>{9A7224C4-0656-4CA0-89C4-23D713A2BB1E}</Project>
+      <Name>Service.Logic.Contract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service.Logic\Service.Logic.csproj">
+      <Project>{E4C70DA9-B430-4A97-B769-54C733C57BC8}</Project>
+      <Name>Service.Logic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service\Service.csproj">
+      <Project>{AB18257B-9BA6-479D-B015-D272339C33A6}</Project>
+      <Name>Service</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Report\RDLC\ReportGastoTotal.rdlc" />
+    <EmbeddedResource Include="Areas\GASTO\Report\RDLC\ReporteAuditoria.rdlc" />
+    <EmbeddedResource Include="Areas\GASTO\Report\RDLC\ReporteDetalleRendicionXLS - Copy.rdlc" />
+    <EmbeddedResource Include="Areas\GASTO\Report\RDLC\ReporteDetalleRendicionXLS.rdlc" />
+    <EmbeddedResource Include="Areas\GASTO\Report\RDLC\ReporteDetalleRendicion.rdlc" />
+    <EmbeddedResource Include="Areas\GASTO\Report\RDLC\ReportGastoDetallado.rdlc" />
+    <EmbeddedResource Include="Areas\GASTO\Report\RDLC\ReportGastoRepresentacion.rdlc" />
+    <EmbeddedResource Include="Report\RDLC\Report1.rdlc" />
+    <EmbeddedResource Include="Report\RDLC\ReportHome.rdlc" />
+    <Content Include="Report\RDLC\ReportLiquidacion.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>20387</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:20387/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.4.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.4.0\build\Microsoft.Net.Compilers.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

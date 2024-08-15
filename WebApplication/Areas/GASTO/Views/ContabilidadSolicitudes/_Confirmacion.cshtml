@@ -1,0 +1,62 @@
+﻿
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+   
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>APROBACION CONTABILIDAD</h3>
+   
+
+</div>
+<div class="modal-body">
+
+    <br />
+
+
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+            <label class="col-sm-12">Está seguro de aprobar la(s) Solicitude(s) seleccionada(s)</label>
+
+        </div>
+    </div>
+    <br />
+    <br />
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="AprobarSolicitudButton" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i>Aprobar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cancelar</button>
+    </div>
+</div>
+</div> @*FIN MODAL*@
+
+<script>
+    $(document).ready(function () {
+        $('#AprobarSolicitudButton').click(function (e) {
+            e.preventDefault();
+            document.getElementById("AprobarSolicitudButton").disabled = true;
+            var indicador = true;
+            //debugger;
+            var grid = $("#jqGrid");
+            var rowKey = grid.getGridParam("selrow");
+
+            if (!rowKey)
+                alert("Porfar seleccione los registros para su aprobación");
+            else {
+                var selectedIDs = grid.getGridParam("selarrrow");
+                var result = "";
+                for (var i = 0; i < selectedIDs.length; i++) {
+                        result += selectedIDs[i] + ",";
+                }
+                if (result != "") {
+                    result = result.substring(0, result.length - 1);
+                    AprobarSolicitud(result);
+                }
+            }
+        });
+    });
+</script>
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+@*<script src="~/Areas/GASTO/Scripts/ContabilidadSolicitudes/_Formulario.js"></script>*@

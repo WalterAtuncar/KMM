@@ -1,0 +1,24 @@
+﻿
+@*<div>*@
+    @Html.DropDownList("listaCentrosCostos",
+                       new SelectList(ViewBag.ListaCentrosCostos, "Codigo", "Descripcion"),
+                       new { @id = "dllListaCentroCosto",
+                           @class = "form-control select2" }
+                      )
+@*</div>*@
+
+<script>
+    $(function () {
+        @{int count = new SelectList(ViewBag.ListaCentrosCostos).Count();}
+        __countCentrosCostosDisponibles = @count;
+        $('select[name="listaCentrosCostos"]').select2({
+            dropdownAutoWidth: true,
+            //width: '100%'
+        });
+
+      
+        $("#dllListaCentroCosto").val(idUserCentroCosto)
+        $("#dllListaCentroCosto").trigger('change')
+        $('#dllListaCentroCosto').prop('disabled', true);
+    })
+</script>

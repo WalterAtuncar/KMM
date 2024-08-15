@@ -1,0 +1,31 @@
+﻿@model WebApplication.Areas.GASTO.Models.DetalleSolicitudViewModel
+
+@using BE_GASTO = GASTO.Domain;
+@{
+    ViewBag.Title = "_AttachmentDetalleGasto";
+}
+
+@foreach (var item in Model.DetRendicionSolicitud.ListaAdjunto ?? new List<BE_GASTO.Adjunto>())
+{
+    if (item.NombreAdjunto!=null && item.NombreAdjunto!="")
+    {
+<div class="input-group file-caption-main" style="margin-top:-1px">
+    <div class="form-control input-sm file-caption kv-fileinput-caption" style="height:30px;">
+        <div class="file-caption-name tooltip-file" id="itemFile" data-original-title="@item.NombreAdjunto">
+            <i class="glyphicon glyphicon-file kv-caption-icon"></i>
+            @if (item.IdAdjunto == default(int))
+            {
+                @item.NombreAdjunto
+            }
+            else
+            {
+                <a style="text-decoration: underline;" href="@Url.Action("Download", "Adjunto", new { idAdjunto = @item.IdAdjunto })"> @item.NombreAdjunto </a>
+            }
+        </div>
+    </div>
+   
+    <span index="@item.NombreAdjunto" class="input-group-addon remove-item-adjuntoDG btn-danger btn-sm tooltip-file" data-original-title="Remover" style="width: 5px;font-size: inherit;"><i class="glyphicon glyphicon-trash"></i></span>
+    </div>
+    }
+}
+

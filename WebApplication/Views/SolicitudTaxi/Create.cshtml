@@ -1,0 +1,391 @@
+﻿
+<style>
+    .controls {
+        margin-top: 10px;
+        border: 1px solid transparent;
+        border-radius: 2px 0 0 2px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 32px;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    #pac-input {
+        background-color: #fff;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        margin-left: 12px;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 300px;
+    }
+
+    .panel-heading {
+        cursor: pointer;
+    }
+</style>
+
+<div>
+    <div class="row">
+        <div class="col-sm-6 col-md-8" style="padding-right: 5px; padding-left: 5px;">
+            @*<div class="embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item" src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d15605.147389855234!2d-77.0271202!3d-12.092504600000002!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses-419!2spe!4v1508182752382" width="600" height="450" frameborder="0" style="border:0" allowfullscreen=""></iframe>
+                </div>*@
+            @*<input id="pac-input" class="controls" type="text" placeholder="Buscar">*@
+            <div id="map" style="width:100%;height:500px;"></div>
+        </div>
+        <div class="col-sm-6 col-md-4" style="padding-right: 5px; padding-left: 5px;">
+            <div class="form-sistema-taxi-2" id="form-sistema-taxi">
+                <div class="inner">
+                    <div class="container-fluid">
+                        <br />
+                        <div id="precio">
+                            <label>Precio Estimado:</label>
+                            <span id="txt-price" class="form-control">S/ 0.00</span>
+                        </div>
+                        <br />
+                        <div class="form-horizontal">
+                            <label>Origen</label>
+                            <input type="text" id="txt-origen" class="form-control" autocomplete="off" placeholder="Buscar" />
+                            <br />
+                            <div id="div-destino">
+                                <label>
+                                    Destinos&nbsp;&nbsp;
+                                    <a href="javascript:void(0);" id="btn-add-destino" data-toggle="tooltip" title="Agregar destino">
+                                        <i class="fa fa-plus-circle fa-lg"></i>
+                                    </a>
+                                </label>
+                                <br />
+                                <label>Destino 1</label>
+                                <input type="text" id="txt-destino-1" data-index="1" class="form-control input-destino" autocomplete="off" placeholder="Buscar" />
+                            </div>
+                        </div>
+                        
+                        <br />
+                        <!---->
+                        <label>Centro de costo</label>
+                        <select name="CentroCostoAfecto" class="form-control">
+                            <option value="CECO1">CECO1</option>
+                            <option value="CECO2">CECO2</option>
+                            <option value="CECO3">CECO3</option>
+                        </select>
+                        <label>Órden de servicio</label>
+                        <input type="text" name="OrdenDeServicio" class="form-control" />
+                        <label>Motivo Creacioón</label>
+                        <textarea name="MotivoCreacion" class="form-control"></textarea>
+                        <label>Cantidad Horas</label>
+                        <input type="text" name="CantidadHoras" class="form-control" />
+                        <label>Cantidad Productos</label>
+                        <input type="text" name="CantidadProductos" class="form-control" />
+                        <input type="hidden" name="OrigenLat" />
+                        <input type="hidden" name="OrigenLng" />
+                        <!---->
+                        <br />
+                        <button type="button" id="btn-save" class="btn btn-primary form-control">Grabar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var map = {};
+    var __p1 = {
+        lat: function () {
+            return 0;
+        },
+        lng: function () {
+            return 0;
+        }
+    };
+    var __p2 = {
+        lat: function () {
+            return 0;
+        },
+        lng: function () {
+            return 0;
+        }
+    };
+
+    var __destinoIndex = 1;
+
+    var __arrDestinos = [];
+
+    $(document).ready(function () {
+        $('.container').removeClass('container').addClass('container-fluid');
+        $('[data-toggle="tooltip"]').tooltip();
+
+        $('#btn-add-destino').click(function (e) {
+            e.preventDefault();
+            var isValid = true;
+            $('.input-destino').each(function () {
+                if (!$(this).val()) {
+                    isValid = false;
+                    return false;
+                }
+            });
+            if (!isValid) {
+                toastr.error('Complete todos los destinos.');
+                return false;
+            }
+            __destinoIndex++;
+            var inputID = 'txt-destino-' + __destinoIndex;
+            var htmlToAppend = '<label>Destino ' + __destinoIndex + '</label>'
+            + '<input type="text" id="' + inputID + '" data-index="' + __destinoIndex + '" class="form-control input-destino" autocomplete="off" placeholder="Buscar" />';
+            $('#div-destino').append(htmlToAppend);
+            var input_destino = document.getElementById(inputID);
+            var searchBox_destino = new google.maps.places.SearchBox(input_destino);
+            map.addListener('bounds_changed', function () {
+                searchBox_destino.setBounds(map.getBounds());
+            });
+            __addSearchListener(searchBox_destino, 'D', inputID);
+        });
+
+        $('#btn-save').click(function (e) {
+            e.preventDefault();
+            $.post('@Url.Action("CreatePost", "SolicitudTaxi")', 
+                {
+                    TipoServicio: 'T',
+                    CentroCostoAfecto: $('select[name="CentroCostoAfecto"]').val(),
+                    OrdenDeServicio: $('input[name="OrdenDeServicio"]').val(),
+                    MotivoCreacion: $('textarea[name="MotivoCreacion"]').val(),
+                    CantidadHoras: $('input[name="CantidadHoras"]').val(),
+                    CantidadProductos: $('input[name="CantidadProductos"]').val(),
+                    OrigenLat: $('input[name="OrigenLat"]').val(),
+                    OrigenLng: $('input[name="OrigenLng"]').val(),
+                    OrigenDireccion: $('#txt-origen').val(),
+                    Destinos: __arrDestinos
+                },
+                function (result) {
+
+                });
+        });
+    });
+
+    //$('#btn-save').click(function (e) {
+    //    e.preventDefault();
+    //    var distance_km = getDistance(__p1, __p2) / 1000;
+    //    toastr.info('S/ ' + parseFloat(distance_km).toFixed(2) * 3.4);
+    //});
+
+    function __setPrice() {
+        __arrDestinos = [];
+        //var distance_km = getDistance(__p1, __p2) / 1000;
+        //$('#txt-price').text('S/ ' + (parseFloat(distance_km) * 3.4).toFixed(2));
+
+        var price = 0.00;
+        var origen_place = {
+            lat: function () {
+                return $('#txt-origen').attr('data-lat');
+            },
+            lng: function () {
+                return $('#txt-origen').attr('data-lng');
+            }
+        };
+        for (var i = 1; i <= $('.input-destino').length; i++) {
+            var destino_lat = $('#txt-destino-' + i).attr('data-lat') ? $('#txt-destino-' + i).attr('data-lat') : 0;
+            var destino_lng = $('#txt-destino-' + i).attr('data-lng') ? $('#txt-destino-' + i).attr('data-lng') : 0;
+            var destino_place = {
+                lat: function () {
+                    //if ($('#txt-destino-' + i).attr('data-lat')) {
+                    //    return $('#txt-destino-' + i).attr('data-lat');
+                    //}
+                    //return 0;
+                    return destino_lat;
+                },
+                lng: function () {
+                    //if ($('#txt-destino-' + i).attr('data-lng')) {
+                    //    return $('#txt-destino-' + i).attr('data-lng');
+                    //}
+                    //return 0;
+                    return destino_lng;
+                }
+            };
+            __arrDestinos.push({
+                Tipo: 'T',
+                Lat: destino_lat,
+                Lng: destino_lng,
+                Direccion: $('#txt-destino-' + i).val()
+            });
+            var distance_km = 0.00;
+            if (i == 1) {
+                //console.log('i = ' + i);
+                distance_km = getDistance(origen_place, destino_place) / 1000;
+                //console.log('distance_km:' + distance_km);
+                price += parseFloat(distance_km) * 3.4;
+            } else {
+                //console.log('i = ' + i);
+                var destino_place_pre = {
+                    lat: function () {
+                        if ($('#txt-destino-' + (i - 1)).attr('data-lat')) {
+                            return $('#txt-destino-' + (i - 1)).attr('data-lat');
+                        }
+                        return 0;
+                    },
+                    lng: function () {
+                        if ($('#txt-destino-' + (i - 1)).attr('data-lng')) {
+                            return $('#txt-destino-' + (i - 1)).attr('data-lng');
+                        }
+                        return 0;
+                    }
+                };
+                distance_km = getDistance(destino_place_pre, destino_place) / 1000;
+                //console.log('distance_km:' + distance_km);
+                price += parseFloat(distance_km) * 3.4;
+            }
+        }
+        $('#txt-price').text('S/ ' + price.toFixed(2));
+    }
+
+    function initMap() {
+        //var myCenter = new google.maps.LatLng(51.508742,-0.120850);
+        var myCenter = new google.maps.LatLng(-12.0480505, -77.10029129999998);
+        var mapCanvas = document.getElementById("map");
+        var mapOptions = {
+            center: myCenter,
+            zoom: 17,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(mapCanvas, mapOptions);
+        var marker = new google.maps.Marker({
+            position: myCenter,
+            //draggable: true,
+            visible: true
+        });
+        marker.setMap(map);
+
+        //google.maps.event.addListener(marker, 'dragend', function () {
+        //    alert('marker dragged');
+        //});
+
+        //google.maps.event.addListener(map, "click", function (event) {
+        //    var latitude = event.latLng.lat();
+        //    var longitude = event.latLng.lng();
+        //    console.log(latitude + ', ' + longitude);
+        //});
+
+        //// Create the search box and link it to the UI element.
+        //var input = document.getElementById('pac-input');
+        //var searchBox = new google.maps.places.SearchBox(input);
+        //map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        //// Bias the SearchBox results towards current map's viewport.
+        //map.addListener('bounds_changed', function () {
+        //    searchBox.setBounds(map.getBounds());
+        //});
+
+        // input origen
+        var input_origen = document.getElementById('txt-origen');
+        var searchBox_origen = new google.maps.places.SearchBox(input_origen);
+        map.addListener('bounds_changed', function () {
+            searchBox_origen.setBounds(map.getBounds());
+        });
+
+        // input destino
+        var input_destino = document.getElementById('txt-destino-1');
+        var searchBox_destino = new google.maps.places.SearchBox(input_destino);
+        map.addListener('bounds_changed', function () {
+            searchBox_destino.setBounds(map.getBounds());
+        });
+
+        __addSearchListener(searchBox_origen, 'O', 'txt-origen');
+        __addSearchListener(searchBox_destino, 'D', 'txt-destino-1');
+    }
+
+    function __addSearchListener(searchBox, type, elementID) {
+        //console.log(searchBox);
+        var markers = [];
+        // Listen for the event fired when the user selects a prediction and retrieve
+        // more details for that place.
+        searchBox.addListener('places_changed', function () {
+            var places = searchBox.getPlaces();
+
+            if (places.length == 0) {
+                //console.log('place not found');
+                return;
+            }
+
+            //console.log(places),
+
+            // Clear out the old markers.
+            markers.forEach(function (marker) {
+                marker.setMap(null);
+            });
+            markers = [];
+
+            // For each place, get the icon, name and location.
+            var bounds = new google.maps.LatLngBounds();
+            places.forEach(function (place) {
+                if (!place.geometry) {
+                    //console.log("Returned place contains no geometry");
+                    return;
+                }
+                var icon = {
+                    url: place.icon,
+                    size: new google.maps.Size(71, 71),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(17, 34),
+                    scaledSize: new google.maps.Size(25, 25)
+                };
+
+                //console.log('lat: ' + place.geometry.location.lat());
+                //console.log('lng: ' + place.geometry.location.lng());
+                if (type === 'O') {
+                    __p1 = place.geometry.location;
+                } else if (type === 'D') {
+                    __p2 = place.geometry.location;
+                }
+                // Create a marker for each place.
+                markers.push(new google.maps.Marker({
+                    map: map,
+                    icon: icon,
+                    title: place.name,
+                    position: place.geometry.location
+                }));
+
+                if (place.geometry.viewport) {
+                    // Only geocodes have viewport.
+                    bounds.union(place.geometry.viewport);
+                } else {
+                    bounds.extend(place.geometry.location);
+                }
+
+                //console.log(place.geometry.location);
+                //console.log(bounds);
+                $('#' + elementID).attr('data-lat', place.geometry.location.lat());
+                $('#' + elementID).attr('data-lng', place.geometry.location.lng());
+            });
+            map.fitBounds(bounds);
+
+            __setPrice();
+        });
+    }
+
+    var rad = function (x) {
+        return x * Math.PI / 180;
+    };
+
+    var getDistance = function (p1, p2) {
+        //
+        if (p1.lat() == 0 || p1.lng() == 0 || p2.lat() == 0 || p2.lng() == 0) {
+            return 0;
+        }
+        //
+        var R = 6378137; // Earth’s mean radius in meter
+        var dLat = rad(p2.lat() - p1.lat());
+        var dLong = rad(p2.lng() - p1.lng());
+        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(rad(p1.lat())) * Math.cos(rad(p2.lat())) *
+          Math.sin(dLong / 2) * Math.sin(dLong / 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        var d = R * c;
+        return d; // returns the distance in meter
+    };
+
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAhS2Z67QxSj44CLS_nG_eCIAWn6E9lOvw&callback=initMap&libraries=places&sensor=false"></script>
+

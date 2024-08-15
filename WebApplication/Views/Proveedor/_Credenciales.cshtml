@@ -1,0 +1,95 @@
+﻿@model WebApplication.Models.ProveedorTaxiModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    @if (Model.Credenciales.ID == default(int))
+    {
+        <h3 class="modal-title" id="myModalLabel">
+            <i class="fa fa-key"></i>
+            <i class="fa fa-chevron-right"></i>
+            REGISTRO CREDENCIALES
+        </h3>
+    }
+    else
+    {
+        <h3 class="modal-title" id="myModalLabel">
+            <i class="fa fa-key"></i>
+            <i class="fa fa-chevron-right"></i>
+            MODIFICAR CREDENCIALES
+        </h3>
+    }
+</div>
+
+@using (Html.BeginForm("Credenciales", "Proveedor", FormMethod.Post, new { @id = "frm-add-credencial", @class = "form-horizontal", @style = "padding-left: 50px;" }))
+{
+    <div class="modal-body">
+        @Html.HiddenFor(m => m.Credenciales.ID, new { @id = "ID" })
+        @Html.HiddenFor(m => m.Credenciales.IdProveedor, new { @id = "IdProveedorTaxi" })
+        <div class="form-group">
+            <label class="col-lg-3 col-md-2">Username</label>
+            <div class="col-sm-6 col-md-6">
+                @Html.TextBoxFor(m => m.Credenciales.UserName,
+                        new
+                        {
+                            @class = "form-control input-sm",
+                            @id = "txtUsername",
+                            @autofocus = "autofocus",
+                            @placeholder = "Username"
+                        })
+            </div>
+        </div>
+
+        <br />
+        <div class="form-group">
+            <label class="col-lg-3 col-md-2">Password</label>
+            <div class="col-sm-6 col-md-6">
+                @Html.TextBoxFor(m => m.Credenciales.Contraseña,
+                        new
+                        {
+                            @class = "form-control input-sm",
+                            @id = "txtPassword",
+                            @autofocus = "autofocus",
+                            @placeholder = "Contraseña"
+                        })
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <label class="col-lg-3 col-md-2">GrantType</label>
+            <div class="col-sm-6 col-md-6">
+                @Html.TextBoxFor(m => m.Credenciales.GrantType,
+                        new
+                        {
+                            @class = "form-control input-sm",
+                            @id = "txtGrantType",
+                            @autofocus = "autofocus",
+                            @placeholder = "GrantType"
+                        })
+            </div>
+        </div>
+
+
+        <br />
+
+        <div class="form-group">
+            <label class="col-lg-3 col-md-2">Key Api</label>
+            <div class="col-sm-6 col-md-6">
+                @Html.TextBoxFor(m => m.Credenciales.KeyApi,
+                        new
+                        {
+                            @class = "form-control input-sm",
+                            @id = "txtKeyApi",
+                            @placeholder = "Key Api"
+                        })
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <div style="float: right">
+            <button id="btn-save-credencial" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+            <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+        </div>
+    </div>
+
+}

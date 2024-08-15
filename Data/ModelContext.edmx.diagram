@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="c458d666d48047b29253c878b4c93c62" Name="Diagram1" ZoomLevel="93">
+        <EntityTypeShape EntityType="DBTaxisModel.Automovil" Width="1.5" PointX="3" PointY="27.125" />
+        <EntityTypeShape EntityType="DBTaxisModel.Beneficiado" Width="1.5" PointX="8.25" PointY="17.25" />
+        <EntityTypeShape EntityType="DBTaxisModel.CategoriaProducto" Width="1.5" PointX="5.75" PointY="2.625" />
+        <EntityTypeShape EntityType="DBTaxisModel.CentroCosto" Width="1.5" PointX="6" PointY="46.125" />
+        <EntityTypeShape EntityType="DBTaxisModel.Concepto" Width="1.5" PointX="6" PointY="5.25" />
+        <EntityTypeShape EntityType="DBTaxisModel.Conductor" Width="1.5" PointX="3" PointY="0.75" />
+        <EntityTypeShape EntityType="DBTaxisModel.Configuracion" Width="1.5" PointX="8.75" PointY="2.625" />
+        <EntityTypeShape EntityType="DBTaxisModel.CredencialesProveedorTaxi" Width="1.5" PointX="3" PointY="30.625" />
+        <EntityTypeShape EntityType="DBTaxisModel.CuentaMayor" Width="1.5" PointX="8.75" PointY="6.625" />
+        <EntityTypeShape EntityType="DBTaxisModel.Destino" Width="1.5" PointX="3" PointY="57" />
+        <EntityTypeShape EntityType="DBTaxisModel.EstadoProveedor" Width="1.5" PointX="3" PointY="4.375" />
+        <EntityTypeShape EntityType="DBTaxisModel.EstadoServicio" Width="1.5" PointX="10.75" PointY="2.625" />
+        <EntityTypeShape EntityType="DBTaxisModel.GastoAdicional" Width="1.5" PointX="8.25" PointY="9.75" />
+        <EntityTypeShape EntityType="DBTaxisModel.IndicadorIGV" Width="1.5" PointX="1.5" PointY="24.375" />
+        <EntityTypeShape EntityType="DBTaxisModel.Liquidacion" Width="1.5" PointX="3" PointY="35.5" />
+        <EntityTypeShape EntityType="DBTaxisModel.LiquidacionDetalle" Width="1.5" PointX="5.25" PointY="8.125" />
+        <EntityTypeShape EntityType="DBTaxisModel.LiquidacionEstado" Width="1.5" PointX="0.75" PointY="39.25" />
+        <EntityTypeShape EntityType="DBTaxisModel.MenuPagina" Width="1.5" PointX="1.5" PointY="54" />
+        <EntityTypeShape EntityType="DBTaxisModel.MetodoProveedorTaxi" Width="1.5" PointX="1.75" PointY="62.5" />
+        <EntityTypeShape EntityType="DBTaxisModel.MotivoCreacionSolicitud" Width="1.5" PointX="0.75" PointY="5.625" />
+        <EntityTypeShape EntityType="DBTaxisModel.Pagina" Width="1.5" PointX="1.5" PointY="50.875" />
+        <EntityTypeShape EntityType="DBTaxisModel.Perfil" Width="1.5" PointX="1.5" PointY="47" />
+        <EntityTypeShape EntityType="DBTaxisModel.PerfilPagina" Width="1.5" PointX="3.75" PointY="51" />
+        <EntityTypeShape EntityType="DBTaxisModel.ProveedorTaxi" Width="1.5" PointX="0.5" PointY="18" />
+        <EntityTypeShape EntityType="DBTaxisModel.ServicioProveedorTaxi" Width="1.5" PointX="4" PointY="22.125" />
+        <EntityTypeShape EntityType="DBTaxisModel.SituacionServicio" Width="1.5" PointX="0.75" PointY="14" />
+        <EntityTypeShape EntityType="DBTaxisModel.Sociedad" Width="1.5" PointX="0.75" PointY="8.25" />
+        <EntityTypeShape EntityType="DBTaxisModel.Solicitud" Width="1.5" PointX="3" PointY="8.875" />
+        <EntityTypeShape EntityType="DBTaxisModel.SolicitudDetalle" Width="1.5" PointX="5.25" PointY="12.875" />
+        <EntityTypeShape EntityType="DBTaxisModel.SolicitudProveedorTaxi" Width="1.5" PointX="8.25" PointY="13.875" />
+        <EntityTypeShape EntityType="DBTaxisModel.TipoDestino" Width="1.5" PointX="0.75" PointY="32.625" />
+        <EntityTypeShape EntityType="DBTaxisModel.TipoDocumento" Width="1.5" PointX="10.75" PointY="8.625" />
+        <EntityTypeShape EntityType="DBTaxisModel.TipoPago" Width="1.5" PointX="0.75" PointY="30.25" />
+        <EntityTypeShape EntityType="DBTaxisModel.TipoServicio" Width="1.5" PointX="0.75" PointY="27.875" />
+        <EntityTypeShape EntityType="DBTaxisModel.Tracking" Width="1.5" PointX="5.25" PointY="29.125" />
+        <EntityTypeShape EntityType="DBTaxisModel.Usuario" Width="1.5" PointX="3.75" PointY="45.875" />
+        <EntityTypeShape EntityType="DBTaxisModel.UsuarioCentroCosto" Width="1.5" PointX="8.25" PointY="46.875" />
+        <AssociationConnector Association="DBTaxisModel.FK__Automovil__IdPro__1BC821DD" />
+        <AssociationConnector Association="DBTaxisModel.FK__Beneficia__Codig__2610A626" />
+        <AssociationConnector Association="DBTaxisModel.fk_Beneficiado_Solicitud" />
+        <AssociationConnector Association="DBTaxisModel.FK__CentroCos__IdRes__2704CA5F" />
+        <AssociationConnector Association="DBTaxisModel.FK__Usuario__CodigoC__52593CB8" />
+        <AssociationConnector Association="DBTaxisModel.FK__UsuarioCe__Codig__2DB1C7EE" />
+        <AssociationConnector Association="DBTaxisModel.FK__GastoAdic__IdCon__0697FACD" />
+        <AssociationConnector Association="DBTaxisModel.FK__Conductor__IdPro__43D61337" />
+        <AssociationConnector Association="DBTaxisModel.FK__Credencia__IdPro__1699586C" />
+        <AssociationConnector Association="DBTaxisModel.FK__Destino__IdProve__7C1A6C5A" />
+        <AssociationConnector Association="DBTaxisModel.FK__Proveedor__IdEst__2645B050" />
+        <AssociationConnector Association="DBTaxisModel.FK__Solicitud__IdEst__22401542" />
+        <AssociationConnector Association="DBTaxisModel.FK__GastoAdic__IdSol__05A3D694" />
+        <AssociationConnector Association="DBTaxisModel.FK__Proveedor__IdInd__408F9238" />
+        <AssociationConnector Association="DBTaxisModel.FK__Proveedor__IdInd__4183B671" />
+        <AssociationConnector Association="DBTaxisModel.FK_Liquidacion_LiquidacionEstado" />
+        <AssociationConnector Association="DBTaxisModel.FK_Liquidacion_ProveedorTaxi" />
+        <AssociationConnector Association="DBTaxisModel.FK_Liquidacion_Sociedad" />
+        <AssociationConnector Association="DBTaxisModel.FK_LiquidacionDetalle_Liquidacion" />
+        <AssociationConnector Association="DBTaxisModel.FK_LiquidacionDetalle_Solicitud" />
+        <AssociationConnector Association="DBTaxisModel.FK_PaginaMenu_Codigo" />
+        <AssociationConnector Association="DBTaxisModel.FK__ServicioP__IdMet__25518C17" />
+        <AssociationConnector Association="DBTaxisModel.FK__Solicitud__IdMot__74794A92" />
+        <AssociationConnector Association="DBTaxisModel.fk_Solicitud_MotivoCreacionSolicitud" />
+        <AssociationConnector Association="DBTaxisModel.FK__PerfilPag__IdPag__4222D4EF" />
+        <AssociationConnector Association="DBTaxisModel.FK__PerfilPag__IdPer__4316F928" />
+        <AssociationConnector Association="DBTaxisModel.FK__Usuario__IdPerfi__5EBF139D" />
+        <AssociationConnector Association="DBTaxisModel.FK__ServicioP__IdPro__2739D489" />
+        <AssociationConnector Association="DBTaxisModel.FK__Solicitud__IdPro__4B7734FF" />
+        <AssociationConnector Association="DBTaxisModel.fk_SolicitudProveedorTaxi_ProveedorTaxi" />
+        <AssociationConnector Association="DBTaxisModel.FK__Solicitud__IdSit__6E8B6712" />
+        <AssociationConnector Association="DBTaxisModel.FK__Solicitud__IdSit__756D6ECB" />
+        <AssociationConnector Association="DBTaxisModel.fk_Solicitud_SituacionServicio" />
+        <AssociationConnector Association="DBTaxisModel.FK__Solicitud__IdSoc__7755B73D" />
+        <AssociationConnector Association="DBTaxisModel.FK__Solicitud__IdSol__01D345B0" />
+        <AssociationConnector Association="DBTaxisModel.FK__Solicitud__IdTip__498EEC8D" />
+        <AssociationConnector Association="DBTaxisModel.FK__Solicitud__IdTip__4A8310C6" />
+        <AssociationConnector Association="DBTaxisModel.FK__Solicitud__IdTip__73852659" />
+        <AssociationConnector Association="DBTaxisModel.FK__Tracking__IdSoli__0B5CAFEA" />
+        <AssociationConnector Association="DBTaxisModel.fk_SolicitudProveedorTaxi_Solicitud" />
+        <AssociationConnector Association="DBTaxisModel.FK__UsuarioCe__IdUsu__2CBDA3B5" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

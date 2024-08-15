@@ -1,0 +1,23 @@
+﻿<div>
+    @Html.DropDownList("ListaSucursal",
+                       new SelectList(ViewBag.ListaSucursales, "IdSucursal", "Nombre"),
+                       new { @id = "dllSucursal_10_pv",
+                           @class = "form-control select2" }
+                      )
+</div>
+<script>
+    $(function () {
+        @{int count = new SelectList(ViewBag.ListaSucursales).Count();}
+        __countSucursalDisponibles = @count;
+        $('select[name="ListaSucursal"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+
+       
+
+        $("#dllSucursal_10_pv").val(idUserSucursal)
+        $("#dllSucursal_10_pv").trigger('change')
+       
+    })
+</script>

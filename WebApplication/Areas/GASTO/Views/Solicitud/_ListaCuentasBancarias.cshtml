@@ -1,0 +1,49 @@
+﻿
+<div>
+    @Html.DropDownList("ListaCuentasBancarias",
+                       new SelectList(ViewBag.ListaCuentasBancarias, "BANKL2", "BANKL_DESCRIPCION"),
+                       new { @id = "dllCuentasBancarias",
+                           @class = "form-control select2" }
+                      )
+</div>
+
+<script>
+    $(function () {
+        @{int count = new SelectList(ViewBag.ListaCuentasBancarias).Count();}
+        __countCuentasBancariasDisponibles = @count;
+        $('select[name="ListaCuentasBancarias"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+        $("#dllCuentasBancarias").val(idUserCuentaBancaria)
+        $("#dllCuentasBancarias").trigger('change')
+
+        $('#dllCuentasBancarias').change(function () {
+         
+            var idtipo = $('#dllTipoSolicitud').val();
+            var cta_ = $('#dllCuentasBancarias').val();
+            if (idtipo == "1" || idtipo == "2") {
+             
+                var idambito = $('#dllAmbito').val();
+                if (cta_!=undefined && cta_!=null && cta_ != "0") {
+                    if (cta_.substr(0, 3) == "USD" && idambito == "1") {
+                        toastr["warning"]('Debe seleccionar un destino diferente a Nacional');
+                        $('#dllAmbito').val(153);
+                        $('#dllAmbito').change();
+                        $('#dllAmbito').focus();
+                        return;
+                    }
+                    if (cta_.substr(0, 3) == "PEN" && idambito != "1") {
+                        toastr["warning"]('Debe seleccionar destino Nacional');
+                        $('#dllAmbito').val(1);
+                        $('#dllAmbito').change();
+                        $('#dllAmbito').focus();
+                        return;
+                    }
+                }
+            }
+        });
+
+
+    })
+</script>

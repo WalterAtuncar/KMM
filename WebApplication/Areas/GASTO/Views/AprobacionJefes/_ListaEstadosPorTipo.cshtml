@@ -1,0 +1,21 @@
+﻿
+<div>
+    @Html.DropDownList("listaEstados",
+                       new SelectList(ViewBag.listaEstados, "IdEstado", "Estado"),
+                       new { @id = "dllEstados",
+                           @class = "form-control select2" }
+                      )
+</div>
+
+<script>
+    $(function () {
+        @{int count = new SelectList(ViewBag.listaEstados).Count();}
+        __countEstadosDisponibles = @count;
+        $('select[name="listaEstados"]').select2({
+            dropdownAutoWidth: true,
+            //width: '100%'
+        });
+        $("#dllEstados").val(idEstadoPorTipo)
+        $("#dllEstados").trigger('change')
+    })
+</script>

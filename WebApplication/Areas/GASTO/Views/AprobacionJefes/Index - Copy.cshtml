@@ -1,0 +1,516 @@
+﻿
+@model WebApplication.Areas.GASTO.Models.SolicitudViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+    .datepicker {
+        z-index: 3000 !important;
+    }
+
+    [class="select2"] {
+        width: 100%;
+    }
+
+    /*.select2-container {
+        display: inline;
+    }*/
+
+</style>
+
+<style type="text/css">
+    #jqGrid3 tr.jqgrow td {
+        white-space: normal !important;
+        height: auto;
+        vertical-align: text-top;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        word-wrap: break-word; /* IE 5.5+ and CSS3 */
+        white-space: pre-wrap; /* CSS3 */
+        white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+        white-space: -pre-wrap; /* Opera 4-6 */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        overflow: hidden;
+    }
+
+    #jqGrid3 th div {
+        height: auto;
+        overflow: hidden;
+        padding-right: 2px;
+        padding-top: 2px;
+        position: relative;
+        /*vertical-align: text-top;*/
+        white-space: normal !important;
+        word-wrap: break-word; /* IE 5.5+ and CSS3 */
+        white-space: pre-wrap; /* CSS3 */
+        white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+        white-space: -pre-wrap; /* Opera 4-6 */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        vertical-align: middle;
+        padding-bottom: 2px;
+    }
+    #modalRendicionGastos {
+        height: 428px;
+        overflow-y: scroll;
+    }
+</style>
+
+
+<h3 class="text-left text-primary">
+    <i class="fa fa-file-text-o" style="color:red;"></i>
+    <i class="fa fa-chevron-right" style="font-size:15px;color:#ee3224;"></i>
+    APROBACION DE SOLICITUDES
+</h3>
+
+<br />
+
+<div class="row">
+    <div id="filtros">
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Sociedad:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkSociedad" />
+                            </span>
+                            @Html.DropDownListFor(m => m.IdSociedad, new SelectList(ViewBag.listaSociedad, "CodigoSociedadFI", "NombreCO"), new { @class = "form-control select2", @id = "dllSociedad" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Sucursal:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkSucursal" />
+                            </span>
+                            @Html.DropDownListFor(m => m.IdSucursal, new SelectList(ViewBag.ListaSucursales, "IdSucursal", "Nombre"), new { @class = "form-control select2", @id = "dllSucursal" })
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Tipo Solicitud:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkTipo" />
+                            </span>
+                            @Html.DropDownListFor(m => m.IdTipo, new SelectList(ViewBag.listaTipoSolicitud, "IdTipo", "Tipo"), new { @class = "form-control select2", @id = "txtTipo" })
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Fecha Reg. desde:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon filtro">
+                                <input type="checkbox" id="chkFechaDesde" />
+                            </span>
+                            <div id="FechaInicioSolicitudDatePicker" style="width: 100%;" class="input-group input-group-sm date filtro" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                <input class="form-control filtro" id="fechaDesde" />
+                                <div class="input-group-addon filtro close-button">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Centro de Costo: </label>
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <input id="chkCentroCosto" type="checkbox" />
+                            </span>
+                            <div id="content-ListaCentroCosto">
+                                @Html.Partial("_ListaCentroCosto")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">DNI - Nombre:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkDni" />
+                            </span>
+                            @Html.DropDownList("listaBeneficiado", new SelectList(ViewBag.ListaBeneficiado, "ID", "Nombres"), new { @id = "txtDni", @class = "form-control select2" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Estado: </label>
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <input id="chkEstadoPorTipo" type="checkbox" />
+                            </span>
+                            <div id="content-ListaEstdosPorTipo">
+                                @Html.Partial("_ListaEstadosPorTipo")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Fecha Reg. hasta:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkFechaHasta" />
+                            </span>
+                            <div id="FechaFinSolicitudDatePicker" style="width: 100%;" class="input-group input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                <input type="text" class="form-control filtro" id="fechaHasta" />
+                                <div class="input-group-addon close-button">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <button id="btnBuscarSolicitudAprobacion" class="btn btn-danger btn-sm"><i class="fa fa-search"></i> Buscar</button>
+            <br /><br />
+            <button id="btnAprobarSolicitud" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Aprobar</button>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+
+<div class="row">
+    <div class="col-sm-12">
+        <div id="div-tbl-solicitud" class="table-responsive">
+            <table id="jqGrid" class="table-gys-kom"></table>
+            <div id="jqControls">
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<div class="modal fade" id="modal-sol-detalle" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-solicitud-aprobacion" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:320px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-solicitud-detalle" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:890px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-solicitud-detalle-gasto" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:90%;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-solicitud-detalle-gasto-registro" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:60%;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-solicitud-detalle-gasto-eliminar" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:300px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-solicitud-rechazo" role="dialog" aria-labelledby="myModalLabel" style="">
+    <div class="modal-dialog" style="width:320px;" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+
+<input type="hidden" id="hdfIdDestinoAprobar" value="@Model.IdDestinoBag" />
+
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+<script src="~/Content/plugins/starrr/starrr.js"></script>
+
+<script>
+
+    var idUserAprobador = 0;
+    var idUserCentroCosto = '';
+    var iddestino = 0;
+    var idEstadoPorTipo = 0;
+    var idUserSociedad = 0;
+    var idUserImpuesto = 0;
+    var idUserCentroCostoSolicitudR = 0;
+    var cargadogrilla = 0;
+
+    var url = {
+        GetListSolicitudAprobacion: '@Url.Action("GetListSolicitudAprobacion", "AprobacionJefes", new { area = "GASTO" })',
+        ValidarOrdenServicio: '@Url.Action("ValidarOrdenServicio", "AprobacionJefes", new { area = "GASTO" })',
+        AprobarPost: '@Url.Action("AprobarPost", "AprobacionJefes", new { area = "GASTO" })',
+        RechazarPost: '@Url.Action("RechazarPost", "AprobacionJefes", new { area = "GASTO" })',
+        DetalleSolicitud: '@Url.Action("GetSolicitudDetalleByIdSolicitud", "AprobacionJefes", new { area = "GASTO" })',
+        GetHistorialSolicitud: '@Url.Action("GetHistorialByIdSolicitud", "AprobacionJefes", new { area = "GASTO" })',
+        ConfirmarAprobar: '@Url.Action("Confirmacion", "AprobacionJefes", new { area = "GASTO" })',
+        GetListSolicitudExteriorPaginado: '@Url.Action("BuscarSolicitudExterior", "AprobacionJefes", new { area = "GASTO" })',
+        SolicitudAprobacionExterior: '@Url.Action("SolicitudAprobacionExterior", "AprobacionJefes", new { area = "GASTO" })',
+        ConfirmaRechazo: '@Url.Action("ConfirmacionRechazo", "AprobacionJefes", new { area = "GASTO" })',
+        ValidarDatosProveedor: '@Url.Action("ValidarDatosProveedor", "AprobacionJefes", new { area = "GASTO" })',
+        DetalleRendirGastos: '@Url.Action("GetDetalleRendirGastoByIdSolicitud", "AprobacionJefes", new { area = "GASTO" })',
+        GetListDetalleRendirGasto: '@Url.Action("GetListDetalleRendirGasto", "AprobacionJefes", new { area = "GASTO" })',
+        ConfirmarEliminarDetalleGastoSolicitud: '@Url.Action("ConfirmacionEliminarDetalleGasto", "AprobacionJefes", new { area = "GASTO" })',
+        EliminarDetalleGastoPost: '@Url.Action("EliminarDetalleGastoPost", "AprobacionJefes", new { area = "GASTO" })',
+        PagarRendicionPost: '@Url.Action("PagarRendicionPost", "AprobacionJefes", new { area = "GASTO" })',
+        RegistroDetalleGastoSolicitud: '@Url.Action("RegistroDetalleGastoSolicitud", "AprobacionJefes", new { area = "GASTO" })',
+        RegistrarDetRendicionSolicitudPost: '@Url.Action("RegistrarDetRendicionSolicitudPost", "AprobacionJefes", new { area = "GASTO" })',
+        ActualizarDetRendicionSolicitudPost: '@Url.Action("ActualizarDetRendicionSolicitudPost", "AprobacionJefes", new { area = "GASTO" })',
+        ObtenerTipoCambioRFC: '@Url.Action("ObtenerTipoCambioRFC", "AprobacionJefes", new { area = "GASTO" })',
+        ValidarNumeroComprobanteDuplicado: '@Url.Action("ValidarNumeroComprobanteDuplicado", "AprobacionJefes", new { area = "GASTO" })',
+        ValidarDatosProveedorExterno: '@Url.Action("ValidarDatosProveedorExterno", "AprobacionJefes", new { area = "GASTO" })',
+    }
+    $(document).ready(function () {
+
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            width: '100%',
+        });
+        $('select[name="listaBeneficiado"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+
+        $('#dllBeneficiado-0').select2({ dropdownAutoWidth: true });
+
+
+        $('#FechaInicioSolicitudDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+
+        $('#FechaFinSolicitudDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+
+        var Fecha = new Date();
+        Fecha.setDate(Fecha.getDate());
+
+        $('.close-button').unbind();
+
+        $('.close-button').click(function () {
+            if ($('.datepicker').is(":visible")) {
+                $(this).parent().datepicker('hide');
+            } else {
+                $(this).parent().datepicker('show');
+            }
+        });
+
+        $('select[name="dllBeneficiado-0"], select[name="CentroCostoAfectoCodigoSap"], select[name="listaAprobadores"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+
+        //getCentroCosto('');
+        $('#dllSociedad').change(function () {
+            var _codsociedad = $("#dllSociedad").val();
+            getCentroCosto(_codsociedad);
+        })
+
+        //getListaEstadosPorTipo(0);
+        $('#txtTipo').change(function () {
+            var _idtipo = $("#txtTipo").val();
+            getListaEstadosPorTipo(_idtipo);
+        })
+
+
+
+    });
+
+    var getListaEstadosPorTipo = function (_idtipo) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaEstadosPorTipo_PV", "AprobacionJefes")',
+            type: 'POST',
+            data: { idtipo: _idtipo },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaEstdosPorTipo").html(data);
+                if (!$("#chkEstadoPorTipo").is(':checked')) {
+                    $('select#dllEstados').prop('disabled', true);
+                }
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+    function EliminarDetalleGasto(id) {
+        $.ajax({
+            url: url.EliminarDetalleGastoPost,
+            type: 'POST',
+            data: { id: id },
+            dataType: 'JSON',
+            async: true,
+            beforeSend: function () {
+                fn_BloquearPantalla();
+            },
+            success: function (data) {
+                if (data.Success) {
+                    $('#modal-solicitud-detalle-gasto-eliminar').modal('hide');
+                    fn_BloquearPantalla();
+                    var idsolicitud = $('#hdfIdSolicitud').val();
+                    $('#modal-solicitud-detalle-gasto .modal-content').empty();
+                    $('#modal-solicitud-detalle-gasto .modal-content').load(url.DetalleRendirGastos, { IdSolicitud: idsolicitud }, function () {
+                        fn_DesbloquearPantalla();
+                    });
+                } else {
+                    toastr["error"](data.Message);
+                    //document.getElementById("RechazarSolicitudButton").disabled = false
+                }
+            },
+            complete: function () {
+                fn_DesbloquearPantalla();
+                //document.getElementById("RechazarSolicitudButton").disabled = false
+            }
+        });
+    }
+
+    var AprobarSolicitud = function (lista) {
+        $.ajax({
+              url: url.AprobarPost,
+              type: 'POST',
+            data: { lista: lista, _iddestino: $('#hdfIdDestinoAprobar').val() },
+              dataType: 'JSON',
+              async: true,
+              beforeSend: function () {
+              fn_BloquearPantalla();
+              },
+              success: function (data) {
+                 if (data.Success) {
+                    window.location = '@Url.Action("Index", "AprobacionJefes")';
+                 } else {
+                   toastr["error"](data.Message);
+                     document.getElementById("AprobarSolicitudButton").disabled = true;
+                 }
+              },
+              complete: function () {
+                 fn_DesbloquearPantalla();
+                  document.getElementById("AprobarSolicitudButton").disabled = true;
+              }
+        });
+    }
+
+    var RechazarSolicitud = function (idsolicitud) {
+        $.ajax({
+              url: url.RechazarPost,
+              type: 'POST',
+              data: { idsolicitud: idsolicitud },
+              dataType: 'JSON',
+              async: true,
+              beforeSend: function () {
+              fn_BloquearPantalla();
+              },
+              success: function (data) {
+                 if (data.Success) {
+                    window.location = '@Url.Action("Index", "AprobacionJefes")';
+                 } else {
+                   toastr["error"](data.Message);
+                     document.getElementById("RechazarSolicitudButton").disabled = false
+                 }
+              },
+              complete: function () {
+                 fn_DesbloquearPantalla();
+                  document.getElementById("RechazarSolicitudButton").disabled = false
+              }
+        });
+    }
+
+    var AprobarSolicitudExterior = function (lista) {
+        $.ajax({
+              url: url.AprobarExteriorPost,
+              type: 'POST',
+              data: { lista: lista },
+              dataType: 'JSON',
+              async: true,
+              beforeSend: function () {
+              fn_BloquearPantalla();
+              },
+              success: function (data) {
+                 if (data.Success) {
+                    window.location = '@Url.Action("Index", "AprobacionJefes")';
+                 } else {
+                     toastr["error"](data.Message);
+                     document.getElementById("AgregarSolicitudButton").disabled = false
+                 }
+              },
+              complete: function () {
+
+                  document.getElementById("AgregarSolicitudButton").disabled = false
+                  fn_DesbloquearPantalla();
+              }
+        });
+    }
+
+
+    var getCentroCosto = function (_codsociedad) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaCentrosCostos", "AprobacionJefes")',
+            type: 'POST',
+            data: { codsociedad: _codsociedad },
+            cache: false,
+            async: true,
+            success: function (data) {
+                //console.log(data);
+                $("#content-ListaCentroCosto").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+
+</script>
+<script src="~/Areas/GASTO/Scripts/AprobacionJefes/Index.js"></script>
+<script src="~/Content/plugins/starrr/starrr.js"></script>

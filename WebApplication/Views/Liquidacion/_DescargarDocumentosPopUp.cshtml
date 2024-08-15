@@ -1,0 +1,65 @@
+﻿@model WebApplication.Models.LiquidacionViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel"><i class="fa fa-envelope"></i><i class="fa fa-chevron-right"></i>Enviar documentos a correo</h3>
+</div>
+<div class="modal-body">
+    @using (Html.BeginForm("EnviarCorreoDocumentoPostJson", "Liquidacion", FormMethod.Post, new { @id = "frm-descargar-documento", @class = "form-horizontal" }))
+    {
+        @Html.HiddenFor(model => model.Liquidacion.ID)
+        @Html.HiddenFor(model => model.Liquidacion.NombreFile)
+        <div class="form-group">
+            <label class="col-sm-2">Proveedor</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(model => model.Liquidacion.NombreProveedor, new
+                {
+                    @id = "txtNombre",
+                    @class = "form-control input-sm",
+                    @readonly = "readonly"
+                })
+
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2">Correo</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(model => model.Liquidacion.CorreoProveedor, new
+                {
+                    @id = "txtCorreo",
+                    @class = "form-control input-sm",
+                    @placeholder = "Ingrese correo",
+                })
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2">Copia a:</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(model => model.Liquidacion.CorreoReferencia, new
+                {
+                    @id = "txtCorreoReferencia",
+                    @class = "form-control input-sm",
+                    @placeholder = "Ingrese correo(copia)"
+                })
+
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2">Mensaje:</label>
+            <div class="col-sm-10">
+                @Html.TextAreaFor(m => m.Liquidacion.Mensaje, new { @class = "form-control", @placeholder = "Ingrese mensaje", @style = "font-size:12px;" })
+            </div>
+        </div>
+
+    }
+</div>
+
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="btn-enviar-correo-documentos" class="btn btn-primary btn-sm" style="padding-left: 20px;"><i class="fa fa-floppy-o"></i> Enviar Correo</button>
+        @Html.ActionLink("Descargar Excel", "DowloadReporte", new { formato = "EXCEL", idLiquidacion = Model.Liquidacion.ID }, new { @class = "btn btn-primary btn-sm", @type = "button" ,@Style = "padding-left:20px;"})
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i>Cerrar</button>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+﻿@model WebApplication.Areas.GASTO.Models.ViewModelMaestros
+    @if (Model.ListaConfiguraciones.Count > 0)
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-condensed table-gys-kom" role="grid">
+                <thead>
+                    <tr>
+                        <th width="50px;">Acciones</th>
+                        @*<th width="40px;">ID</th>*@
+                        <th width="70px;">Clave</th>
+                        <th width="100px;">Valor1</th>
+                        <th width="100px;">Valor2</th>
+
+                    </tr>
+                </thead>
+                <tbody style="font-size: 11px;">
+                    @foreach (var detalle in Model.ListaConfiguraciones)
+                    {
+                    <tr>
+                        <td>
+                            <a href="javascript(0);" id="btn-edit-tabla20" data-pid-20=@detalle.Id class="glyphicon glyphicon-pencil" title="Editar"></a>&nbsp;&nbsp;&nbsp;
+                            <a href="javascript(0);" id="btn-del-tabla20" data-pid-20=@detalle.Id class="glyphicon glyphicon-trash" title="Eliminar"></a>
+                        </td>
+                        @*<td>@detalle.ID</td>*@
+                        <td>@detalle.Clave</td>
+                        <td>@detalle.Valor1</td>
+                        <td>@detalle.Valor2</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <p>NO EXISTEN REGISTROS.</p>
+        </div>
+    }
+<script>
+    $(document).ready(function () {
+        
+    });
+
+    
+
+    
+
+</script>
+
+
+
+

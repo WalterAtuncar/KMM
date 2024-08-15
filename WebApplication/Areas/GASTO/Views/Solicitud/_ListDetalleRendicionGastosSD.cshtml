@@ -1,0 +1,510 @@
+﻿@model WebApplication.Areas.GASTO.Models.DetalleSolicitudViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel">
+        <i class="fa fa-list"></i>
+        <i class="fa fa-chevron-right"></i>
+        DETALLE RENDICION DE GASTO
+    </h3>
+</div>
+<input type="hidden" id="hdfIdSolicitud" value="@Model.IdSolicitud" />
+<input type="hidden" id="hdfIdSociedad" value="@Model.IdSociedad" />
+<input type="hidden" id="hdfIdTipo" value="@Model.IdTipo" />
+<input type="hidden" id="hdfIdSituacionServicio" value="@Model.RendicionSolicitud.IdSituacionServicio" />
+<input type="hidden" id="hdfIdMoneda" value="@Model.IdMoneda" />
+<input type="hidden" id="hdfMoneda" value="@Model.Moneda" />
+<input type="hidden" id="hdfImporteTotal" value="@Model.ImporteSolicitudStr" />
+<input type="hidden" id="hdfGastoTotal" value="0" />
+
+
+
+<div class="modal-body" id="modalRendicionGastos">
+
+    <div class="row">
+        <div id="filtros">
+            <div class="col-sm-6">
+                <div class="form-horizontal">
+                    <div class="form-horizontal  rowUser">
+                        <div class="form-group" style="margin-bottom: 0px">
+                            <label class="col-sm-10"><span style="font-weight:bold;font-size:12px;">Nombre Completo:</span> <span style="font-weight:normal;font-size:11px;"> @Model.NomApe </span></label>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0px">
+                        <label class="col-sm-10"><span style="font-weight:bold;font-size:12px;">Codigo Solicitud: </span> <span style="font-weight:normal;font-size:11px;">@Model.Codigo </span></label>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0px">
+                        <label class="col-sm-10"><span style="font-weight:bold;font-size:12px;">Sucursal: </span> <span style="font-weight:normal;font-size:11px;">@Model.Sucursal </span></label>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0px">
+                        <label class="col-sm-10"><span style="font-weight:bold;font-size:12px;">Motivo: </span> <span style="font-weight:normal;font-size:11px;">@Model.Motivo </span></label>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0px">
+                        <label class="col-sm-10"><span style="font-weight:bold;font-size:12px;">Viaje Desde: </span> <span style="font-weight:normal;font-size:11px;">@Model.FechaInicioStr </span><span style="font-weight:bold;font-size:12px;"> Hasta: </span> <span style="font-weight:normal;font-size:11px;"> @Model.FechaFinStr</span></label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="form-horizontal">
+                    <div class="form-group" style="margin-bottom: 0px">
+                        <label class="col-sm-10"><span style="font-weight:bold;font-size:12px;">Centro de Costo: </span> <span style="font-weight:normal;font-size:11px;"> @Model.CECO</span></label>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0px">
+                        <label class="col-sm-10"><span style="font-weight:bold;font-size:12px;">Sociedad: </span> <span style="font-weight:normal;font-size:11px;"> @Model.NombreCO</span></label>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0px">
+                        <label class="col-sm-10"><span style="font-weight:bold;font-size:12px;">Aprobador: </span> <span style="font-weight:normal;font-size:11px;"> @Model.Aprobador</span></label>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 0px">
+                        <label class="col-sm-10" style="color:green;"><span style="font-weight:bold;font-size:12px;">Monto Asignado: </span> <span style="font-weight:normal;font-size:11px;" id="lblImporteSolicitud"> @Model.ImporteSolicitudStr</span><span style="font-weight:normal;font-size:11px;">&nbsp; @Model.Moneda</span></label>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0px">
+                        <label class="col-sm-10"><span style="font-weight:bold;font-size:12px;">Saldo: </span> <span style="font-weight:normal;font-size:11px;" id="lblSaldo"></span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="filtros">
+            <div style="padding-left:45%;">
+                <button id="btnAgregarDetalle" class="btn btn-primary btn-sm" style="width:150px;"><i class="fa fa-plus-circle"></i> Agregar Detalle</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="div-tbl-solicitud_rendiciongasto" class="table-responsive" >
+                <table id="jqGrid_3" class="table-gys-kom"></table>
+                <div id="jqControls_3">
+                </div>
+            </div>
+        </div>
+    </div>
+    </br>
+     <div class="row">
+        <div id="filtros">
+            <div class="col-sm-6">
+                <div class="form-horizontal">
+                    <div class="form-group" id="divComentario" style="color:red;margin-bottom: 0px;">
+                        <label class="col-sm-4" id="lblComentario">Gasto Total: </label>
+                        <div class="col-sm-8">
+                            <label class="col-sm-6" id="lblImporteMoneda">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-horizontal">
+                    <div class="form-group" id="divComentario" style="margin-bottom: 0px;">
+                        <label class="col-sm-4" id="lblComentario" style="font-weight:normal;font-size:12px;">Comentarios:</label>
+                        <div class="col-sm-8">
+                            @Html.TextAreaFor(m => m.RendicionSolicitud.Comentario, new { @class = "form-control input-sm", @rows = 1, @columns = 50, @id = "txtComentario" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="btnExportarExcel" class="btn btn-success btn-sm"><i class="fa fa-file-excel-o"></i> Excel</button>
+        <button id="btnExportarPDF" class="btn btn-danger btn-sm"><i class="fa fa-file-pdf-o"></i> Pdf</button>
+
+        <button id="GuardarRendicionSolicitud" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar </button>
+        <button id="EnviarRendicionSolicitud" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Enviar </button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        
+
+        $('#btnAgregarDetalle').click(function (e) {
+            var IdDetRendicionSolicitud = 0;
+            var idsociedad = $('#hdfIdSociedad').val();
+            var IdMoneda = $('#hdfIdMoneda').val();
+            var idtipo = $('#hdfIdTipo').val();
+            abrirModalRegistroDetalleGastoSolicitud(IdDetRendicionSolicitud, IdMoneda, idtipo, idsociedad);
+        });
+        $('body').on('click', "#btn-edit-gasto", function (e) {
+            e.preventDefault();
+            var IdDetRendicionSolicitud = $(this).attr('data-id');
+            var idsociedad = $('#hdfIdSociedad').val();
+            var IdMoneda = $('#hdfIdMoneda').val();
+            var idtipo = $('#hdfIdTipo').val();
+            abrirModalRegistroDetalleGastoSolicitud(IdDetRendicionSolicitud, IdMoneda, idtipo, idsociedad);
+        });
+        $('body').on('click', "#btn-eliminar-gasto", function (e) {
+            e.preventDefault();
+            var id = $(this).attr('data-id');
+            abrirModalEliminarDetalleGastoSolicitud(id);
+        });
+        $('#EnviarRendicionSolicitud').click(function (e) {
+            e.preventDefault();
+            GuardarEnviarRendicionGasto(1);
+        });
+        $('#GuardarRendicionSolicitud').click(function (e) {
+            e.preventDefault();
+            GuardarEnviarRendicionGasto(0);
+        });
+        $('#btnExportarPDF').click(function (e) {
+            e.preventDefault();
+            exportPDF();
+        });
+        $('#btnExportarExcel').click(function (e) {
+            e.preventDefault();
+            exportExcel();
+        });
+
+
+        var idsolicitud = parseInt($('#hdfIdSolicitud').val());
+        var idtipo = parseInt($('#hdfIdTipo').val());
+        var idsituacionservicio = parseInt($('#hdfIdSituacionServicio').val());
+
+        if (idsolicitud != 0) {
+            if (idtipo == 1) {
+                //if (idsituacionservicio == 5 || idsituacionservicio == 8 || idsituacionservicio == 9 || idsituacionservicio == 10) {
+                if (idsituacionservicio == 5) {
+                    $('#EnviarRendicionSolicitud').show();
+                    $('#GuardarRendicionSolicitud').show();
+                    $('#btnAgregarDetalle').show();
+                }
+                else {
+                    $('#EnviarRendicionSolicitud').hide();
+                    $('#GuardarRendicionSolicitud').hide();
+                    $('#btnAgregarDetalle').hide();
+                }
+            }
+            if (idtipo == 2) {
+                if (idsituacionservicio == 1) {
+
+                    $('#EnviarRendicionSolicitud').show();
+                    $('#GuardarRendicionSolicitud').show();
+                    $('#btnAgregarDetalle').show();
+                }
+                else {
+                    $('#EnviarRendicionSolicitud').hide();
+                    $('#GuardarRendicionSolicitud').hide();
+                    $('#btnAgregarDetalle').hide();
+                }
+            }
+            if (idtipo == 3 || idtipo == 4) {
+                if (idsituacionservicio > 1) {
+                    $('#EnviarRendicionSolicitud').hide();
+                    $('#GuardarRendicionSolicitud').hide();
+                    $('#btnAgregarDetalle').hide();
+                }
+            }
+        } else {
+            var moneda = $('#hdfMoneda').val();
+            $('#lblImporteMoneda').text('0 ' + moneda);
+        }
+        
+        paginadorendicion();
+        var anchoventana = parseInt($(window).width());
+        var anchomodal = (anchoventana - parseInt(anchoventana * 0.1)) - 60;
+        $("#jqGrid_3").setGridWidth(anchomodal);
+   
+    });
+
+  
+    //function resizeGrid() {
+    //    var $grid = $("#jqGrid_3"),
+    //        newWidth = $grid.closest(".ui-jqgrid").parent().parent().width();
+    //    $grid.jqGrid("setGridWidth", newWidth, true);
+    //}
+    
+
+    function paginadorendicion() {
+        $("#jqGrid_3").jqGrid({
+            //url: getURLGet3(),
+            url: url.GetListDetalleRendirGasto + '?IdSolicitud=' + $('#hdfIdSolicitud').val(),
+            datatype: 'JSON',
+            mtype: 'GET',
+            colNames: ['Opciones', 'Item', 'Ext', 'RUC', 'Proveedor', 'Tip.Doc', 'Fecha', 'Nro.Comprobante', 'Moneda', 'Importe', 'Total(S/.)', 'Base.Inafecta', 'Impuesto', 'Clase Gasto', 'CECO', 'Ord.Serv', 'Cod.Liquidacion'],
+            colModel: [
+                {
+                    key: false,
+                    name: 'ID',
+                    index: 'ID',
+                    align: 'center',
+                    width: '50px',
+                    fixed: true,
+                    formatter: formatoOpciones3,
+                    formatoptions: { keys: true, }
+                },
+                //{ key: false, name: 'CORREL', index: 'CORREL', width: "36", align: 'center' },
+                //{ key: false, name: 'IsProveedorExt', index: 'IsProveedorExt', width: "25", align: 'center' },
+                //{ key: false, name: 'RUC', index: 'RUC', width: "75" },
+                //{ key: false, name: 'Proveedor', index: 'Proveedor', width: "110", align: 'center' },
+                //{ key: false, name: 'TipoDocumento', index: 'TipoDocumento', width: "70", align: 'center' },
+                //{ key: false, name: 'FechaStr', index: 'FechaStr', width: "65" },
+                //{ key: false, name: 'NroComprobante', index: 'NroComprobante', width: "70", align: 'center' },
+                //{ key: false, name: 'Moneda', index: 'Moneda', width: "35", align: 'center' },
+                //{ key: false, name: 'ImporteStr', index: 'ImporteStr', width: "60", align: 'right', sortable: true },
+                //{ key: false, name: 'TotalSolesStr', index: 'TotalSolesStr', width: "60", align: 'right' },
+                //{ key: false, name: 'BaseInafectaStr', index: 'BaseInafectaStr', width: "60", align: 'right' },
+                //{ key: false, name: 'Impuesto', index: 'Impuesto', width: "57", align: 'center' },
+                //{ key: false, name: 'TipoGastoViaje', index: 'TipoGastoViaje', width: "150", align: 'center' },
+                //{ key: false, name: 'CECO', index: 'CECO', width: "80", align: 'center' },
+                //{
+                //    key: false, name: 'OrdenServicio', index: 'OrdenServicio', width: "74", align: 'center',
+                //    formatter: function (cellvalue, options, rowObject) {
+                //        if (!IsValidaOrdenServicio(rowObject.OrdenServicio)) {
+                //            return '<span style="color:red;display: block; width: 100%; height: 100%">' + cellvalue + '</span>';
+                //        } else {
+                //            return '<span style="">' + cellvalue + '</span>';
+                //        }
+
+                //    }
+                //},
+                //{ key: false, name: 'CodigoLiquidacion', index: 'CodigoLiquidacion', width: "74" }
+                { key: false, name: 'CORREL', index: 'CORREL', width: "36", align: 'center' },
+                { key: false, name: 'IsProveedorExt', index: 'IsProveedorExt', width: "25", align: 'center' },
+                { key: false, name: 'RUC', index: 'RUC', width: "75" },
+                { key: false, name: 'Proveedor', index: 'Proveedor', width: "220", align: 'center' },
+                { key: false, name: 'TipoDocumento', index: 'TipoDocumento', width: "120", align: 'center' },
+                { key: false, name: 'FechaStr', index: 'FechaStr', width: "65" },
+                { key: false, name: 'NroComprobante', index: 'NroComprobante', width: "110", align: 'center' },
+                { key: false, name: 'Moneda', index: 'Moneda', width: "50", align: 'center' },
+                { key: false, name: 'ImporteStr', index: 'ImporteStr', width: "70", align: 'right', sortable: true },
+                { key: false, name: 'TotalSolesStr', index: 'TotalSolesStr', width: "70", align: 'right' },
+                { key: false, name: 'BaseInafectaStr', index: 'BaseInafectaStr', width: "75", align: 'right' },
+                { key: false, name: 'Impuesto', index: 'Impuesto', width: "57", align: 'center' },
+                { key: false, name: 'TipoGastoViaje', index: 'TipoGastoViaje', width: "270", align: 'center' },
+                { key: false, name: 'CECO', index: 'CECO', width: "80", align: 'center' },
+                {
+                    key: false, name: 'OrdenServicio', index: 'OrdenServicio', width: "90", align: 'center',
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (!IsValidaOrdenServicio(rowObject.OrdenServicio)) {
+                            return '<span style="color:red;display: block; width: 100%; height: 100%;font:bold">' + cellvalue + '</span>';
+                        } else {
+                            return '<span style="">' + cellvalue + '</span>';
+                        }
+
+                    }
+                },
+                { key: false, name: 'CodigoLiquidacion', index: 'CodigoLiquidacion', width: "90" }
+            ],
+            pager: $('#jqControls_3'),
+            rowNum: 10,
+            rowList: [10, 20, 30, 40, 50],
+            height: '100%',
+
+            viewrecords: true,
+            jsonReader: {
+                root: "rows",
+                page: "page",
+                total: "total",
+                records: "records",
+                repeatitems: false,
+            },
+            autowidth: true,
+            //autowidth: false,
+            //shrinkToFit: true,
+            //width: auto,
+            //rownumbers: true,
+            cmTemplate: { sortable: false },
+
+            loadComplete: function (data) {
+
+                var moneda = $('#hdfMoneda').val();
+                var total = $("#jqGrid_3").jqGrid('getCol', 'ImporteStr', false, 'sum');
+                var strEx = $('#lblImporteSolicitud').text().trim();
+                strEx = strEx.replace(",", "");
+                //strEx = strEx.replace(".", ",");
+                var importesolicitud = parseFloat(strEx);
+                importesolicitud = importesolicitud * 1;
+                var totalrendido = total;
+                $('#hdfGastoTotal').val(total);
+                var saldo = importesolicitud - totalrendido;
+                $('#lblImporteMoneda').text(total + ' ' + moneda);
+                $('#lblSaldo').text(saldo + ' ' + moneda);
+            },
+        });
+    }
+
+
+    function IsValidaOrdenServicio(ordenServicio) {
+        var retorno = true;
+        var idSociedad = $('#hdfIdSociedad').val();
+        if (ordenServicio != "-------") {
+            $.ajax({
+                url: url.ValidarOrdenServicio,
+                type: 'POST',
+                data: { ordenServicio: ordenServicio, sociedad: idSociedad },
+                cache: false,
+                async: false,
+                beforeSend: function () {
+                    fn_BloquearPantalla();
+                },
+                success: function (data) {
+
+                    if (data.Success) {
+                        fn_DesbloquearPantalla();
+                    } else {
+                        retorno = false;
+                        fn_DesbloquearPantalla();
+                    }
+                },
+                complete: function () {
+                    fn_DesbloquearPantalla();
+                }
+            });
+        }
+        return retorno;
+    }
+    function exportPDF() {
+     
+        var IdSolicitud = $('#hdfIdSolicitud').val();
+        document.location = '@Url.Action("DescargarPDF", "Solicitud", new { area = "GASTO" })?pdf=true&IdSolicitud=' + IdSolicitud;
+    }
+    function exportExcel() {
+        var IdSolicitud = $('#hdfIdSolicitud').val();
+        document.location = '@Url.Action("DescargarExcel", "Solicitud", new { area = "GASTO" })?IdSolicitud=' + IdSolicitud;
+    }
+
+    function getURLGet3() {
+       
+        var IdSolicitud = $('#hdfIdSolicitud').val();
+        return url.GetListDetalleRendirGasto + '?IdSolicitud=' + IdSolicitud;
+    }
+    function formatoOpciones3(cellvalue, options, rowObject) {
+        var result = '';
+        var idsolicitud = parseInt($('#hdfIdSolicitud').val());
+        var idtipo = parseInt($('#hdfIdTipo').val());
+        var idsituacionservicio = parseInt($('#hdfIdSituacionServicio').val());
+
+        if (idsolicitud != 0) {
+            if (idtipo == 1) {
+                //if (idsituacionservicio == 5 || idsituacionservicio == 8 || idsituacionservicio == 9 || idsituacionservicio == 10) {
+                if (idsituacionservicio == 5) {
+                    result += '<a href="javascript(0);" id="btn-edit-gasto" data-id ="' + cellvalue + '"  class="glyphicon glyphicon-pencil" title="Editar"></a>' + '&nbsp;&nbsp;';
+                    result += '<a href="javascript(0);" id="btn-eliminar-gasto" data-id ="' + cellvalue + '" class="fa fa-times-circle" title = "Eliminar"></a>' + '&nbsp;&nbsp;';
+                }
+            }
+            if (idtipo == 2) {
+                if (idsituacionservicio == 1) {
+                    result += '<a href="javascript(0);" id="btn-edit-gasto" data-id ="' + cellvalue + '"  class="glyphicon glyphicon-pencil" title="Editar"></a>' + '&nbsp;&nbsp;';
+                    result += '<a href="javascript(0);" id="btn-eliminar-gasto" data-id ="' + cellvalue + '" class="fa fa-times-circle" title = "Eliminar"></a>' + '&nbsp;&nbsp;';
+                }
+            }
+            if (idtipo == 3 || idtipo == 4) {
+                if (idsituacionservicio == 1) {
+                    result += '<a href="javascript(0);" id="btn-edit-gasto" data-id ="' + cellvalue + '"  class="glyphicon glyphicon-pencil" title="Editar"></a>' + '&nbsp;&nbsp;';
+                    result += '<a href="javascript(0);" id="btn-eliminar-gasto" data-id ="' + cellvalue + '" class="fa fa-times-circle" title = "Eliminar"></a>' + '&nbsp;&nbsp;';
+                }
+            }
+            //ver documento pdf
+            if (rowObject.NombreFile != '') {
+                result += '<a href="/FilesDetallesGastos/' + rowObject.NombreFile +'" target="_blank" id="btn-ver-gasto-doc" class="glyphicon glyphicon-book" title="Ver Adjunto"></a>' + '&nbsp;&nbsp;';
+            }
+
+        } else {
+            result += '<a href="javascript(0);" id="btn-edit-gasto" data-id ="' + cellvalue + '"  class="glyphicon glyphicon-pencil" title="Editar"></a>' + '&nbsp;&nbsp;';
+            result += '<a href="javascript(0);" id="btn-eliminar-gasto" data-id ="' + cellvalue + '" class="fa fa-times-circle" title = "Eliminar"></a>' + '&nbsp;&nbsp;';
+        }
+        return result;
+    }
+    //function getParameterFilter3() {
+    //    var parametro = [
+    //        {
+    //            ParamName: "Prueba1",
+    //            ParamValue: "3"
+    //        },
+    //        {
+    //            ParamName: "Prueba2",
+    //            ParamValue: "4"
+    //        }
+    //    ];
+    //    var Pagination = new Object();
+    //    Pagination.Page = $('#jqGrid_3').getGridParam("page") == undefined ? 1 : $('#jqGrid_3').getGridParam("page");
+    //    Pagination.Rows = $('#jqGrid_3').getGridParam("rowNum") == undefined ? 10 : $('#jqGrid_3').getGridParam("rowNum");
+    //    Pagination.ListaParameterFiler = parametro;
+    //    return Pagination;
+    //}
+
+    function abrirModalRegistroDetalleGastoSolicitud(IdDetRendicionSolicitud, IdMoneda, idtipo, idsociedad) {
+
+        fn_BloquearPantalla();
+        $('#modal-solicitud-detalle-gasto-registro .modal-content').empty();
+        $('#modal-solicitud-detalle-gasto-registro .modal-content').load(url.RegistroDetalleGastoSolicitud, { IdDetRendicionSolicitud: IdDetRendicionSolicitud, IdMoneda: IdMoneda, idtipo: idtipo, idsociedad: idsociedad }, function () {
+            $("#modal-solicitud-detalle-gasto-registro").modal({ show: true, backdrop: 'static', keyboard: true });
+            fn_DesbloquearPantalla();
+        });
+    }
+    function abrirModalEliminarDetalleGastoSolicitud(id) {
+        fn_BloquearPantalla();
+        $('#modal-solicitud-detalle-gasto-eliminar .modal-content').empty();
+        $('#modal-solicitud-detalle-gasto-eliminar .modal-content').load(url.ConfirmarEliminarDetalleGastoSolicitud, { id: id }, function () {
+           $("#modal-solicitud-detalle-gasto-eliminar").modal({ show: true, backdrop: 'static', keyboard: true });
+            fn_DesbloquearPantalla();
+        });
+    }
+
+    function ValidaImportes() {
+        debugger;
+        var importetotal = parseFloat(FixparteFloat($('#hdfImporteTotal').val()));
+        var importegasto = parseFloat(FixparteFloat($('#hdfGastoTotal').val()));
+        var idtipo = parseInt($('#hdfIdTipo').val());
+        var valida = true;
+        if (importegasto < importetotal && idtipo==1) {
+            valida = false;
+        }
+        return valida;
+    }
+
+
+    function GuardarEnviarRendicionGasto(envia) {
+      
+            var IdSolicitud = $('#hdfIdSolicitud').val();
+            var comentario = $('#txtComentario').val();
+            if (envia == 1) {
+                if (!ValidaImportes()) {
+                    toastr["warning"]('El Importe Rendido no puede ser menor que el Importe Asignado');
+                    return;
+                }
+            }
+        document.getElementById("GuardarRendicionSolicitud").disabled = true;
+       
+            urlAccion = url.PagarRendicionPost;
+            fn_BloquearPantalla();
+            $.ajax({
+                url: urlAccion,
+                type: 'POST',
+                data: { IdSolicitud: IdSolicitud, comentario: comentario, envia: envia },
+                dataType: 'JSON',
+                async: true,
+                beforeSend: function () {
+                    fn_BloquearPantalla();
+                },
+                success: function (data) {
+                    if (data.Success) {
+                        window.location = '@Url.Action("Index", "Solicitud")';
+                    } else {
+                        toastr["error"](data.Message);
+                        document.getElementById("GuardarRendicionSolicitud").disabled = false
+                    }
+                },
+                complete: function () {
+                    fn_DesbloquearPantalla();
+                    document.getElementById("GuardarRendicionSolicitud").disabled = false;
+                }
+            });
+    }
+</script>
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+
+

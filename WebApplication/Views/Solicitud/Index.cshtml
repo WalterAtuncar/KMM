@@ -1,0 +1,655 @@
+﻿@model WebApplication.Models.SolicitudViewModel
+
+<style>
+    #tbl-sol-list > tbody > tr > td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100px;
+    }
+    .datepicker {
+        z-index: 200 !important;
+    }
+
+    /*ul > .select2-results__option, .select2-selection__rendered { text-transform: uppercase !important; }*/
+</style>
+
+<h3 class="text-left text-primary">
+    <i class="fa fa fa-table" style="color: #ee3224;"></i>
+    <i class="fa fa-chevron-right" style="color: #ee3224;"></i> EVALUACIÓN DE SOLICITUDES
+</h3>
+<br />
+<div class="row">
+    <div id="filtros">
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Código:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkSolicitud" />
+                            </span>
+                            <input type="text" id="txtSolicitud" class="form-control input-sm filtro" required="required" />
+                            @*<span id="btn-show-modal-search-personal" class="input-group-addon btn btn-default" style="border:1px solid #CCCCCC">
+                                    <i class="fa fa-search"></i>
+                                </span>*@
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Situación de Serv.:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkSituacion" />
+                            </span>
+                            <select id="ddlSituacion" name="ListaSituacion" class="form-control filtro select2">
+                                <option value="">-SELECCIONE-</option>
+                                <option value="1">Registrado</option>
+                                <option value="2">Aprobado</option>
+                                <option value="3">Cancelado</option>
+                                <option value="4">Rechazado</option>
+                                <option value="5">Finalizado</option>
+                                <option value="6">Facturado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Sociedad:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkCompania" />
+                            </span>
+                            @Html.DropDownList("ListaSociedad", new SelectList(Model.ListaSociedad, "ID", "NombreFI"), "-SELECCIONE-", new { @class = "form-control filtro select2", @id = "ddlCompania" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Fecha R. Desde:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkFechaDesde" />
+                            </span>
+                            <div id="FechaFinDesdeDatePicker" style="width: 100%;" class="input-group input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                <input id="txtFechaDesde" class="form-control filtro" />
+                                <div class="input-group-addon close-button">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Fecha R. Hasta:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkFechaHasta" />
+                            </span>
+                            <div id="FechaHastaDatePicker" style="width: 100%;" class="input-group input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                <input id="txtFechaHasta" class="form-control filtro" />
+                                <div class="input-group-addon close-button">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Centro costo afecto:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkCentroCosto" />
+                            </span>
+                            @Html.DropDownList("ListaSociedad", new SelectList(Model.ListaCentroCosto, "Codigo", "Descripcion"), "-SELECCIONE-", new { @class = "form-control filtro select2", @id = "ddlCentroCosto" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            @*<a href="@Url.Action("Registrar", "Solicitud")" class="btn btn-primary btn-sm page-url"><i class="fa fa-plus-circle"></i> Nuevo</a>*@
+            <div class="form-group">
+                <button id="btnAprobarSolicitud" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> Aprobar</button>
+            </div>
+            <div class="form-group">
+                <button id="btnRechazarSolicitud" class="btn btn-danger btn-sm"><i class="fa fa-times"></i> Rechazar</button>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-info btn-sm" id="btnBuscarSolicitudEvaludar" style="width:120px;"><i class="fa fa-search"></i> Buscar</button>
+            </div>
+            </div>
+        </div>
+</div>
+<hr />
+@if (ViewBag.Updated != null)
+{
+    <div class="alert alert-success">
+        <i class="fa fa-check fa-lg"></i>&nbsp;&nbsp;@ViewBag.Message
+    </div>
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div id="div-tbl-centro" class="table-responsive">
+            <table id="jqGrid" class="table-gys-kom"></table>
+            <div id="jqControls"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-historial" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-rechazar-confirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title" id="myModalLabel">
+                    <i class="fa fa-remove"></i>
+                    <i class="fa fa-chevron-right"></i>
+                    RECHAZAR SOLICITUD
+                </h3>
+            </div>
+            <div class="modal-body">
+                <form id="frm-eva">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label>Motivo de rechazo</label>
+                                <textarea class="form-control" id="txt-motivo-rechazo" required=""></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div style="float: right">
+                    <button type="button" class="btn btn-primary btn-sm" id="btn-rechazar-confirm"><i class="fa fa-floppy-o"></i> Guardar</button>
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+
+<script>
+     var url = {
+         GetListSolicitud: '@Url.Action("GetListSolicitud", "Paginado")',
+         GetSolicitudDetalle: '@Url.Action("GetSolicitudDetalle", "Solicitud")',
+         GetListSolicitudAprobador: '@Url.Action("GetListSolicitudAprobador", "Paginado")',
+         AprobarPost: '@Url.Action("AprobarPost", "Solicitud")',
+         RechazarPost: '@Url.Action("RechazarPost", "Solicitud")'
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        //var URLactual = window.location.href;
+        //var EsTrue = URLactual.split('Index')[1];
+        //if (EsTrue != "") {
+
+        //    if (window.localStorage) {
+        //        if (!localStorage.getItem('firstLoad')) {
+        //            localStorage['firstLoad'] = true;
+        //            window.location.reload();
+        //            window.location = '/Solicitud/Index';
+        //        }
+        //        else
+        //            localStorage.removeItem('firstLoad');
+        //    }
+        //} else {
+        //    if (window.localStorage) {
+        //        if (!localStorage.getItem('firstLoad')) {
+        //            localStorage['firstLoad'] = true;
+        //            window.location.reload();
+        //            window.location = '/Solicitud/Index';
+        //        }
+        //        else
+        //            localStorage.removeItem('firstLoad');
+        //    }
+        //}
+
+        $('[data-toggle="tooltip"]').tooltip();
+        $('.filtro').attr('disabled', true);
+        $('.select2').select2();
+        $('#chkCompania').change(function () { checkCompania(this) });
+        $('#chkCentroCosto').change(function () { checkCentroCosto(this) });
+
+        $('#chkSituacion').change(function () { checkSituacion(this) });
+        $('#chkSolicitud').change(function () { checkSolicitud(this) });
+        $('#chkFechaHasta').change(function () { checkFechaHasta(this) });
+        $('#chkFechaDesde').change(function () { checkFechaDesde(this) });
+
+        paginado();
+
+
+        $('#btnBuscarSolicitudEvaludar').click(function () {
+            $('#jqGrid').jqGrid('setGridParam', {
+                url: getURLGet(),
+                ajaxGridOptions: {
+                    beforeSend: function (xhr) {
+                        fn_BloquearPantalla();
+                    },
+                    complete: function (xhr) {
+                        fn_DesbloquearPantalla();
+                    },
+                }
+            }).trigger('reloadGrid');
+        });
+
+        $('#FechaDesdeDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true
+        });
+
+        $('#FechaHastaDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true
+        });
+
+        $('.close-button').unbind();
+
+        $('.close-button').click(function () {
+            if ($('.datepicker').is(":visible")) {
+                $(this).parent().datepicker('hide');
+            } else {
+                $(this).parent().datepicker('show');
+            }
+        });
+
+    });
+
+     $('body').on('click', '.btn-sol-evaluar', function (e) {
+            e.preventDefault();
+            fn_BloquearPantalla();
+            var pid = $(this).attr('data-id');
+            window.location = "@Url.Action("Evaluar", "Solicitud")?id=" + pid;
+     });
+
+    $('body').on('click', '#btn-historial', function (e) {
+        e.preventDefault();
+        var pid = $(this).attr('data-id');
+        abrirHistorial(pid);
+    });
+
+    var checkCompania = function (element) {
+        if (element.checked) {
+            $('#ddlCompania').prop('disabled', false);
+            $('#ddlCompania').focus();
+        } else {
+            $('#ddlCompania').prop('disabled', true);
+            $('#ddlCompania').val("");
+            $('#ddlCompania').trigger("change")
+        }
+    }
+    var checkCentroCosto = function (element) {
+        if (element.checked) {
+            $('#ddlCentroCosto').prop('disabled', false);
+            $('#ddlCentroCosto').focus();
+        } else {
+            $('#ddlCentroCosto').prop('disabled', true);
+            $('#ddlCentroCosto').val("");
+            $('#ddlCentroCosto').trigger("change")
+        }
+    }
+
+    var checkSituacion = function (element) {
+        if (element.checked) {
+            $('#ddlSituacion').prop('disabled', false);
+            $('#ddlSituacion').focus();
+        } else {
+            $('#ddlSituacion').prop('disabled', true);
+            $('#ddlSituacion').val('');
+            $('#ddlSituacion').trigger("change")
+        }
+    }
+
+    var checkSolicitud = function (element) {
+        if (element.checked) {
+            $('#txtSolicitud').prop('disabled', false);
+            $('#txtSolicitud').focus();
+        } else {
+            $('#txtSolicitud').prop('disabled', true);
+            $('#txtSolicitud').val('');
+        }
+    }
+
+    var checkFechaHasta = function (element) {
+        if (element.checked) {
+            $('#txtFechaHasta').prop('disabled', false);
+            //$('#txtFechaHasta').focus();
+        } else {
+            $('#txtFechaHasta').prop('disabled', true);
+            $('#txtFechaHasta').val('');
+        }
+    }
+
+    var checkFechaDesde = function (element) {
+        if (element.checked) {
+            $('#txtFechaDesde').prop('disabled', false);
+            //$('#txtFechaDesde').focus();
+        } else {
+            $('#txtFechaDesde').prop('disabled', true);
+            $('#txtFechaDesde').val('');
+        }
+    }
+
+    function evaluar(ID) {
+        fn_BloquearPantalla();
+        window.location = "@Url.Action("Evaluar", "Solicitud")?id="+ ID;
+    }
+
+    var abrirHistorial = function (pid) {
+        fn_BloquearPantalla();
+        $('#modal-historial .modal-content').empty();
+        $('#modal-historial .modal-content').load(url.GetSolicitudDetalle, { idSolicitud: pid }, function () {
+            fn_DesbloquearPantalla();
+        });
+        $('#modal-historial').modal('show');
+    }
+
+    function getURLGet() {
+
+        var sociedad = $('#ddlCompania').val();
+        var fechaDesde = $('#txtFechaDesde').val();
+        var fechaHasta = $('#txtFechaHasta').val();
+        var situacion = $('#ddlSituacion').val();
+        var nroSolicitud = $('#txtSolicitud').val();
+        var centroCosto = $('#ddlCentroCosto').val();
+
+
+        return url.GetListSolicitudAprobador + '?sociedad=' + sociedad + '&fechaDesde=' + fechaDesde + '&fechaHasta=' + fechaHasta + '&nroSolicitud=' + nroSolicitud + '&situacion=' + situacion + '&centroCosto=' + centroCosto;
+    }
+
+    var paginado = function () {
+        $("#jqGrid").jqGrid({
+            url: url.GetListSolicitudAprobador,
+            datatype: 'JSON',
+            mtype: 'GET',
+            colNames: ['Seleccione','Opciones', 'Código', 'Situación', 'Fecha Registro', 'Fecha Servicio', 'Hora Servicio', 'Beneficiado', 'Centro de Costo', 'Descripcion', 'Orden de Servicio', 'CeCo Afecto', 'Descripcion'],
+            colModel: [
+                {
+                    key: false,
+                    name: 'ID',
+                    index: 'ID',
+                    align: 'center',
+                    fixed: false,
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (rowObject.IdSituacionServicio == 1) {
+                            //return '<input role="checkbox" type="checkbox" id="jqg_jqGrid_' + rowObject.ID + '" class="cbox" name="jqg_jqGrid_' + rowObject.ID +'">';
+                            return '<input role="checkbox" type="checkbox" id="jqg_jqGrid_' + rowObject.ID + '" class="cbox" name="' + rowObject.ID + "," + rowObject.IdProveedor + '">';
+                        } else {
+                            //return '<input role="checkbox" type="checkbox" id="jqg_jqGrid_' + rowObject.ID + '" class="cbox" style="display:none;" name="jqg_jqGrid_' + rowObject.ID + '">';
+                            return '<input role="checkbox" type="checkbox" id="jqg_jqGrid_' + rowObject.ID + '" class="cbox" style="display:none;" name="' + rowObject.ID + "," + rowObject.IdProveedor + '">';
+                        }
+                    },
+                    formatoptions: { keys: true, }
+                },
+                {
+                    key: false,
+                    name: 'ID',
+                    index: 'ID',
+                    align: 'center',
+                    fixed: false,
+                    formatter: formatoOpciones,
+                    formatoptions: { keys: true, }
+                },
+                {
+                    key: false,
+                    name: 'Codigo',
+                    index: 'Codigo',
+                    align: 'center',
+                    fixed: false
+                },
+                { key: false, name: 'NombreSituacionServicio', index: 'NombreSituacionServicio' },
+                { key: false, name: 'FechaRegistroStr', index: 'FechaRegistroStr' },
+                { key: false, name: 'FechaServicioStr', index: 'FechaServicioStr' },
+                { key: false, name: 'HoraServicio', index: 'HoraServicio', align: 'center' },
+                //{ key: false, name: 'DireccionOrigen', index: 'DireccionOrigen' },
+                //{ key: false, name: 'DireccionDestino', index: 'DireccionDestino' },
+                { key: false, name: 'BeneficiadoNombreCompleto', index: 'BeneficiadoNombreCompleto', fixed: true },
+                { key: false, name: 'BeneficiadoCodigoCentroCosto', index: 'BeneficiadoCodigoCentroCosto', fixed: true },
+                { key: false, name: 'BeneficiadoCentroCostoDescripcion', index: 'BeneficiadoCentroCostoDescripcion' },
+                {
+                    key: false,
+                    name: 'NroOrdenServicio',
+                    index: 'NroOrdenServicio',
+                    align: 'center',
+                    formatter: formatoOrdenServicio,
+                    formatoptions: { keys: true, }
+                },
+                { key: false, name: 'CentroCostoAfectoCodigoSap', index: 'CentroCostoAfectoCodigoSap' },
+                { key: false, name: 'CentroCostoAfectoDescripcion', index: 'CentroCostoAfectoDescripcion', fixed: true },
+            ],
+            pager: $('#jqControls'),
+            rowNum: 10,
+            rowList: [10, 20, 30, 40, 50],
+            height: '100%',
+            //postData: getParameterFilter(),
+
+            viewrecords: true,
+            //caption: 'Students Records',
+            //emptyrecords: 'No Students Records are Available to Display',
+            jsonReader: {
+                root: "rows",
+                page: "page",
+                total: "total",
+                records: "records",
+                repeatitems: false,
+                //Id: "0"
+            },
+            autowidth: true,
+            multiselect: false,
+            rownumbers: true,
+            cmTemplate: { sortable: false },
+            loadBeforeSend: function () {
+                fn_BloquearPantalla();
+            },
+            gridComplete: function () {
+                //fn_DesbloquearPantalla();
+                //$('[data-toggle="tooltip"]').tooltip({ placement: 'right' });
+            },
+            loadComplete: function (data) {
+                //$('[data-toggle="tooltip"]').tooltip();
+                console.log(data);
+                fn_DesbloquearPantalla();
+            },
+        });
+    }
+
+    var formatoOpciones = function (cellvalue, options, rowObject) {
+        return '<a href="javascript(0);" data-id ="' + cellvalue + '" class="fa fa-check-square-o fa-lg text-danger btn-sol-evaluar" title = "Evaluar"></a>' + '&nbsp;&nbsp;&nbsp;' +
+               '<a href="javascript(0);" id="btn-historial" data-id="' + cellvalue + '" class="fa fa-bars" title = "Historial"></a>';
+    }
+
+    var formatoOrdenServicio = function (cellvalue, options, rowObject) {
+        if (cellvalue == null) {
+            return '';
+        }
+        return cellvalue;
+    }
+
+
+    $('#btnAprobarSolicitud').click(function (e) {
+        e.preventDefault();
+        debugger;
+        var Items = [];
+
+        $("input[id^='jqg_jqGrid_']").each(function () {
+            if ($(this).is(":checked")) {
+
+                Items.push({
+                    'ID': $(this).attr('name').split(',')[0],
+                    'IdProveedor': $(this).attr('name').split(',')[1]
+                });
+            }
+        });
+
+        if (Items.length == 0) {
+
+            toastr["error"]('Debe seleccionar como mínimo una solicitud');
+            return;
+        }
+
+        fn_BloquearPantalla();
+        //$('#btnAprobarSolicitud').prop('disabled', true);
+
+        //var countItems = Items.length == 1 ? countItems = 0 : Items.length;
+        var countItems =  Items.length;
+
+        for (var i = 0; i < Items.length; i++) {
+
+            $.ajax({
+                url: url.AprobarPost,
+                data: {
+                    id: Items[i].ID,
+                    idProveedor: Items[i].IdProveedor
+                },
+                type: 'POST',
+                async: true,
+                cache: false,
+                success: function (data) {
+                    if (data.Success) {
+                        if (i == countItems) {
+                            setTimeout(function () {
+                                window.location = '/Solicitud/Index?upd=true';
+                            }, 15000); 
+                            
+                        }                
+                    } else {
+                        var MsjError = data.Message.substring(27).slice(0, -5);;
+                        //toastr["error"]('Ocurrio un error en el servicio');
+                        toastr["error"](MsjError);
+                        fn_DesbloquearPantalla();
+                    }
+                },
+                error: function (request, status, error) {
+                    //console.log(request);
+                    toastr["error"]('Ocurrio un error en el servicio');
+                    fn_DesbloquearPantalla();
+                }
+            });
+
+        }
+
+        console.log(Items);
+    });
+
+
+    $('#btnRechazarSolicitud').click(function (e) {
+        e.preventDefault();
+
+        var PreItems = [];
+        $("input[id^='jqg_jqGrid_']").each(function () {
+            if ($(this).is(":checked")) {
+
+                PreItems.push({
+                    'ID': $(this).attr('name').split(',')[0],
+                    'IdProveedor': $(this).attr('name').split(',')[1]
+                });
+            }
+        });
+
+        if (PreItems.length == 0) {
+
+            toastr["error"]('Debe seleccionar como mínimo una solicitud');
+            return;
+        }
+
+        $('#txt-motivo-rechazo').val('');
+        $('#modal-rechazar-confirm').modal('show');
+    });
+
+
+    $('#btn-rechazar-confirm').click(function (e) {
+        e.preventDefault();
+
+
+       
+        //var IdSolicitud = document.getElementById('IdSolicitud').value;
+        var motivoRechazo = document.getElementById('txt-motivo-rechazo').value;
+
+        if (motivoRechazo == "") {
+
+            toastr["error"]('Debe ingresar el motivo del rechazo');
+            return;
+        }
+
+        debugger;
+        var Items = [];
+        $("input[id^='jqg_jqGrid_']").each(function () {
+            if ($(this).is(":checked")) {
+
+                Items.push({
+                    'ID': $(this).attr('name').split(',')[0],
+                    'IdProveedor': $(this).attr('name').split(',')[1]
+                });
+            }
+        });
+
+        fn_BloquearPantalla();
+
+        var countItems = Items.length;
+
+        for (var i = 0; i < Items.length; i++) {
+
+            $.ajax({
+                url: url.RechazarPost,
+                data: {
+                    id: Items[i].ID,
+                    m: motivoRechazo
+                },
+                dataType: 'JSON',
+                //beforeSend: function () {
+                //    fn_BloquearPantalla();
+                //},
+                type: 'POST',
+                async: true,
+                success: function (data) {
+                    if (data.Success) {
+                        if (i == countItems) {
+                            window.location = '/Solicitud/Index?upd=true';
+                        }
+                    } else {
+                        toastr["error"](data.Message);
+                        fn_DesbloquearPantalla();
+                    }
+                },
+                error: function (request, status, error) {
+                    //console.log(request);
+                    toastr["error"]('Ocurrio un error en el servicio');
+                    fn_DesbloquearPantalla();
+                },
+                complete: function () {
+                    fn_DesbloquearPantalla();
+                }
+            });
+
+        }
+            
+            
+        
+    });
+
+</script>

@@ -1,0 +1,527 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1A9AF656-7A6B-4A30-9D2E-58E71FCEC290}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Data</RootNamespace>
+    <AssemblyName>Data</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Dapper">
+      <HintPath>..\packages\Dapper.1.50.4\lib\net451\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper.Contrib, Version=1.50.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.Contrib.1.50.4\lib\net451\Dapper.Contrib.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper.SimpleCRUD, Version=1.13.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.SimpleCRUD.1.13.0\lib\net45\Dapper.SimpleCRUD.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Report.Viewer.11.0.0.0\lib\net\Microsoft.ReportViewer.WebForms.DLL</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.6.0\lib\net45\Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.Sinks.Console, Version=3.1.1.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.Console.3.1.1\lib\net45\Serilog.Sinks.Console.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.File.4.0.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.4\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Automovil.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Beneficiado.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CategoriaProducto.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CentroCosto.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Common\Adjunto.cs" />
+    <Compile Include="Common\AhorroProveedor.cs" />
+    <Compile Include="Common\Automovil.cs" />
+    <Compile Include="Common\Beneficiado.cs" />
+    <Compile Include="Common\CentroCosto.cs" />
+    <Compile Include="Common\LiquidacionExport2.cs" />
+    <Compile Include="Common\ComparacionMensual.cs" />
+    <Compile Include="Common\Conductor.cs" />
+    <Compile Include="Common\Correo.cs" />
+    <Compile Include="Common\CredencialesProveedorTaxi.cs" />
+    <Compile Include="Common\CuentaMayor.cs" />
+    <Compile Include="Common\Destino.cs" />
+    <Compile Include="Common\DetalleGastoTotal.cs" />
+    <Compile Include="Common\DocumentoLiquidacion.cs" />
+    <Compile Include="Common\EmailAdjunto.cs" />
+    <Compile Include="Common\EstadoProveedor.cs" />
+    <Compile Include="Common\GastoAdicional.cs" />
+    <Compile Include="Common\GlobalFormat.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GlobalFormat.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Common\IndicadorIGV.cs" />
+    <Compile Include="Common\IndicadorLiquidacion.cs" />
+    <Compile Include="Common\Liquidacion.cs" />
+    <Compile Include="Common\LiquidacionExport.cs" />
+    <Compile Include="Common\LiquidacionExport3.cs" />
+    <Compile Include="Common\MenuPaginas.cs" />
+    <Compile Include="Common\MotivoCreacionSolicitud.cs" />
+    <Compile Include="Common\OrdenServicioValid.cs" />
+    <Compile Include="Common\Paginas.cs" />
+    <Compile Include="Common\Pagination.cs" />
+    <Compile Include="Common\ParameterFiler.cs" />
+    <Compile Include="Common\PenalidadTiempoEspera.cs" />
+    <Compile Include="Common\Perfil.cs" />
+    <Compile Include="Common\ProveedorTaxi.cs" />
+    <Compile Include="Common\GastoTotal.cs" />
+    <Compile Include="Common\ReporteAuditoria.cs" />
+    <Compile Include="Common\ReporteRepresentacion.cs" />
+    <Compile Include="Common\SituacionServicio.cs" />
+    <Compile Include="Common\Sociedad.cs" />
+    <Compile Include="Common\Solicitud.cs" />
+    <Compile Include="Common\SolicitudDetalle.cs" />
+    <Compile Include="Common\SolicitudLiquidacion.cs" />
+    <Compile Include="Common\SolicitudProveedorTaxi.cs" />
+    <Compile Include="Common\TipoDestino.cs" />
+    <Compile Include="Common\TipoPago.cs" />
+    <Compile Include="Common\TipoServicio.cs" />
+    <Compile Include="Common\Usuario.cs" />
+    <Compile Include="Common\UsuarioCentroCosto.cs" />
+    <Compile Include="Concepto.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Conductor.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Configuracion.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CredencialesProveedorTaxi.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CuentaMayor.cs" />
+    <Compile Include="Destino.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Enum\SolicitudEnum.cs" />
+    <Compile Include="Enum\TipoCorreoEnum.cs" />
+    <Compile Include="EstadoProveedor.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EstadoServicio.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Fn_SplitContenido_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GastoAdicional.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="IndicadorIGV.cs" />
+    <Compile Include="Liquidacion.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="LiquidacionDetalle.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="LiquidacionEstado.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MenuPagina.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MetodoProveedorTaxi.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ModelContext.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModelContext.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ModelContext.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ModelContext.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModelContext.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="MotivoCreacionSolicitud.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Pagina.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Perfil.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PerfilPagina.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProveedorTaxi.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ServicioProveedorTaxi.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SituacionServicio.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Sociedad.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Solicitud.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SolicitudDetalle.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SolicitudProveedorTaxi.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_helpdiagramdefinition_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="sp_helpdiagrams_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoDestino.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoDocumento.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoPago.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TipoServicio.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Tracking.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_AprobadorByCentroCosto_List_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Automovil_By_Solicitud_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Beneficiado_List_By_Solicitud_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Beneficiado_Lis_By_Servicio_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_CentroCosto_By_Codigo_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_CentroCosto_By_Solicitud_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_CentroCosto_Listar_Paginado_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Cliente_Select_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Conductor_By_Solicitud_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Destinio_List_By_Proveedor_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Destino_By_Solicitud_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_DetalleSolicitud_By_Solicitud_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_EstadoProveedor_GetBySolicitud_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_GastoAdicional_By_Solicitud_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_LiquidacionDeatlle_By_Liquidacion_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_LiquidacionDetalle_By_Liquidacion_Export_Detallado_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_LiquidacionDetalle_By_Liquidacion_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Liquidacion_By_Id_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Liquidacion_Cancelar_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Liquidacion_Export_By_ID_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Liquidacion_Insert_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Liquidacion_Listar_Paginado_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Liquidacion_Listar_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Liquidacion_List_By_ID_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Listar_CuentaMayor_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Listar_IndicadorIGV_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_MenuPagina_Listar_By_UserName_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Pagina_Listar_By_UserName_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Pagina_List_By_Perfil_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Pagina_List_Not_In_Perfil_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Pagina_List_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Perfil_Listar_Paginado_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_ProveedorTaxi_Activo_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_ProveedorTaxi_List_By_Solicitud_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_ProveedorTaxi_List_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Proveedor_GetByID_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Proveedor_Listar_Paginado_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_ReporteComparacionMensual_Listar_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_ReporteDetalleGastoTotal_Listar_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_ReporteGastoTotal_Listar_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_ReportePenalidadTiempoEspera_Listar_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_ResponsableByCentroCosto_List_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Responsable_Listar_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_ServicioProveedorTaxi_By_Proveedor_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_ServicioProveedorTaxi_List_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_SituacionServicio_GetBySolicitud_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_SolicitudCorreo_By_Servicio_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Solicitud_Buscar_Paginado_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Solicitud_GetByID_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Solicitud_GetByLiquidacionIDForExcel_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Solicitud_GetByLiquidacionID_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Solicitud_List_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_SoporteAdministrativo_List_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Tracking_Sel_By_Solicitud_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_User_Get_By_UserName_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_User_Listar_Paginado_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_UsuarioCentroCosto_By_ID_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_UsuarioRegistroBySolicitud_List_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_UsuarioRegistro_List_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Usuario_By_ID_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Usuario_GetBySociedad_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="usp_Usuario_List_Result.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Usuario.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UsuarioCentroCosto.cs">
+      <DependentUpon>ModelContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Util\DataUtil.cs" />
+    <Compile Include="Util\Parameter.cs" />
+    <Compile Include="Util\UpperCaseAtributte.cs" />
+    <Compile Include="Util\Utilitario.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
+    <EntityDeploy Include="ModelContext.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ModelContext.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="ModelContext.edmx.diagram">
+      <DependentUpon>ModelContext.edmx</DependentUpon>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Common\GlobalFormat.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>GlobalFormat.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ModelContext.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ModelContext.edmx</DependentUpon>
+      <LastGenOutput>ModelContext.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="ModelContext.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ModelContext.edmx</DependentUpon>
+      <LastGenOutput>ModelContext.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

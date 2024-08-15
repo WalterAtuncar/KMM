@@ -1,0 +1,327 @@
+﻿@model WebApplication.Areas.GASTO.Models.SolicitudViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+    .accordion-link {
+        display: none;
+    }
+
+    .data-point-label {
+        font-weight: bold;
+    }
+
+    .container-flot {
+        box-sizing: border-box;
+        width: 850px;
+        height: 450px;
+        padding: 20px 15px 15px 15px;
+        margin: 15px auto 30px auto;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid #ddd;
+        background: #fff;
+        background: linear-gradient(#f6f6f6 0, #fff 50px);
+        background: -o-linear-gradient(#f6f6f6 0, #fff 50px);
+        background: -ms-linear-gradient(#f6f6f6 0, #fff 50px);
+        background: -moz-linear-gradient(#f6f6f6 0, #fff 50px);
+        background: -webkit-linear-gradient(#f6f6f6 0, #fff 50px);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        -o-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        -ms-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        -moz-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        -webkit-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .placeholder-flot {
+        width: 100%;
+        height: 100%;
+        font-size: 12px;
+    }
+</style>
+
+
+<h2 class="title" style="margin-bottom: 0">
+    <i class="fa fa-angle-right"></i>&nbsp;Reporte Auditoria
+</h2>
+<br />
+<div class="row">
+    <div id="filtros" style="margin-top: 15px;">
+        <div class="col-sm-4">
+            @*<div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Sociedad:</label>
+                        <div class="col-sm-8 input-group-sm">
+                            @Html.DropDownListFor(m => m.IdSociedad, new SelectList(ViewBag.listaSociedad, "CodigoSociedadFI", "NombreCO"), new { @class = "form-control select2", @id = "dllSociedad" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Fecha reporte desde:</label>
+                        <div class="col-sm-8">
+                            <div class="input-group input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                <input type="text" id="FechaReporteInicioTextBox" class="form-control" />
+                                <div class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+        <div class="col-sm-4">
+            @*<div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Codigo:</label>
+                        <div id="responsable" class="col-sm-8 input-group-sm">
+                            @Html.TextBoxFor(m => m.Codigo,
+                                 new
+                                 {
+                                     @class = "form-control input-sm",
+                                     @id = "txtCodigoFiltro",
+                                     @placeholder = "Codigo"
+                                  })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Fecha reporte hasta:</label>
+                        <div class="col-sm-8">
+                            <div class="input-group input-group-sm input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                <input type="text" id="FechaReporteFinTextBox" class="form-control" />
+                                <div class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-4">
+                        @*<button id="BuscarReporte" class="btn btn-sm btn-danger" style="width: 120px;">Buscar <i class="fa fa-search"></i></button>*@
+                        <button id="btnExportarExcel" class="btn btn-primary btn-sm pull-right" style="width: 120px;">Exportar Excel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+<h2 class="title" style="margin-bottom: 0">
+    <i class="fa fa-angle-right"></i>&nbsp;Reporte Gastos Representacion
+</h2>
+<br />
+<div class="row">
+    <div id="filtros" style="margin-top: 15px;">
+        <div class="col-sm-4">
+            @*<div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Sociedad:</label>
+                        <div class="col-sm-8 input-group-sm">
+                            @Html.DropDownListFor(m => m.IdSociedad, new SelectList(ViewBag.listaSociedad, "CodigoSociedadFI", "NombreCO"), new { @class = "form-control select2", @id = "dllSociedad" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Fecha reporte desde:</label>
+                        <div class="col-sm-8">
+                            <div class="input-group input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                <input type="text" id="FechaReporteInicioTextBox" class="form-control" />
+                                <div class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+        <div class="col-sm-4">
+            @*<div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Codigo:</label>
+                    <div id="responsable" class="col-sm-8 input-group-sm">
+                        @Html.TextBoxFor(m => m.Codigo,
+                             new
+                             {
+                                 @class = "form-control input-sm",
+                                 @id = "txtCodigoFiltro",
+                                 @placeholder = "Codigo"
+                              })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Fecha reporte hasta:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                            <input type="text" id="FechaReporteFinTextBox" class="form-control" />
+                            <div class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-4">
+                    @*<button id="BuscarReporte" class="btn btn-sm btn-danger" style="width: 120px;">Buscar <i class="fa fa-search"></i></button>*@
+                    <button id="btnExportarExcelGR" class="btn btn-primary btn-sm pull-right" style="width: 120px;">Exportar Excel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+<h2 class="title" style="margin-bottom: 0">
+    <i class="fa fa-angle-right"></i>&nbsp;Reporte Gastos Detallado
+</h2>
+<br />
+<div class="row">
+    <div id="filtros" style="margin-top: 15px;">
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Año:</label>
+                    <div class="col-sm-8">
+                        <select id="AnioReporteDetallado" class="form-control">
+                            <!-- Generar opciones para los años desde 2016 hasta 2024 -->
+                            @*<option value="2016">2016</option>
+                            <option value="2017">2017</option>
+                            <option value="2018">2018</option>
+                            <option value="2019">2019</option>*@
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023">2023</option>
+                            <option value="2024">2024</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            @*<div class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-sm-4">Sociedad:</label>
+                <div class="col-sm-8 input-group-sm">
+                    @Html.DropDownListFor(m => m.IdSociedad, new SelectList(ViewBag.listaSociedad, "CodigoSociedadFI", "NombreCO"), new { @class = "form-control select2", @id = "dllSociedad" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-4">Fecha reporte desde:</label>
+                <div class="col-sm-8">
+                    <div class="input-group input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                        <input type="text" id="FechaReporteInicioTextBox" class="form-control" />
+                        <div class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+        </div>
+        <div class="col-sm-4">
+            @*<div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Codigo:</label>
+                    <div id="responsable" class="col-sm-8 input-group-sm">
+                        @Html.TextBoxFor(m => m.Codigo,
+                             new
+                             {
+                                 @class = "form-control input-sm",
+                                 @id = "txtCodigoFiltro",
+                                 @placeholder = "Codigo"
+                              })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Fecha reporte hasta:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                            <input type="text" id="FechaReporteFinTextBox" class="form-control" />
+                            <div class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <div class="col-sm-4">
+                    @*<button id="BuscarReporte" class="btn btn-sm btn-danger" style="width: 120px;">Buscar <i class="fa fa-search"></i></button>*@
+                    <button id="btnExportarExcelDE" class="btn btn-primary btn-sm pull-right" style="width: 120px;">Exportar Excel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-sm-offset-10 col-sm-2">
+        @*<button id="btnExportarExcel" class="btn btn-primary btn-sm pull-right" style="width: 120px;">Exportar Excel</button>*@
+        @*@Html.ActionLink("Descargar Excel", "ExportarExcel", new { formato = "EXCEL", listaUsuario = "", listaCentroCosto = "" }, new { @id = "exportarExcel", @class = "btn btn-primary btn-sm pull-right", @type = "button", @Style = "padding-left:20px;" })*@
+    </div>
+    <br />
+    <br />
+    <div class="col-sm-12">
+        <div id="div-tbl-solicitudes" class="table-responsive">
+        </div>
+    </div>
+</div>
+
+<div id="spinner" style="display: none; position: fixed !important;" class="LockOn"></div>
+
+<script>
+    var currentYear = new Date().getFullYear();
+    $('#AnioReporteDetallado').val(currentYear);
+var url = {
+            GetReporteAuditoria: '@Url.Action("GetReporteAuditoria", "ReporteGasto")',
+            ExportarExcel: '@Url.Action("ExportarExcel", "ReporteGasto")'
+    }
+
+    $('body').on('click', '#btnExportarExcel', function (e) {
+        e.preventDefault();
+        debugger;
+        var codigo = $("#txtCodigoFiltro").val();
+        var fechaInicio = $("#FechaReporteInicioTextBox").val()
+        var fechafin = $("#FechaReporteFinTextBox").val()
+        var sociedad = $("#dllSociedad").val();
+        exportExcel(codigo, fechaInicio, fechafin, sociedad);
+        function exportExcel(codigo, fechaInicio, fechafin, sociedad) {
+            document.location = '@Url.Action("ExportarExcel", "ReporteGasto", new { area = "GASTO" })?IdSolicitud=' + codigo + '&fechaInicio=' + fechaInicio + '&fechaFin=' + fechafin + '&sociedad=' + sociedad;
+        }
+
+    });
+
+    $('body').on('click', '#btnExportarExcelGR', function (e) {
+        e.preventDefault();
+        debugger;
+        exportExcelGR();
+        function exportExcelGR() {
+            document.location = '@Url.Action("ExportarExcelGR", "ReporteGasto", new { area = "GASTO" })';
+        }
+
+    });
+
+    $('body').on('click', '#btnExportarExcelDE', function (e) {
+        e.preventDefault();
+        debugger;
+        var codigo = $("#txtCodigoFiltro").val();
+        var fechaInicio = $("#FechaReporteInicioTextBox").val()
+        var fechafin = $("#FechaReporteFinTextBox").val()
+        var sociedad = $("#dllSociedad").val();
+        var anio = $("#AnioReporteDetallado").val();
+        exportExcelDE();
+        function exportExcelDE() {
+            document.location = '@Url.Action("ExportarExcelDE", "ReporteGasto", new { area = "GASTO", })?anio=' + anio;
+        }
+
+    });
+
+</script>
+<script src="~/Areas/GASTO/Scripts/ReporteGastos/Index.js"></script>

@@ -1,0 +1,364 @@
+﻿@model WebApplication.Areas.GASTO.Models.DelegacionesViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+    @if (Model.ID == default(int))
+    {
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>REGISTRO DELEGAR</h3>
+    }
+    else
+    {
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>MODIFICAR DELEGAR  ID: @Model.ID</h3>
+    }
+
+</div>
+<input type="hidden" id="hdfID" value="@Model.ID" />
+<input type="hidden" id="hdfIdEstado" value="@Model.Estado" />
+
+<div class="modal-body">
+    @*<div class="row">
+        <div class="col-sm-12">
+            <ul id="detalleLiquidacion" class="nav nav-tabs responsive-tabs">
+                <li class="nav-item active">
+                    <a class="nav-link nav-link-tab active" data-toggle="tab" href="#info" role="tab" data-index="0">Información</a>
+                </li>
+            </ul>
+        </div>
+    </div>*@
+    @*<br />*@
+
+
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+
+            @using (Html.BeginForm("RegistroDelegar", "AprobacionesJefes", FormMethod.Post, new { @id = "frm-guardar-delegar" }))
+            {
+
+                <div class="row">
+
+
+
+                    <div class="form-group">
+                        <label class="col-sm-3">Delegar A: </label>
+                        <div class="col-sm-8">
+                            @Html.DropDownListFor(m => m.IdUsuarioDelegado, new SelectList(ViewBag.ListaDelegarA, "ID", "Nombres"), new { @class = "form-control select2", @id = "dllDelegarA" })
+                        </div>
+                    </div>
+
+
+                </div>
+                <br />
+
+                @*<div class="row">
+                <div id="filtros">
+                    <div class="col-sm-8">
+                        <div class="form-horizontal">
+                            <div class="form-horizontal  rowUser">
+                                <div class="form-group">
+                                    <label class="col-sm-4">Delegar A: </label>
+                                    <div class="col-sm-8">
+                                        @Html.DropDownListFor(m => m.IdUsuarioDelegado, new SelectList(ViewBag.ListaDelegarA, "ID", "NombreCompleto"), new { @class = "form-control select2", @id = "dllDelegarA" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+
+                @*<div class="row">
+                <div id="filtros">
+                    <div class="col-sm-8">
+                        <div class="form-horizontal">
+                            <div class="form-horizontal  rowUser">
+                                <div class="form-group">
+                                    <label class="col-sm-4">Comentarios: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextAreaFor(m => m.Comentarios, new { @class = "form-control input-sm", @rows = 2, @columns = 60, @id = "txtComentarios" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+
+
+                <div class="row">
+
+                    <div class="form-group">
+                        <label class="col-sm-3">Comentarios: </label>
+                        <div class="col-sm-8">
+                            @Html.TextAreaFor(m => m.Comentarios, new { @class = "form-control input-sm", @rows = 2, @columns = 60, @id = "txtComentarios" })
+                        </div>
+                    </div>
+
+                </div>
+                <br />
+                @*<div class="row">
+                <div id="filtros">
+                    <div class="col-sm-8">
+                        <div class="form-horizontal">
+                            <div class="form-horizontal  rowUser">
+                                <div class="form-group">
+                                    <label class="col-sm-4" id="lblFechaDesde">Desde:</label>
+                                    <div class="col-sm-8">
+                                        <div id="fecha-content-desde" class="input-group input-group-sm date" data-date-format="dd/mm/yyyy" data-date-viewmode="years">
+                                            @Html.TextBoxFor(m => m.FechaDesdeStr,
+                                                                                                 new
+                                                                                                 {
+                                                                                                     @class = "form-control input-sm",
+                                                                                                     @placeholder = "FECHA DESDE"
+
+                                                                                                 })
+                                            <div class="input-group-addon close-button">
+                                                <span class="fa fa-calendar"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+
+                <div class="row">
+
+                    <div class="form-group">
+                        <label class="col-sm-3" id="lblFechaDesde">Desde:</label>
+                        <div class="col-sm-4">
+                            <div id="fecha-content-desde" class="input-group input-group-sm date" data-date-format="dd/mm/yyyy" data-date-viewmode="years">
+                                @Html.TextBoxFor(m => m.FechaDesdeStr,
+                                                                                     new
+                                                                                     {
+                                                                                         @class = "form-control input-sm",
+                                                                                         @placeholder = "FECHA DESDE"
+
+                                                                                     })
+                                <div class="input-group-addon close-button">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+
+                    <div class="form-group">
+                        <label class="col-sm-3" id="lblFechaHasta">Hasta:</label>
+                        <div class="col-sm-4">
+                            <div id="fecha-content-hasta" class="input-group input-group-sm date" data-date-format="dd/mm/yyyy" data-date-viewmode="years">
+                                @Html.TextBoxFor(m => m.FechaHastaStr,
+                                                                                     new
+                                                                                     {
+                                                                                         @class = "form-control input-sm",
+                                                                                         @placeholder = "FECHA HASTA"
+
+                                                                                     })
+                                <div class="input-group-addon close-button">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="GuardarDelegacionButton" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cancelar</button>
+    </div>
+</div>
+</div> @*FIN MODAL*@
+
+<script>
+    
+    $(document).ready(function () {
+
+       
+
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            width: '100%',
+        });
+
+        $('#fecha-content-desde').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+        //$('#fecha-content-desde').datepicker('setStartDate', new Date());
+
+      
+        $('#fecha-content-hasta').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+        //$('#fecha-content-fin').datepicker('setStartDate', new Date());
+       
+       
+
+        $('#FechaDesdeStr').change(function (e) {
+            e.preventDefault();
+            var fini = $('#FechaDesdeStr').val();
+            var ffin = $('#FechaHastaStr').val();
+          
+                if ((fini != undefined && fini != "") && (ffin != undefined && ffin != "")) {
+                    if (!validate_fechaMayorQue(fini, ffin)) {
+                        alert('La Fecha Desde debe ser menor igual a la fecha Hasta');
+                        $("#FechaDesdeStr").focus();
+                    }
+                }
+          
+           
+        });
+
+        $('#FechaHastaStr').change(function (e) {
+            e.preventDefault();
+            var fini = $('#FechaDesdeStr').val();
+            var ffin = $('#FechaHastaStr').val();
+           
+                if ((fini != undefined && fini != "") && (ffin != undefined && ffin != "")) {
+                    if (!validate_fechaMayorQue(fini, ffin)) {
+                        alert('La Fecha Desde debe ser menor igual a la fecha Hasta');
+                        $("#FechaHastaStr").focus();
+                    }
+                }
+           
+        });
+
+        $('#GuardarDelegacionButton').click(function (e) {
+            e.preventDefault();
+            debugger;
+            var Id = $('#hdfID').val();
+            document.getElementById("GuardarDelegacionButton").disabled = true;
+            var $frm = $('#frm-guardar-delegar');
+            var formParsley = $frm.parsley(__defaultParsleyForm());
+            var isValid = formParsley.validate();
+            indicador = true;
+               
+            var IdUsuarioDelegado = $('#dllDelegarA').val();
+            if (isValid && (IdUsuarioDelegado == undefined || IdUsuarioDelegado == "" || IdUsuarioDelegado == "0")) {
+                toastr["warning"]('Debe seleccionar un Usuario a Delegar.');
+                document.getElementById("GuardarDelegacionButton").disabled = false;
+                indicador = false;
+                return;
+            }
+              
+
+                
+             
+                indicador = true;
+                var fini = $('#FechaDesdeStr').val();
+                var ffin = $('#FechaHastaStr').val();
+                    if (fini == undefined || fini == "") {
+                        toastr["warning"]('Debe Ingresar fecha Desde');
+                        document.getElementById("GuardarDelegacionButton").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+                    if (ffin == undefined || ffin == "") {
+                        toastr["warning"]('Debe Ingresar fecha Hasta');
+                        document.getElementById("GuardarDelegacionButton").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+              
+
+              
+                
+
+               
+
+               
+
+                indicador = true;
+                if (isValid) {
+                    
+                        var fini = $('#FechaDesdeStr').val();
+                        var ffin = $('#FechaHastaStr').val();
+                        if ((fini != undefined && fini != "") && (ffin != undefined && ffin != "")) {
+                           if (!validate_fechaMayorQue(fini, ffin)) {
+                               toastr["warning"]('La Fecha Desde debe ser menor igual a la fecha Hasta');
+                               document.getElementById("GuardarDelegacionButton").disabled = false;
+                               indicador = false;
+                               return;
+                           }
+                         }
+                   
+                }
+
+            if (indicador) {
+                var urlAccion = '';
+                if (Id == 0) {
+                    urlAccion = url.RegistrarDelegarPost;
+                } else {
+                    urlAccion = url.ActualizarDelegarPost;
+                }
+                fn_BloquearPantalla();
+            
+                var element = {
+                    ID: Id,
+                    IdUsuario: $('#hdfIdUsuarioDelegador').val(),
+                    IdUsuarioDelegado: $('#dllDelegarA').val(),
+                    Comentarios: $('#txtComentarios').val(),
+                    FechaDesde: $('#FechaDesdeStr').val(),
+                    FechaHasta: $('#FechaHastaStr').val(),
+                    Estado: $('#hdfIdEstado').val()
+                };
+                $.ajax({
+
+                    url: urlAccion,
+                    type: 'POST',
+                    data: { element: element },
+                    dataType: 'JSON',
+                    async: true,
+                    beforeSend: function () {
+                        fn_BloquearPantalla();
+                    },
+                    success: function (data) {
+                        if (data.Success) {
+                            $('#modal-detalle-delegacion').modal('hide');
+                            fn_BloquearPantalla();
+                            $('#modal-delegar .modal-content').empty();
+                            $('#modal-delegar .modal-content').load(url.Delegar, { IdUsuario: 0 }, function () {
+                                $("#modal-delegar").modal({ show: true, backdrop: 'static', keyboard: true });
+                                fn_DesbloquearPantalla();
+                            });
+
+                        } else {
+                            toastr["error"](data.Message);
+                            document.getElementById("GuardarDelegacionButton").disabled = false
+                        }
+                    },
+                    complete: function () {
+                        fn_DesbloquearPantalla();
+                        document.getElementById("GuardarDelegacionButton").disabled = false;
+                    }
+                });
+            } // fin indicador
+        });
+        cargado = 1;
+    });
+
+    
+
+</script>
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+

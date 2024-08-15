@@ -1,0 +1,10 @@
+﻿@model List<Data.CentroCosto>
+
+<select class="form-control select2 filtro" multiple = "multiple" id="listCentroCosto">
+    @foreach (var centrocosto in Model)
+    {
+        <option value="@centrocosto.Codigo">@(centrocosto.Codigo + " - " + centrocosto.Descripcion)</option>
+    }
+</select>
+
+

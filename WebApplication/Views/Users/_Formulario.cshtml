@@ -1,0 +1,189 @@
+﻿@model WebApplication.Models.UsuarioViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    @if (Model.Usuario.ID == default(int))
+    {
+        <h3 class="modal-title" id="myModalLabel">
+            <i class="fa fa-pencil-square-o"></i>
+            <i class="fa fa-chevron-right"></i>
+            REGISTRO DE USUARIO
+        </h3>
+    }
+    else
+    {
+        <h3 class="modal-title" id="myModalLabel">
+            <i class="fa fa-pencil-square-o"></i>
+            <i class="fa fa-chevron-right"></i> 
+            MODIFICAR USUARIO
+        </h3>
+    }
+</div>
+
+@using (Html.BeginForm("Registrar", "Users", FormMethod.Post, new { @id = "frm-add-user", @class = "form-horizontal", @style = "padding-left: 50px;" }))
+{
+<div class="modal-body">
+    @Html.HiddenFor(m => m.Usuario.ID, new { @id = "IdUser" })
+    @Html.HiddenFor(m => m.Usuario.ListaCentroCosto , new { @id = "IdListaCentoCosto"})
+    @Html.HiddenFor(m => m.Usuario.CodigoCentroCosto, new { @id = "IdCentroCosto" })
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">N° Documento</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.TextBoxFor(m => m.Usuario.NumeroDocumento,
+                         new
+                         {
+                             @class = "form-control input-sm",
+                             @id = "txtNumeroDocumento",
+                             @maxlength = "20",
+                             @autofocus = "autofocus",
+                             @placeholder = "Número Documento",
+                             @readonly = "readonly"
+                         })
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Nombres</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.TextBoxFor(m => m.Usuario.Nombres,
+                         new
+                         {
+                             @class = "form-control input-sm",
+                             @id = "txtNombres",
+                             @placeholder = "Nombres",
+                             @readonly = "readonly"
+                         })
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Apellidos</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.TextBoxFor(m => m.Usuario.Apellidos,
+                         new
+                         {
+                             @class = "form-control input-sm",
+                             @id = "txtApellidos",
+                             @placeholder = "Apellidos",
+                             @readonly = "readonly"
+                         })
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Username</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.TextBoxFor(m => m.Usuario.UserName,
+                         new
+                         {
+                             @class = "form-control input-sm",
+                             @id = "txtUserName",
+                             @placeholder = "User Name",
+                             @readonly = "readonly"
+                         })
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Teléfono</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.TextBoxFor(m => m.Usuario.Telefono,
+                         new
+                         {
+                             @class = "form-control input-sm",
+                             @id = "txtTelefono",
+                             @placeholder = "Teléfono",
+                             @readonly = "readonly"
+                         })
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Perfil</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.DropDownListFor(m => m.Usuario.IdPerfil,
+                         new SelectList(Model.ListaPerfil, "ID", "Nombre"), "SELECCIONE PERFIL",
+                         new
+                         {
+                             @id = "ddlPerfil",
+                             @class = "form-control select2",
+                             @style = "width:100%;"
+                         })
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Centro de Costo</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.DropDownListFor(m => m.Usuario.CodigoCentroCosto,
+                         new SelectList(Model.ListaCentroCosto, "Codigo", "Descripcion"),
+                         new
+                         {
+                             @id = "ddlCentroCosto",
+                             @class = "form-control select2",
+                             @style = "width:100%;",
+                             @disabled = "disabled"
+                         })
+        </div>
+    </div>
+
+
+    <br />
+
+    <div class="form-group div-multiselect">
+        <label class="col-lg-3 col-md-2">Cecos Asignados</label>
+        <div class="col-sm-6 col-md-6" style="max-height: 150px; overflow-y: auto;">
+            @Html.ListBoxFor(m => m.ListaCentroCostoByUsuario, new MultiSelectList(Model.ListaCentroCosto, "Codigo", "Descripcion"),
+                         new 
+                         {
+                             @id = "ddlCentroCostoMultiSelect",
+                             @multiple = "multiple"
+                         })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Estado</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.TextBoxFor(m => m.Usuario.Estado,
+                         new
+                         {
+                             @class = "form-control input-sm",
+                             @id = "txtEstado",
+                             @placeholder = "Estado",
+                             @readonly = "readonly"
+                         })
+        </div>
+    </div>
+</div>
+
+    <div class="modal-footer">
+        <div style="float: right">
+            <button id="btn-save" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+            <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+        </div>
+    </div>
+
+}
+
+<script>
+    $(document).ready(function () {
+        $('.modal-body .select2').select2();
+        $("#ddlCentroCostoMultiSelect").select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+    });
+</script>

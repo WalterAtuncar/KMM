@@ -1,0 +1,180 @@
+﻿@model WebApplication.Areas.GASTO.Models.UsuarioAprobadorViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+    @if (Model.ID == default(int))
+    {
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>REGISTRAR USUARIO APROBADOR</h3>
+    }
+    else
+    {
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>MODIFICAR USUARIO APROBADOR</h3>
+    }
+
+</div>
+<input type="hidden" id="hdfID_FormularioTabla22" value="@Model.ID" />
+<input type="hidden" id="hdfIdUsuarioAprobador" value="@Model.IdUsuario" />
+<input type="hidden" id="hdfListaCeco" value="@ViewBag.listaCeco" />
+
+<div class="modal-body">
+    @*<div class="row">
+            <div class="col-sm-12">
+                <ul id="detalleLiquidacion" class="nav nav-tabs responsive-tabs">
+                    <li class="nav-item active">
+                        <a class="nav-link nav-link-tab active" data-toggle="tab" href="#info" role="tab" data-index="0">Datos</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <br />*@
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+
+            @using (Html.BeginForm("RegistrarUsuarioAprobador", "Maestros", FormMethod.Post, new { @id = "frm-guardar-usuarioaprobador" }))
+            {
+                <div class="row">
+                    <div id="filtros">
+                        <div class="col-sm-12">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal  rowUser">
+
+                                    <div class="form-group">
+                                        <label class="col-sm-3">Sociedad: </label>
+                                        <div class="col-sm-8">
+                                            @Html.DropDownListFor(m => m.CodigoSociedadFI, new SelectList(ViewBag.ListaSociedades, "CodigoSociedadFI", "NombreCO"), new { @class = "form-control select2", @id = "dllSociedad_22" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="filtros">
+                        <div class="col-sm-12">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal   rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-3">Aprobador:</label>
+                                        <div class="col-sm-8" id="content-ListaAprobadorM">
+                                            @*@Html.DropDownListFor(m => m.IdUsuario, new SelectList(ViewBag.ListaUsuarios, "ID", "ApellidosNombres"), new { @class = "form-control select2", @id = "dllUsuario22" })*@
+                                            @Html.Partial("_ListaAprobador")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="filtros">
+                        <div class="col-sm-12">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal   rowUser">
+                                    <div class="form-group div-multiselect">
+                                        <label class="col-lg-3 col-md-2">Cecos Asignados</label>
+                                        <div class="col-sm-8 col-md-8" style="max-height: 150px; overflow-y: auto;" id="content-ListaCentroCostoM">
+                                            @*@Html.ListBoxFor(m => m.listaCentroCostoByUsuario, new MultiSelectList(Model.listaCentroCosto, "Codigo", "Descripcion"),
+                                                new
+                                                {
+                                                    @class = "form-control select2",
+                                                    @id = "ddlCentroCostoMultiSelect",
+                                                    @multiple = "multiple"
+                                                })*@
+                                            @Html.Partial("_ListaCentroCosto", Model)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="GuardarTabla22" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cancelar</button>
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        $('.modal-body .select2').select2();
+
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            width: '100%',
+        });
+
+        $('#dllSociedad_22').change(function () {
+            var idsociedad = $("#dllSociedad_22").val();
+            getAprobadorBySociedad(idsociedad);
+            getCentroCostoBySociedad(idsociedad);
+            $('#dllUsuario22').val('0');
+            $('#dllUsuario22').change();
+            $('#ddlCentroCostoMultiSelect').val('');
+            $('#ddlCentroCostoMultiSelect').change();
+        })
+
+
+        $('#GuardarTabla22').click(function (e) {
+
+            e.preventDefault();
+            var idsociedad = $('#dllSociedad_22').val();
+            //var idsucursal = $('#dllSucursal_22_pv').val();
+            var idusuario = $('#dllUsuario22').val();
+
+            document.getElementById("GuardarTabla22").disabled = true;
+
+            var $frm = $('#frm-guardar-usuarioaprobador');
+            var formParsley = $frm.parsley(__defaultParsleyForm());
+            var isValid = formParsley.validate();
+
+            var indicador = true;
+            if (isValid && idsociedad == "0") {
+                toastr["warning"]('Debe seleccionar una Sociedad.');
+                document.getElementById("GuardarTabla22").disabled = false;
+                indicador = false;
+                return;
+            }
+            var indicador = true;
+            if (isValid && idusuario == "0") {
+                toastr["warning"]('Debe seleccionar un Usuario.');
+                document.getElementById("GuardarTabla22").disabled = false;
+                indicador = false;
+                return;
+            }
+
+            var indicador = true;
+            if (isValid && ($('#ddlCentroCostoMultiSelect').val() === null || $('#ddlCentroCostoMultiSelect').val() === [])) {
+                toastr["warning"]('Debe Asignar Centros de Costos.');
+                document.getElementById("GuardarTabla22").disabled = false;
+                indicador = false;
+                return;
+            }
+            if (indicador) {
+                GuardarUsuarioAprobador(isValid);
+            }
+
+        });
+        var ID = parseInt($('#hdfID_FormularioTabla22').val());
+        if (ID > 0) {
+            idUserAprobador = parseInt($('#hdfIdUsuarioAprobador').val());
+            $("#dllUsuario22").val(idUserAprobador)
+            $("#dllUsuario22").change();
+            var listaceco = $('#hdfListaCeco').val();
+            ListaCentroCostoAsignados = listaceco.split(',');
+            $("#ddlCentroCostoMultiSelect").val(ListaCentroCostoAsignados)
+            $("#ddlCentroCostoMultiSelect").change();
+
+        }
+    });
+</script>
+
+

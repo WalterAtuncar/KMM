@@ -1,0 +1,97 @@
+﻿<div class="row">
+    <div class="col-sm-12">
+        <div class="col-sm-12">
+            <div class="col-sm-8">
+                <h4>Comparacion Mensual por B.U.</h4>
+            </div>
+            <div class="col-sm-4" style="margin-top: 10px; margin-bottom: 10px;">
+                <button id="btnExportarGeneralCM" class="btn pull-right btn-sm btn-primary" style="width: 120px;" disabled>Exportar <i class="glyphicon glyphicon-export"></i></button>
+                <button id="btnExportarComparacionMensual" class="btn pull-right btn-sm btn-primary" style="width: 120px;">Exportar <i class="glyphicon glyphicon-export"></i></button>
+            </div>
+        </div>
+        <div id="" class="col-sm-12" style="overflow: auto;">
+            <div class="container-flot">
+                <div id="placeComportamientoMensual" class="placeholder-flot"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function BusquedaComparacionMensual(ResponsableID, SociedadID, FechaInicio, FechaFin) {
+        $.post('@Url.Action("ComparacionMensualByResponsable", "Reporte")', { idResponsable: ResponsableID, idSociedad: SociedadID, fechaInicio: FechaInicio, fechaFin: FechaFin },
+            function (data) {
+                var costo = [["January", 10], ["February", 8], ["March", 4], ["April", 13], ["May", 17], ["June", 9]];
+                var gasto = [["January", 9], ["February", 11], ["March", 6], ["April", 8], ["May", 15], ["June", 9]];
+
+                //var costo = [];
+                //var gasto = [];
+                data.forEach(function (item) {
+                    if (item.FlagCosto) {
+                        costo.push([item.Mes, item.TotalServicio.toFixed(2)]);
+                    } else {
+                        gasto.push([item.Mes, item.TotalServicio.toFixed(2)]);
+                    }
+                });
+
+                var dataset = [
+                {
+                    label: "COSTO",
+                    data: costo,
+                    color: "#0062FF",
+                    points: { symbol: "diamond" }
+                }, {
+                    label: "GASTO",
+                    data: gasto,
+                    color: "#FF0000",
+                    points: { symbol: "square" }
+                }];
+
+                var p = $.plot($("#placeComportamientoMensual"), dataset, {
+                    xaxis: {
+                        mode: "categories",
+                        tickLength: 0,
+                        //autoscaleMargin: .05,
+                        alignTicksWithAxis: true,
+                        rotateTicks: 135,
+                        tickSize: 1,
+                        alignTicksWithAxis: true,
+                        minTickSize: 0,
+                    },
+                    yaxis: {
+                        tickDecimals: 2,
+                        tickFormatter: function (v, axis) {
+                            return "S/. " + v.toFixed(axis.tickDecimals);
+                        }
+                    },
+                    grid: {
+                        hoverable: true,
+                        borderWidth: 0,
+                        backgroundColor: { colors: ["#ffffff", "#EDF5FF"] }
+                    },
+                    tooltip: true
+                });
+
+                $.each(p.getData()[0].data, function (i, el) {
+                    var o = p.pointOffset({ x: i, y: el[1] });
+                    //console.log(i + " - " + el[1]);
+                    //console.log(o);
+                    $('<div class="data-point-label">S/.' + el[1] + '</div>').css({
+                        position: 'absolute',
+                        left: o.left - 30,
+                        top: o.top - 20,
+                        display: 'none'
+                    }).appendTo(p.getPlaceholder()).fadeIn('slow');
+                });
+
+                $.each(p.getData()[1].data, function (i, el) {
+                    var o = p.pointOffset({ x: i, y: el[1] });
+                    $('<div class="data-point-label">S/.' + el[1] + '</div>').css({
+                        position: 'absolute',
+                        left: o.left + 4,
+                        top: o.top - 20,
+                        display: 'none'
+                    }).appendTo(p.getPlaceholder()).fadeIn('slow');
+                });
+        });
+    }
+</script>

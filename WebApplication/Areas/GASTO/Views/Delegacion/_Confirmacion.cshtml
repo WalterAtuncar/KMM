@@ -1,0 +1,79 @@
+﻿@model WebApplication.Areas.GASTO.Models.SolicitudViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+    <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>APROBACION CONTABILIDAD</h3>
+
+
+</div>
+<div class="modal-body">
+
+    <br />
+
+
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+            <div class="form-group">
+                <label class="control-label col-sm-4">DNI - Nombre:</label>
+                <div class="col-sm-8">
+                    <div class="input-group input-group-sm" style="width:320px;">
+                        @Html.DropDownList("listaBeneficiado", new SelectList(ViewBag.ListaBeneficiado, "ID", "Nombres"), new { @id = "txtdniDelegacion", @class = "form-control select2" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="AprobarSolicitudButton" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i>Aprobar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cancelar</button>
+    </div>
+</div>
+</div> @*FIN MODAL*@
+
+<script>
+    $(document).ready(function () {
+
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+
+        //$('#dllBeneficiado-0').select2({ dropdownAutoWidth: true });
+
+        $('#AprobarSolicitudButton').click(function (e) {
+            e.preventDefault();
+            document.getElementById("AprobarSolicitudButton").disabled = true;
+
+            debugger;
+            var indicador = true;
+            var dni = $("#select2-txtdniDelegacion-container").text().split(" ")[0];
+            var grid = $("#jqGrid");
+            var rowKey = grid.getGridParam("selrow");
+
+            if (!rowKey)
+                alert("Porfar seleccione los registros para su aprobación");
+            else {
+
+                var selectedIDs = grid.getGridParam("selarrrow");
+                var result = "";
+                for (var i = 0; i < selectedIDs.length; i++) {
+                    result += selectedIDs[i] + ",";
+                }
+                if (result != "") {
+                    result = result.substring(0, result.length - 1);
+                    AprobarDelegacion(result,dni);
+                }
+            }
+        });
+    });
+</script>
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+

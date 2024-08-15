@@ -1,0 +1,41 @@
+﻿<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>REVOCAR</h3>
+
+
+</div>
+<div class="modal-body">
+    <br />
+    <input type="hidden" id="hdfIdRevocar" value="@ViewBag.ID" />
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+            <label class="col-sm-12">Está seguro de revocar la delegación seleccionada?</label>
+
+        </div>
+    </div>
+    <br />
+    <br />
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="RevocarButton" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i>Revocar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cancelar</button>
+    </div>
+</div>
+</div> @*FIN MODAL*@
+
+<script>
+    $(document).ready(function () {
+        $('#RevocarButton').click(function (e) {
+            e.preventDefault();
+            document.getElementById("RevocarButton").disabled = true;
+            var id = $('#hdfIdRevocar').val();
+            Revocar(id);
+        });
+    });
+</script>
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+

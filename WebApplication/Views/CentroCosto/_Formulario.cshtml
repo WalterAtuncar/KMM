@@ -1,0 +1,176 @@
+﻿@model WebApplication.Models.CentroCostoViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel">
+        <i class="fa fa-pencil-square-o"></i>
+        <i class="fa fa-chevron-right"></i> 
+        MODIFICAR CENTRO COSTO
+    </h3>
+</div>
+
+@using (Html.BeginForm("Registrar", "CentroCosto", FormMethod.Post, new { @id = "frm-add-centro", @class = "form-horizontal", @style = "padding-left: 50px;" }))
+{
+<div class="modal-body">
+    @Html.HiddenFor(m => m.CentroCosto.Codigo, new { @id = "CodigoCentroCosto" })
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Código</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.TextBoxFor(m => m.CentroCosto.Codigo,
+                                                                                          new
+                                                                                          {
+                                                                                              @class = "form-control input-sm",
+                                                                                              @placeholder = "CÓDIGO",
+                                                                                              @readonly = "readonly"
+                                                                                          })
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Válido Desde</label>
+        <div class="col-sm-6 col-md-6">
+            <div id="fecha-content-emision" class="input-group input-group-sm date" data-date-format="dd/mm/yyyy" data-date-viewmode="years">
+                @Html.TextBoxFor(m => m.CentroCosto.FechaInicioStr,
+                                                                     new
+                                                                     {
+                                                                         @class = "form-control input-sm",
+                                                                         @placeholder = "FECHA INICIO",
+                                                                         @readonly = "readonly"
+                                                                     })
+                <div class="input-group-addon close-button">
+                    <span class="fa fa-calendar"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Válido Hasta</label>
+        <div class="col-sm-6 col-md-6">
+            <div id="fecha-content-emision" class="input-group input-group-sm date" data-date-format="dd/mm/yyyy" data-date-viewmode="years">
+                @Html.TextBoxFor(m => m.CentroCosto.FechaFinStr,
+                                                                      new
+                                                                      {
+                                                                          @class = "form-control input-sm",
+                                                                          @placeholder = "FECHA FIN",
+                                                                          @readonly = "readonly"
+                                                                      })
+                <div class="input-group-addon close-button">
+                    <span class="fa fa-calendar"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Sociedad</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.TextBoxFor(m => m.CentroCosto.Soc,
+                                                                                          new
+                                                                                          {
+                                                                                              @class = "form-control input-sm",
+                                                                                              @placeholder = "SOC",
+                                                                                              @readonly = "readonly"
+                                                                                          })
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Denominación</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.TextBoxFor(m => m.CentroCosto.Denominacion,
+                                                                                     new
+                                                                                     {
+                                                                                         @class = "form-control input-sm",
+                                                                                         @placeholder = "DENOMINACIÓN",
+                                                                                         @readonly = "readonly"
+                                                                                     })
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Descripción</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.TextBoxFor(m => m.CentroCosto.Descripcion,
+                                                                                     new
+                                                                                     {
+                                                                                         @class = "form-control input-sm",
+                                                                                         @placeholder = "DESCRIPCIÓN",
+                                                                                         @readonly = "readonly"
+                                                                                     })
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Texto Breve</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.TextBoxFor(m => m.CentroCosto.TextoBreve,
+                                                                                     new
+                                                                                     {
+                                                                                         @class = "form-control input-sm",
+                                                                                         @placeholder = "TEXTO BREVE",
+                                                                                         @readonly = "readonly"
+                                                                                     })
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Responsable</label>
+        <div class="col-sm-6 col-md-6">
+            @Html.DropDownListFor(m => m.CentroCosto.IdResponsable,
+                                                  new SelectList(Model.ListaUsuario, "ID", "NombreCompleto"), "SELECCIONE USUARIO",
+                                                  new
+                                                  {
+                                                      @id = "ddlUsuario",
+                                                      @class = "form-control select2",
+                                                      @style = "width:100%;"
+                                                  })
+        </div>
+    </div>
+
+    <br />
+
+    <div class="form-group">
+        <label class="col-lg-3 col-md-2">Tipo</label>
+        <div class="radio-list col-md-6 ">
+            <label class="radio-inline">
+                @Html.HiddenFor(m => m.CentroCosto.FlagCosto,new { @id = "IdCosto"})
+                <input type="radio" id="checkCosto" class="proyecto checkFlag" name="proyecto">COSTO
+            </label>                                              
+                                                                  
+            <label class="radio-inline">
+                @Html.HiddenFor(m => m.CentroCosto.FlagGasto, new { @id = "IdGasto" })
+                <input type="radio" id="checkGasto" class="proyecto checkFlag" name="proyecto">GASTO
+            </label>
+
+        </div>
+    </div>
+
+
+</div>
+    <div class="modal-footer">
+        <div style="float: right">
+            <button id="btn-save" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+            <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {$('.select2').select2();});
+</script>

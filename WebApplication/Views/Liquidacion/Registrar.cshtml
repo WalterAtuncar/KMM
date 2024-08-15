@@ -1,0 +1,137 @@
+﻿@model WebApplication.Models.LiquidacionViewModel
+
+<h3 class="text-left text-primary">
+    <i class="fa fa-list-alt" style="color: #ee3224;"></i>
+    <i class="fa fa-chevron-right" style="color: #ee3224;"></i> REGISTRAR LIQUIDACIÓN
+</h3>
+<br />
+@using (Html.BeginForm("Guardar", "Liquidacion", FormMethod.Post, new { @id = "frm-guardar-liquidacion" }))
+{
+    <div class="row">
+        <div id="filtros">
+            <div class="col-sm-4">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Proveedor: </label>
+                        <div class="col-sm-8">
+                            @Html.DropDownListFor(m => m.Liquidacion.ProveedorTaxiID, new SelectList(Model.ListaProveedor, "ID", "RazonSocial"), new { @class = "form-control input-sm filtro select2", @id = "ddlProveedorTaxi" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Sociedad: </label>
+                        <div class="col-sm-8">
+                            @Html.DropDownListFor(m => m.Liquidacion.SociedadID, new SelectList(Model.ListaSociedad, "ID", "NombreFI"), new { @class = "form-control input-sm filtro select2", @id = "ddlSociedad", @style = "text-transform: uppercase;" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Fecha Liquidación: </label>
+                        <div class="col-sm-8">
+                            <div id="FechaDatePicker" class="input-group input-group-sm date" style="z-index:auto;" data-provide="datepicker">
+                                @Html.TextBoxFor(m => m.Liquidacion.FechaStr, new { @id = "txtFecha", @class = "form-control", Value = Model.Liquidacion.Fecha == DateTime.MinValue ? DateTime.Now.ToString("dd/MM/yyyy") : Model.Liquidacion.Fecha.ToString("dd/MM/yyyy") })
+                                <div class="input-group-addon close-button">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Observaciones: </label>
+                        <div class="col-sm-8">
+                            @Html.TextAreaFor(m => m.Liquidacion.Observacion, new { @class = "form-control", @rows = 1, @id = "txtObservacion" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <a id="AgregarServiciosButton" class="btn btn-primary btn-sm gs-btn-block-pag" style="padding-left: 23px;"><i style="padding-right: 2px;" class="fa fa-plus"></i> Solicitudes</a>
+            </div>
+        </div>
+    </div>
+}
+
+<hr />
+<div class="row">
+    <div class="col-sm-12">
+        <div id="div-tbl-solicitudes-registrar" tabindex="-10000" >
+            <table id="tbl-solicitudes-registrar" class="table-gys-kom"></table>
+            <div id="jqControls" tabindex="-10001"></div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-sm-12"> Total general: S/. <label id="TotalGeneralLabel">0</label></div>
+</div>
+<div class="row">
+    <div class="col-sm-12"> Seleccionado: <label id="CantidadLabel">0</label></div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-sm-12">
+        <div class="pull-right">
+            <button id="GuardarButton" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+            <a href="@Url.Action("Index", "Liquidacion")" class="btn btn-danger btn-sm"><i class="fa fa-times-circle"></i> Cancelar </a>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="modal-solicitud" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-sol-detalle" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<script>
+    var url = {
+        GetListLiquidacionPaginado: '@Url.Action("BuscarSolicitud", "Liquidacion")',
+        PostGuardarLiquidacion: '@Url.Action("Guardar", "Liquidacion")',
+        GetSolicitudDetalle: '@Url.Action("GetSolicitudDetalle", "Liquidacion")'
+    }
+
+    $(document).ready(function () {
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            width: '100%',
+        });
+
+        $('#FechaDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true
+        });
+
+        var Fecha = new Date();
+        Fecha.setDate(Fecha.getDate());
+        //$('#FechaDatePicker').datepicker('setDate', (Fecha.getDate()) + '/' + (Fecha.getMonth() + 1) + '/' + (Fecha.getFullYear()));
+
+        $('.close-button').unbind();
+
+        $('.close-button').click(function () {
+            if ($('.datepicker').is(":visible")) {
+                $(this).parent().datepicker('hide');
+            } else {
+                $(this).parent().datepicker('show');
+            }
+        });
+    });
+</script>
+
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+<script src="~/Scripts/Liquidacion/Registrar.js?version=2.2"></script>
+

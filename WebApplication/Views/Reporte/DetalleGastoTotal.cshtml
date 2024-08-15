@@ -1,0 +1,54 @@
+﻿<div class="row">
+    <div class="col-sm-12">
+        <div class="col-sm-12">
+            <div class="col-sm-8">
+                <h4>Porcentaje del Detalle de Gasto Total por B.U.</h4>
+            </div>
+            <div class="col-sm-4" style="margin-top: 10px; margin-bottom: 10px;">
+                <button id="btnExportarGeneralDGT" class="btn pull-right btn-sm btn-primary" style="width: 120px;" disabled>Exportar <i class="glyphicon glyphicon-export"></i></button>
+                <button id="btnExportarDetalleGastoTotal" class="btn pull-right btn-sm btn-primary" style="width: 120px;">Exportar <i class="glyphicon glyphicon-export"></i></button>
+            </div>
+        </div>
+        <div id="content-detallegasto" class="col-sm-12" style="overflow: auto;">
+            <div class="container-flot">
+                <div id="placeDetalleGastoTotal" class="placeholder-flot"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function labelFormatter(label, series) {
+        return "<div style='font-size:8pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
+    }
+    function BusquedaDetalleGastoTotal(ResponsableID, SociedadID, FechaInicio, FechaFin) {
+        $.post('@Url.Action("DetalleGastoTotalByResponsable", "Reporte")', { idResponsable: ResponsableID, idSociedad: SociedadID, fechaInicio: FechaInicio, fechaFin: FechaFin },
+            function (data) {
+                var detalle = [{ label: "Visible 1", data: 10 }, {label: "Visible 2", data: 20}, { label: "Visible 3", data: 30 }, { label: "Visible 4", data: 40 }];
+                //var detalle = [];
+                data.foreach(function (item) {
+                    //console.log(item);
+                    detalle.push({ label: item.motivocreacionsolicitudnombre, data: item.porcentajeservicio });
+                });
+                $.plot($("#placeDetalleGastoTotal"), detalle, {
+                    series: {
+                        pie: {
+                            show: true,
+                            radius: 1,
+                            label: {
+                                show: true,
+                                radius: 3 / 4,
+                                formatter: labelFormatter,
+                                background: {
+                                    opacity: 0.5,
+                                    color: "#000"
+                                }
+                            }
+                        }
+                    },
+                    legend: {
+                        show: true
+                    }
+                });
+        });
+    }
+</script>

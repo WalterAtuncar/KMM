@@ -1,0 +1,164 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+    .datepicker {
+        z-index: 200 !important;
+    }
+</style>
+
+
+<h3 class="text-left text-primary">
+    <i class="fa fa-file-text-o" style="color:red;"></i>
+    <i class="fa fa-chevron-right" style="font-size:15px;color:#ee3224;"></i>
+    CENTRO COSTO
+</h3>
+
+<br />
+
+<div class="row">
+    <div id="filtros">
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Código:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkCodigo" />
+                            </span>
+                            <input type="text" id="txtCodigo" class="form-control filtro" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Valido Desde:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon filtro">
+                                <input type="checkbox" id="chkFechaDesde" />
+                            </span>
+                            <div id="FechaInicioCentroCostoDatePicker" style="width: 100%;" class="input-group input-group-sm date filtro" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                <input class="form-control filtro" id="fechaDesde" />
+                                <div class="input-group-addon filtro close-button">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Tipo:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkTipo" />
+                            </span>
+                            <select type="select" id="txtTipo" class="form-control filtro select2">
+                                <option value="">-SELECCIONE-</option>
+                                <option value="2">NINGUNO</option>
+                                <option value="0">COSTO</option>
+                                <option value="1">GASTO</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Sociedad:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkSoc" />
+                            </span>
+                            <input type="text" id="txtSoc" class="form-control filtro" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Valido Hasta:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkFechaHasta" />
+                            </span>
+                            <div id="FechaFinCentroCostoDatePicker" style="width: 100%;" class="input-group input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                <input type="text" class="form-control filtro" id="fechaHasta" />
+                                <div class="input-group-addon close-button">
+                                    <span class="fa fa-calendar"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <button  id="btnBuscarCentroCosto" class="btn btn-danger btn-sm"><i class="fa fa-search"></i> Buscar</button>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+
+<div class="row">
+    <div class="col-sm-12">
+        <div id="div-tbl-centro" class="table-responsive">
+            <table id="jqGrid" class="table-gys-kom"></table>
+            <div id="jqControls"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-centro" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<script>
+    var url = {
+        GetListCentroCosto: '@Url.Action("GetListCentroCosto", "CentroCosto")',
+        Registrar: '@Url.Action("Registrar", "CentroCosto")',
+        RegistrarPost: '@Url.Action("RegistrarPost", "CentroCosto")',
+    }
+    $(document).ready(function () {
+        $(".select2").select2();
+        $('#FechaInicioCentroCostoDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            setDate: new Date()
+        });
+
+        $('#FechaFinCentroCostoDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true
+        });
+
+        $('.close-button').unbind();
+
+        $('.close-button').click(function () {
+            if ($('.datepicker').is(":visible")) {
+                $(this).parent().datepicker('hide');
+            } else {
+                $(this).parent().datepicker('show');
+            }
+        });
+    });
+</script>
+
+
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+<script src="~/Scripts/CentroCosto/Index.js"></script>
+

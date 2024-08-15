@@ -1,0 +1,4 @@
+﻿
+@model List<Data.CentroCosto>
+
+@Html.DropDownList("ddlCentroCosto", new SelectList(Model, "Codigo", "Descripcion"), new { @class = "select2" })

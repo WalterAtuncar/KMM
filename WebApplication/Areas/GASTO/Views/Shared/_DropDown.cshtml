@@ -1,0 +1,7 @@
+﻿@model Tuple<IEnumerable<SelectListItem>, string>
+@{
+    Layout = "";
+}
+
+@*@Html.DropDownList(Model.Item2, Model.Item1, new { @class = "form-control", @required = "", name = Model.Item2 })*@
+@Html.DropDownList(Model.Item2, Model.Item1, new { @class = "form-control select2", name = Model.Item2 })

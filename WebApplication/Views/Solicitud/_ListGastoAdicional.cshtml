@@ -1,0 +1,60 @@
+﻿@model WebApplication.Models.SolicitudViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel">
+        <i class="fa fa-usd"></i>
+        <i class="fa fa-chevron-right"></i>
+        GASTOS ADICIONALES
+    </h3>
+</div>
+
+<div class="modal-body">
+    @if (Model.ListaGastoAdicional.Count > 0)
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-condensed ">
+                <thead style="font-size: 10px;">
+                    <tr>
+                        <th>N°</th>
+                        <th width="300px;">Concepto</th>
+                        <th width="150px;">Monto</th>
+                        <th width="350px;">Observación</th>
+                        <th width="250px;">Tiempo</th>
+                    </tr>
+                </thead>
+                <tbody style="font-size: 9px;">
+                    @{ int count = 0;}
+                    @foreach (var gasto in Model.ListaGastoAdicional)
+                    {
+                        count += 1;
+                    <tr>
+
+                        <td style="width:1%" class="text-center">@count</td>
+                        <td>@gasto.Concepto</td>
+                        <td class="text-center">S/.@gasto.MontoStr</td>
+                        <td>@gasto.Observacion</td>
+                        <td class="text-center">@gasto.TiempoMinutoStr min</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <p>NO EXISTEN REGISTROS.</p>
+        </div>
+    }
+
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+    </div>
+</div>
+
+
+

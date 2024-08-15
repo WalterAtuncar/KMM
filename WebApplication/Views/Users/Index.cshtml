@@ -1,0 +1,150 @@
+﻿@model WebApplication.Models.UserViewModel
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+    .datepicker {
+        z-index: 100 !important;
+    }
+
+    /*.select2.select2-container{
+        width:100% !important;
+    }*/
+
+    /*ul > .select2-results__option, .select2-selection__rendered { text-transform: uppercase !important; }*/
+</style>
+
+<div style="display: none;">
+    <input type="hidden" id="UserId" value="@ViewBag.CurrentUser.Id"/>
+    <input type="hidden" id="UserName" value="@ViewBag.CurrentUser.UserName" />
+</div>
+
+<h3 class="text-left text-primary">
+    <i class="fa fa-file-text-o" style="color:red;"></i>
+    <i class="fa fa-chevron-right" style="font-size:15px;color:#ee3224;"></i>
+    USUARIOS
+</h3>
+<br />
+
+<div class="row">
+    <div id="filtros">
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Nombres:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkNombre" />
+                            </span>
+                            <input type="text" id="txtNombre" class="form-control filtro" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Email:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkEmail" />
+                            </span>
+                            <input type="text" id="txtEmail" class="form-control filtro" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4">N°Documento:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkDocumento" />
+                            </span>
+                            <input type="text" id="txtDocumento" class="form-control filtro" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Apellidos:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkApellido" />
+                            </span>
+                            <input type="text" id="txtApellido" class="form-control filtro" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Centro Costo:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkCentroCosto" />
+                            </span>
+                            @Html.DropDownList("ListaCentroCosto", new SelectList(Model.ListaCentroCosto, "Codigo", "Descripcion"), "-SELECCIONE-", new { @class = "form-control filtro select2", @id = "txtCentroCosto" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Perfil:</label>
+                    <div class="col-sm-8">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkPerfil" />
+                            </span>
+                            @Html.DropDownList("ListaPerfil",new SelectList(ViewBag.ListaPerfil,"ID","Nombre"),"-SELECCIONE-",new { @id  = "ddlPerfilFiltro" , @class = "form-control filtro" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <button id="btnBuscarUsers" class="btn btn-danger btn-sm"><i class="fa fa-search"></i> Buscar</button>
+        </div>
+    </div>
+    
+</div>
+
+<br />
+<br />
+
+<div class="row">
+    <div class="col-sm-12">
+        <div id="div-tbl-centro" class="table-responsive">
+            <table id="jqGrid" class="table-gys-kom"></table>
+            <div id="jqControls"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-usuario" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<script>
+    var url = {
+        GetListUsers: '@Url.Action("GetListUsers", "Users")',
+        Registrar: '@Url.Action("Registrar", "Users")',
+        RegistrarPost: '@Url.Action("RegistrarPost", "Users")',
+    }
+
+    $(document).ready(function () {
+        $('.select2').select2();
+    });
+</script>
+
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+<script src="~/Scripts/User/Index.js"></script>

@@ -1,0 +1,168 @@
+﻿@model WebApplication.Models.LiquidacionViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel">
+        <i class="fa fa-pencil"></i>
+        <i class="fa fa-chevron-right"></i>
+        EDITAR TARIFA
+    </h3>
+</div>
+
+<div class="modal-body" id="tblTarifa">
+    @foreach (var destino in Model.ListaDestino ?? new List<Data.Common.Destino>())
+    {
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Origen: </label>
+                        <div class="col-sm-8">
+                            <label class="control-label">@destino.ZonaOrigen </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Destino: </label>
+                        <div class="col-sm-8">
+                            <label class="control-label">@destino.ZonaDestino </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-horizontal">
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="control-label col-sm-4">Tarifa: </label>
+                        <div class="col-sm-8">
+                            @if (destino.Negociado)
+                            {
+                            @Html.TextBox("Precio", destino.Precio, "{0:0,0.00}", new { @class = "form-control totaltarifa", @style = "width:inherit;height: 25px;" , @disabled = "disabled" })
+                            }
+                            else
+                            {
+                            @Html.TextBox("Precio", destino.Precio, "{0:0,0.00}", new { @class = "form-control totaltarifa", @style = "width:inherit;height: 25px;" })
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-horizontal">
+                    <div class="form-group" style="margin-top: 12px;">
+                        <div class="col-sm-8">
+                            @if (destino.Negociado)
+                            {<input type="checkbox" class="chckNegociado" value="@destino.Negociado" checked disabled />}
+                            else
+                            { <input type="checkbox" class="chckNegociado" value="@destino.Negociado" />}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-6">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Total: </label>
+                    <div class="col-sm-8">
+                        <label id="txtTotalTarifaNegociable" class="control-label">@string.Format("{0:0,0.00}", Model.ListaDestino.Sum(m => m.Precio))  </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="btn-save-tarifa"  data-pid="@Model.Solicitud.ID" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+    </div>
+</div>
+
+<script>
+    (function () {
+
+        $(document).ready(function () {
+            $('.totaltarifa').change(function () { calcularTarifa(); });
+            $('.totaltarifa').change(function () { formatDecimal($(this)); });
+            $('#btn-save-tarifa').click(function () { saveTarifa($(this)); });
+            $('.chckNegociado').change(function () {changeNegociado($(this))})
+        });
+
+        var formatDecimal = function (selector, formato) {
+            if (formato == 'undefined' || formato == null) { formato = 2; }
+            var nuevoFormato = parseFloat(selector.val()).toFixed(formato);
+            selector.val(nuevoFormato);
+        }
+        var changeNegociado = function (selector) {
+            $(selector.parent().parent().parent().parent().parent()).find('.totaltarifa').css('border', '0px solid red');
+
+            if (selector.is(':checked')) {
+                $(selector.parent().parent().parent().parent().parent()).find('.totaltarifa').prop('disabled',true);
+            } else {
+                $(selector.parent().parent().parent().parent().parent()).find('.totaltarifa').prop('disabled', false);
+                $(selector.parent().parent().parent().parent().parent()).focus();
+            }
+        }
+
+        var saveTarifa = function (btn) {
+            fn_BloquearPantalla();
+            var countNegociable = 0;
+            var id = btn.attr('data-pid');
+
+            $('#tblTarifa input[type="checkbox"]').each(function () {
+                if (!$(this).is(':checked')) {
+                    $($(this).parent().parent().parent().parent().parent()).find('.totaltarifa').css('border', '1px solid red');
+                    countNegociable = countNegociable + 1;
+                }
+            });
+
+            if (countNegociable > 0) {
+                toastr["warning"]('Todavía existen tarifas observadas');
+            }
+            else
+            {
+                var valueRow = $('#tbl-solicitudes-registrar').jqGrid('getRowData', id);
+                var varTarifa = (+$('#txtTotalTarifaNegociable').text().replace(',', '')).toFixed(2);
+                var varEspera = valueRow.PrecioEsperaStr;
+                var varDesvio = valueRow.PrecioDesvioRutaStr;
+                var varPeaje = valueRow.PrecioPeajeStr;
+                var varEstacionamiento = valueRow.PrecioEstacionamientoStr;
+                var varDesplazamiento = valueRow.PrecioDesplazamientoStr;
+                var varTotalGeneral = + varTarifa + +varEspera + +varDesvio + +varPeaje + +varEstacionamiento + +varDesplazamiento;
+
+                valueRow.ID = id;
+                valueRow.PrecioTarifalStr = varTarifa;
+                valueRow.TotalGeneralStr = (+varTotalGeneral).toFixed(2);
+                valueRow.IndicadorNegociado = 0;
+                $('#tbl-solicitudes-registrar').jqGrid('setRowData', id, valueRow);
+
+                var $tr = $('#tbl-solicitudes-registrar').find("tr[id='" + id + "']");
+                $tr.find('#btn-edit-tarifa').remove();
+                $tr.find('#btn-flag').removeClass('fa fa-flag');
+                $tr.find('#btn-flag').addClass('fa fa-flag-o');
+                $tr.find('#btn-flag').prop('title', 'Sin Observaciones');
+                $tr.find('#btn-flag').removeAttr('style');
+
+                var totalGeneralGrid = 0;
+                var data = $("#tbl-solicitudes-registrar").jqGrid('getGridParam', 'data');
+                data.forEach(function (Row) {
+                    totalGeneralGrid += parseFloat(Row.TotalGeneralStr);
+                });
+                $('#TotalGeneralLabel').html(totalGeneralGrid.toFixed(2).toString());
+
+                $('#modal-solicitud').modal('hide');
+            }
+            fn_DesbloquearPantalla();
+        }
+
+        var calcularTarifa = function () {
+            var total = parseFloat(0);
+            $('.totaltarifa').each(function () { total = + total + + (+$(this).val().replace(',', '')).toFixed(2); });
+            $('#txtTotalTarifaNegociable').text(total.toFixed(2));
+        }
+    })();
+</script>

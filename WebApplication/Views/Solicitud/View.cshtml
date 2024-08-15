@@ -1,0 +1,651 @@
+﻿@model Data.Solicitud
+@{
+    var usuario = ((HttpContext.Current.User as CustomPrincipal).Identity
+                    as CustomIdentity).Usuario;
+}
+<style>
+    #map {
+        width: 100%;
+        /*height: 570px;*/
+        height: 90vh;
+    }
+
+    #tbl-precio-estimado > thead > tr > th {
+        background-color: #666666;
+    }
+
+    #tbl-precio-estimado > tbody {
+        border: #666666 2px solid;
+    }
+
+        #tbl-precio-estimado > tbody > tr > td {
+            padding: 1px;
+        }
+
+    #txt-price {
+        font-size: 1.5em;
+        font-weight: 600;
+    }
+
+    .select2.select2-container {
+        width: 100% !important;
+    }
+
+    .datepicker-days table {
+        /*background-color: #fff;*/
+    }
+
+    #div-sol-reg-controls {
+        position: static;
+        width: auto;
+        overflow: auto;
+        /*max-height: 90vh;*/
+        max-height: 90vh;
+    }
+
+    .table > tbody {
+         background-color: transparent; 
+    }
+</style>
+
+<div class="row">
+    <div class="col-sm-9" style="padding-right:5px; padding-left:5px;">
+        <div id="map"></div>
+    </div>
+    <div class="col-sm-3" style="padding-right:5px; padding-left:5px;">
+        <div id="div-sol-reg-controls">
+            <form id="frm-sol">
+                @if (Model.SituacionServicio == 1)
+                {
+                    <br />
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <button type="button" id="btn-sol-cancelar" class="btn btn-danger form-control"><i class="fa fa-remove"></i>&nbsp;Cancelar</button>
+                        </div>
+                    </div>
+                }
+                <br />
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table id="tbl-precio-estimado" class="table table-bordered table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Precio Estimado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center">
+                                        @*<span id="txt-price" class="text-danger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S/ <span id="spn-precio">0.00</span> </span>*@
+                                        <span id="txt-price" class="text-danger">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;S/ 
+                                            <span id="spn-precio">@(Model.SolicitudProveedorTaxi != null && Model.SolicitudProveedorTaxi.Any() ? Model.SolicitudProveedorTaxi.Where(x => x.Seleccionado == "1").FirstOrDefault().PrecioServicio.ToString() : "0.00" )</span> 
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label>Tipo de servicio</label>
+                        @{Html.RenderAction("GetDropDown", "TipoServicio", new { id = Model.TipoServicio, nombre = "TipoServicio" }); }
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Tipo de destino</label>
+                        @{Html.RenderAction("GetDropDown", "TipoDestino", new { id = Model.TipoDestino, nombre = "TipoDestino" }); }
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="fa fa-location-arrow"></i>
+                            </span>
+                            @Html.TextBoxFor(x => x.OrigenDireccion, new { @class = "form-control", @placeholder = "Origen", @required = "" })
+                            @Html.HiddenFor(x => x.OrigenLat)
+                            @Html.HiddenFor(x => x.OrigenLng)
+                        </div>
+                    </div>
+                </div>
+                <div id="sol-reg-step-1" class="sol-reg-step">
+                    <div id="div-destinos">
+                        @if (Model.DestinoServicio != null && Model.DestinoServicio.Any())
+                        {
+                            int conta_destino = 0;
+                            foreach (var destino in Model.DestinoServicio)
+                            {
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <span>&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-chevron-down"></i></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="input-group">
+                                            <span class="input-group-addon"><i class="fa fa-map-marker"></i></span>
+                                            <input type="text" id="txt-destino-@(++conta_destino)" class="form-control"
+                                                   placeholder="Destino @(conta_destino)" required="" value="@destino.Direccion" />
+                                            @*<span class="input-group-addon"><i class="fa fa-remove"></i></span>*@
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div id="div-btn-add-destino" style="display:none;">
+                        <br />
+                        <div class="row">
+                            <div class="col-sm-12">
+                                &nbsp;&nbsp;
+                                <a href="javascript:void(0);" id="btn-add-destino">
+                                    <i class="fa fa-plus-circle fa-lg"></i>&nbsp;Agregar destino
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div id="sol-reg-step-2" class="sol-reg-step">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label>Centro de costo afecto</label>
+                                @{Html.RenderAction("GetDropDown", "CentroCosto", new { id = usuario.IdCentroCosto, nombre = "CentroCostoAfectoCodigoSap", @default = "-SELECCIONE-" }); }
+                            </div>
+                            <div class="form-group" id="div-fg-ordenservicio">
+                                <label>Órden de servicio</label>
+                                @Html.TextBoxFor(x => x.NroOrdenServicio, new { @class = "form-control", @required = "" })
+                            </div>
+                            <div class="form-group hidden" id="div-fg-nrohoras">
+                                <label>Nro de horas</label>
+                                @Html.TextBoxFor(x => x.CantidadHoras, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group hidden" id="div-fg-categoriaproducto">
+                                <label>Categoría producto</label>
+                                @Html.TextBoxFor(x => x.CategoriaProducto, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group hidden" id="div-fg-nroproductos">
+                                <label>Nro productos</label>
+                                @Html.TextBoxFor(x => x.CantidadProductos, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label>Motivo creación</label>
+                                @{Html.RenderAction("GetDropDown", "MotivoCreacionSolicitud", new { id = Model.MotivoCreacionSolicitudID }); }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div id="sol-reg-step-3" class="sol-reg-step">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-2">
+                            <div id="div-fecha-servicio"></div>
+                            @Html.HiddenFor(x => x.FechaServicio)
+                            <br />
+                            <div class="input-group bootstrap-timepicker timepicker">
+                                <input id="txt-hora-servicio" type="text" class="form-control input-small">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                            </div>
+                            @Html.HiddenFor(x => x.HoraServicioEnMinutos)
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label>
+                                Beneficiados&nbsp;&nbsp;
+                            </label>
+                            <div id="div-beneficiados">
+                                @if (Model.Beneficiado != null && Model.Beneficiado.Any())
+                                {
+                                    foreach (var beneficiado in Model.Beneficiado)
+                                    {
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-user"></i>
+                                            </span>
+                                            @{Html.RenderAction("GetDropDown", "Users", new { id = beneficiado.UsersID, nombre = "beneficiado-1", @default = "-SELECCIONE-" }); }
+                                        </div>
+                                                    }
+                                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-sol-cancelar-confirm" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Cancelar solicitud</h4>
+            </div>
+            <div class="modal-body">
+                @using (Html.BeginForm("CancelarPost", "Solicitud", FormMethod.Post, new { @id = "frmSolicitudCancel", @autocomplete = "off" }))
+                {
+                    <div class="">
+                        <div class="form-group">
+                            <label class="control-label">Motivo cancelación:</label>
+                            <textarea name="MotivoCancelacion" class="form-control" required="required"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btn-sol-cancel-confirm" type="button" class="btn btn-danger"><i class="fa fa-remove"></i>&nbsp; Cancelar</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var __lat_default = -12.0480505;
+    var __lng_default = -77.10029129999998;
+    var __$map = $('#map');
+    var __map;
+    var __arrDestinos = [];
+    var __arrBeneficiados = [];
+    var __$div_destinos = $('#div-destinos');
+    var __currentDestinoIndex = 0;
+    var __currentBeneficiadoIndex = 0;
+    var __txt_origen_id = 'txt-origen';
+    var __markers = [];
+    var __objTarifaProveedor = {};
+    var __arrSolicitudProveedores = [];
+    var $origin = '@Url.Content("~/")';
+
+    $(document).ready(function () {
+
+        var $div_form = $('#div-sol-reg-controls');
+        $div_form.find('select, input, textarea').attr('disabled', 'disabled');
+
+        $('#btn-sol-cancelar').click(function (e) {
+            e.preventDefault();
+            var $btn = $(this);
+            bootbox.confirm({
+                title: 'Mensaje de confirmación',
+                message: "Está seguro que procederá a cancelar la solicitud?",
+                buttons: {
+                    confirm: {
+                        label: '<i class="fa fa-check fa-lg"></i> SI',
+                        className: 'btn-success btn-sm',
+                    },
+                    cancel: {
+                        label: '<i class="fa fa-ban fa-lg"></i> NO',
+                        className: 'btn-danger btn-sm',
+                    }
+                },
+                size: 'small',
+                callback: function (result) {
+                    if (result) {
+                        $('#modal-sol-cancelar-confirm').modal('show');
+                    }
+                }
+            });
+        });
+
+        $('#btn-sol-cancel-confirm').click(function (e) {
+            e.preventDefault();
+            $.post('@Url.Action("CancelarPost", "Solicitud")', { id: '@Model.ID', m: $('textarea[name="MotivoCancelacion"]').val() }, function (result) {
+                if (result.Success) {
+                    window.location = '@Url.Action("Index", "Solicitud")?upd=true';
+                }
+            });
+        });
+
+        $('#btn-add-destino').click(function (e) {
+            e.preventDefault();
+            __addDestino();
+        });
+
+        $('#btn-add-beneficiado').click(function (e) {
+            e.preventDefault();
+            __currentBeneficiadoIndex++;
+            $.get('@Url.Action("GetDropDown", "Users")', {
+                id: '',
+                nombre: 'beneficiado-' + __currentBeneficiadoIndex,
+                'default': '-SELECCIONE-'
+            },
+            function (data) {
+                var html = '<br/><div class="input-group"><span class="input-group-addon"><i class="fa fa-user"></i></span>';
+                html += data;
+                html += '<span class="input-group-addon"><i class="fa fa-remove"></i></span></div>';
+                $('#div-beneficiados').append(html);
+                $('#div-beneficiados select').select2({
+                    dropdownAutoWidth: true,
+                    width: 'auto'
+                });
+            });
+        });
+
+        $('#btn-save').click(function (e) {
+            e.preventDefault();
+            var $frm = $('#frm-sol');
+            var formParsley = $frm.parsley(__defaultParsleyForm());
+            var isValid = formParsley.validate();
+            if (isValid) {
+                $('#div-beneficiados select').each(function () {
+                    var $sel = $(this);
+                    if ($sel.val()) {
+                        __arrBeneficiados.push({
+                            UsersID: $sel.val()
+                        });
+                    }
+                });
+                if (!$('input[name="HoraServicioEnMinutos"]').val()) {
+                    var hours = $('#txt-hora-servicio').data('timepicker').hour;
+                    var minutes = $('#txt-hora-servicio').data('timepicker').minute;
+                    var meridian = $('#txt-hora-servicio').data('timepicker').meridian;
+                    $('input[name="HoraServicioEnMinutos"]').val(((hours + (meridian == 'PM' ? 12 : 0)) * 60) + minutes)
+                }
+                if (__arrDestinos.length) {
+                    for (var i_d = 0; i_d < __arrDestinos.length; i_d++) {
+                        __arrDestinos[i_d].ZonaOrigen = __objTarifaProveedor.ZonaOrigen;
+                        __arrDestinos[i_d].ZonaDestino = __objTarifaProveedor.ZonaDestino;
+                        __arrDestinos[i_d].DistanciaKm = __objTarifaProveedor.Distancia.replace('km', '').trim();
+                    }
+                }
+                var element = {
+                    SituacionServicio: 'R',
+                    TipoServicio: $('select[name="TipoServicio"]').val(),
+                    TipoDestino: $('select[name="TipoDestino"').val(),
+                    FechaServicio: $('input[name="FechaServicio"]').val(),
+                    HoraServicioEnMinutos: $('input[name="HoraServicioEnMinutos"]').val(),
+                    CentroCostoAfectoCodigoSap: $('select[name="CentroCostoAfectoCodigoSap"]').val(),
+                    NroOrdenServicio: $('input[name="NroOrdenServicio"]').val(),
+                    MotivoCreacion: $('textarea[name="MotivoCreacion"]').val(),
+                    CantidadHoras: $('input[name="CantidadHoras"]').val(),
+                    CategoriaProducto: $('input[name="CategoriaProducto"]').val(),
+                    CantidadProductos: $('input[name="CantidadProductos"]').val(),
+                    OrigenLat: $('input[name="OrigenLat"]').val(),
+                    OrigenLng: $('input[name="OrigenLng"]').val(),
+                    OrigenDireccion: $('#' + __txt_origen_id).val(),
+                    DestinoServicio: __arrDestinos,
+                    Beneficiado: __arrBeneficiados,
+                    PrecioServicio: __objTarifaProveedor.Precio,
+                    ProveedorTaxiID: __objTarifaProveedor.IdProveedor,
+                    SolicitudProveedorTaxi: __arrSolicitudProveedores
+                };
+                //console.log(element);
+                $.post('@Url.Action("RegistrarPost", "Solicitud")',
+                    element,
+                    function (result) {
+                        if (result.Success) {
+                            window.location = '@Url.Action("IndexUsuario", "Solicitud")?upd=true';
+                        }
+                    });
+            }
+        });
+
+        $('select[name="CentroCostoAfectoCodigoSap"], #div-beneficiados select').select2({
+            dropdownAutoWidth: true,
+            width: 'auto'
+        });
+
+        $('#div-fecha-servicio').datepicker({
+            format: 'dd/MM/yyyy',
+            autoclose: true,
+            language: 'es',
+        }).on('changeDate', function (e) {
+            $('input[name="FechaServicio"]').val(e.format('dd/mm/yyyy'))
+        });
+
+        $("#div-fecha-servicio").datepicker("setDate", new Date());
+
+        $('#txt-hora-servicio').timepicker({
+            modalBackdrop: true
+        }).on('changeTime.timepicker', function (e) {
+            //console.log('The time is ' + e.time.value);
+            //console.log('The hour is ' + e.time.hours);
+            //console.log('The minute is ' + e.time.minutes);
+            //console.log('The meridian is ' + e.time.meridian);
+            var minutes = ((e.time.hours + (e.time.meridian == 'PM' ? 12 : 0)) * 60) + e.time.minutes;
+            $('input[name="HoraServicioEnMinutos"]').val(minutes);
+        });
+
+        $('select[name="TipoServicio"]').change(function (e) {
+            e.preventDefault();
+            if ($(this).val() == 'N') {
+                $('select[name="TipoDestino"] option[value="M"]').css('display', '');
+                $('#div-fg-nrohoras').removeClass('hidden').addClass('hidden');
+                $('#div-fg-categoriaproducto').removeClass('hidden').addClass('hidden');
+                $('#div-fg-nroproductos').removeClass('hidden').addClass('hidden');
+                $('input[name="CantidadHoras"]').removeAttr('required');
+                $('input[name="CategoriaProducto"]').removeAttr('required');
+                $('input[name="CantidadProductos"]').removeAttr('required');
+            } else {
+                if ($(this).val() == 'H') {
+                    $('#div-fg-nrohoras').removeClass('hidden');
+                    $('input[name="CantidadHoras"]').attr('required', '');
+                    $('#div-fg-categoriaproducto').removeClass('hidden').addClass('hidden');
+                    $('#div-fg-nroproductos').removeClass('hidden').addClass('hidden');
+                } else if ($(this).val() == 'M') {
+                    $('#div-fg-nrohoras').removeClass('hidden').addClass('hidden');
+                    $('#div-fg-categoriaproducto').removeClass('hidden');
+                    $('#div-fg-nroproductos').removeClass('hidden');
+                    $('input[name="CategoriaProducto"]').attr('required', '');
+                    $('input[name="CantidadProductos"]').attr('required', '');
+                }
+                $('#sel-tipo-destino option[value="M"]').css('display', 'none');
+            }
+        });
+
+        $('#sel-tipo-destino').change(function (e) {
+            e.preventDefault();
+            if ($(this).val() == 'U') {
+                $('#div-btn-add-destino').css('display', 'none');
+            } else {
+                $('#div-btn-add-destino').css('display', '');
+            }
+        });
+
+        $('[data-toggle="tooltip"]').tooltip();
+
+        __currentBeneficiadoIndex++;
+    });
+
+    function __addDestino() {
+        __currentDestinoIndex++;
+        var txt_destino_id = 'txt-destino-' + __currentDestinoIndex;
+        var html = '<div class="row"><div class="col-sm-12">'
+                    + '<span>&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-chevron-down"></i></span>'
+                    + '</div></div>';
+        html += '<div class="row"><div class="col-sm-12">'
+                    + '<div class="input-group"><span class="input-group-addon"><i class="fa fa-map-marker"></i></span>'
+                    + '<input type="text" id="' + txt_destino_id + '" class="form-control" placeholder="Destino ' + __currentDestinoIndex + '" required="" />'
+                    + '<span class="input-group-addon"><i class="fa fa-remove"></i></span>'
+                    + '</div></div></div>';
+        __$div_destinos.append(html);
+        __addSearchBox(txt_destino_id);
+        //$('#txt-destino-' + __currentDestinoIndex).focus();
+    }
+
+    function __addSearchBox(elementID, type) {
+        var input = document.getElementById(elementID);
+        var searchBox = new google.maps.places.SearchBox(input);
+        __map.addListener('bounds_changed', function () {
+            searchBox.setBounds(__map.getBounds());
+        });
+
+        //var markers = [];
+
+        searchBox.addListener('places_changed', function () {
+
+            var places = searchBox.getPlaces();
+            if (places.length == 0) {
+                //console.log('place not found');
+                return;
+            }
+
+            //markers.forEach(function (marker) {
+            //    marker.setMap(null);
+            //});
+            //markers = [];
+
+            var bounds = new google.maps.LatLngBounds();
+            var place = places[0];
+            __markers.push(new google.maps.Marker({
+                map: __map,
+                title: place.name,
+                position: place.geometry.location,
+                draggable: true
+            }));
+            if (place.geometry.viewport) {
+                bounds.union(place.geometry.viewport);
+            } else {
+                bounds.extend(place.geometry.location);
+            }
+            __map.fitBounds(bounds);
+
+            var lat = place.geometry.location.lat();
+            var lng = place.geometry.location.lng();
+
+            if (elementID == __txt_origen_id) {
+                $('input[name="OrigenLat"]').val(lat);
+                $('input[name="OrigenLng"]').val(lng);
+            } else {
+                __arrDestinos.push({
+                    Lat: lat,
+                    Lng: lng,
+                    Direccion: input.value
+                });
+            }
+
+            __buildTraces();
+        });
+    }
+
+    function __buildTraces() {
+        //console.log(__markers);
+        if (__markers.length > 1) {
+            var directionsService = new google.maps.DirectionsService,
+            directionsDisplay = new google.maps.DirectionsRenderer({
+                map: __map
+            });
+            for (var i = 1; i < __markers.length; i++) {
+                calculateAndDisplayRoute(directionsService, directionsDisplay, __markers[i - 1].position, __markers[i].position);
+            }
+        }
+    }
+
+    function initMap() {
+        __map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: __lat_default, lng: __lng_default },
+            zoom: 16
+        });
+        //var infoWindow = new google.maps.InfoWindow({ map: map });
+
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                //infoWindow.setPosition(pos);
+                //infoWindow.setContent('Posición actual');
+                __map.setCenter(pos);
+
+                //var marker = new google.maps.Marker({
+                //    position: pos,
+                //    draggable: true,
+                //    visible: true
+                //});
+                //marker.setMap(__map);
+
+                //
+                __lat_default = pos.lat;
+                __lng_default = pos.lng;
+
+                //__addSearchBox(__txt_origen_id);
+
+                //
+                __markers.push(new google.maps.Marker({
+                    map: __map,
+                    title: '@Model.OrigenDireccion',
+                    position: new google.maps.LatLng(parseFloat('@Model.OrigenLat'), parseFloat('@Model.OrigenLng')),
+                    draggable: true
+                }));
+
+                @if (Model.DestinoServicio != null && Model.DestinoServicio.Any())
+                {
+                    foreach (var destino in Model.DestinoServicio)
+                    {
+                        <text>
+                __markers.push(new google.maps.Marker({
+                    map: __map,
+                    title: '@destino.Direccion',
+                    position: new google.maps.LatLng(parseFloat('@destino.Lat'), parseFloat('@destino.Lng')),
+                    draggable: true
+                }));
+                </text>
+                    }
+                }
+
+                __buildTraces();
+                //
+            }, function () {
+                //handleLocationError(true, infoWindow, map.getCenter());
+            });
+        } else {
+            // Browser doesn't support Geolocation
+            //handleLocationError(false, infoWindow, map.getCenter());
+        }
+    }
+
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                                'Error: The Geolocation service failed.' :
+                                'Error: Your browser doesn\'t support geolocation.');
+    }
+
+    function calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB) {
+        directionsService.route({
+            origin: pointA,
+            destination: pointB,
+            avoidTolls: true,
+            avoidHighways: false,
+            travelMode: google.maps.TravelMode.DRIVING
+        }, function (response, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                directionsDisplay.setDirections(response);
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+
+        //__getTarifaMenor();
+    }
+
+    function __getTarifaMenor() {
+        $('#spn-precio').text(0.00);
+        $.get('@Url.Action("GetTarifaMenor", "Shared")', {
+            origen_lat: $('input[name="OrigenLat"]').val(),
+            origen_lng: $('input[name="OrigenLng"]').val(),
+            destino_lat: __arrDestinos[__arrDestinos.length - 1].Lat,
+            destino_lng: __arrDestinos[__arrDestinos.length - 1].Lng
+        }, function (data) {
+            if (data) {
+                __objTarifaProveedor = data;
+                $('#spn-precio').text(data.Precio);
+                //console.log(__objTarifaProveedor);
+                __arrSolicitudProveedores = [];
+                __arrSolicitudProveedores.push({
+                    ProveedorTaxiID: data.IdProveedor,
+                    PrecioServicio: data.Precio,
+                    Seleccionado: '1'
+                });
+            }
+        });
+    }
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAhS2Z67QxSj44CLS_nG_eCIAWn6E9lOvw&callback=initMap&libraries=places&sensor=false"></script>

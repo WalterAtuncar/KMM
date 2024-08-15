@@ -1,0 +1,641 @@
+﻿@model WebApplication.Areas.GASTO.Models.SolicitudViewModel
+
+<h3 class="text-left text-primary">
+    <i class="fa fa-list-alt" style="color: #ee3224;"></i>
+    <i class="fa fa-chevron-right" style="color: #ee3224;"></i> REGISTRAR SOLICITUD
+</h3>
+<br />
+@using (Html.BeginForm("BuscarUsuario", "Solicitud", FormMethod.Post, new { @id = "frm-guardar-solicitud" }))
+{
+    <div class="row">
+        <div id="filtros">
+            <div class="col-sm-5">
+                <div id="div-beneficiados">
+                    <div class="form-horizontal  rowUser" >
+                        <div class="form-group">
+                            <label class="control-label col-sm-4">DNI - Nombre: </label>
+                            <div class="col-sm-8">
+                                @*@Html.TextBoxFor(m => m.Dni,
+                    new
+                    {
+                        @class = "form-control input-sm",
+                        @id = "txtDni",
+                        @placeholder = "Dni - Nombres"
+                    })*@
+                                @Html.DropDownList("listaBeneficiado", new SelectList(ViewBag.ListaBeneficiado, "ID", "Nombres"), new { @id = "dllBeneficiado-0", @class = "form-control select2" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            @*<div class="col-sm-2">
+                <button id="btnBuscarEmpleado" class="btn btn-danger btn-sm"><i class="fa fa-search"></i> Buscar</button>
+            </div>*@
+            @*<div class="col-sm-3">
+                <div class="form-group">
+                    <label class="col-sm-4">Empleado</label>
+                    <div class="col-sm-7">
+                        @Html.TextBoxFor(x => x.NombreCompleto, new { @class = "form-control input-toggle-marker", @style="font-size:10px;" ,@id = "txtEmpleado" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4">Email</label>
+                    <div class="col-sm-7">
+                        @Html.TextBoxFor(x => x.Email, new { @class = "form-control input-toggle-marker", @style = "font-size:10px;", @id = "txtMail" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-4">Sociedad</label>
+                    <div class="col-sm-7">
+                        @Html.TextBoxFor(x => x.ListaSociedad.FirstOrDefault().NombreFI, new { @class = "form-control input-toggle-marker", @style = "font-size:10px;", @id = "txtSociedad" })
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+}
+<input type="hidden" id="hdfCodigoSociedad" value="@ViewBag.CodigoSociedad" />
+
+
+<hr />
+@using (Html.BeginForm("Guardar", "Solicitud", FormMethod.Post, new { @id = "frm-guardar-solicitud" }))
+{
+<div class="row">
+    <div id="filtros">
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Centro de Costo: </label>
+                    <div class="col-sm-8">
+                        @*@Html.DropDownListFor(m => m.CentroCostoAfectoCodigoSap, new SelectList(Model.ListaCentroCosto, "Codigo", "Descripcion"), "-SELECCIONE-", new { @class = "form-control input-sm filtro select2", @id = "CentroCostoAfectoCodigoSap" })*@
+
+                        @{Html.RenderAction("GetDropDown", "CentroCosto", new { @class = "form-control input-sm filtro select2", id = string.Empty, nombre = "CentroCostoAfectoCodigoSap", @default = "-SELECCIONE-" }); }
+
+                        
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Sucursal Usuario: </label>
+                    <div class="col-sm-8">
+                        @*@Html.DropDownListFor(m => m.Liquidacion.ProveedorTaxiID, new SelectList(Model.ListaProveedor, "ID", "RazonSocial"), new { @class = "form-control input-sm filtro select2", @id = "ddlProveedorTaxi" })*@
+                        <select class="form-control input-sm filtro select2" id="dllSucursalUsuario">
+                            <option selected="selected" value="">-SELECCIONE-</option>
+                            <option value="14">Arequipa</option>
+                            <option value="5">Cajamarca</option>
+                            <option value="16">Chiclayo</option>
+                            <option value="7">Chimbote</option>
+                            <option value="13">Cusco</option>
+                            <option value="11">Huancayo</option>
+                            <option value="8">Huaraz</option>
+                            <option value="9">Ilo</option>
+                            <option value="3">Iquitos</option>
+                            <option value="10">Lima</option>
+                            <option value="4">Piura</option>
+                            <option value="2">Pucalpa</option>
+                            <option value="17">Tacna</option>
+                            <option value="1">Tarapoto</option>
+                            <option value="6">Trujillo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Tipo Solicitud: </label>
+                    <div class="col-sm-8">
+                        @*@Html.DropDownListFor(m => m.Liquidacion.ProveedorTaxiID, new SelectList(Model.ListaProveedor, "ID", "RazonSocial"), new { @class = "form-control input-sm filtro select2", @id = "ddlProveedorTaxi" })*@
+                        <select class="form-control input-sm filtro select2" id="dllTipoSolicitud">
+                            <option value="1">Anticipo</option>
+                            <option value="2">Abono</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <br />
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Desde</label>
+                    <div class="col-sm-6 col-md-6">
+                        <div id="fecha-content-inicio" class="input-group input-group-sm date" data-date-format="dd/mm/yyyy" data-date-viewmode="years">
+                            @Html.TextBoxFor(m => m.FechaInicioStr,
+                                                                                 new
+                                                                                 {
+                                                                                     @class = "form-control input-sm",
+                                                                                     @placeholder = "FECHA INICIO"
+
+                                                                                 })
+                            <div class="input-group-addon close-button">
+                                <span class="fa fa-calendar"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" id="divMoneda">
+                    <label class="control-label col-sm-4" id="lblMoneda">Moneda: </label>
+                    <div class="col-sm-8">
+                        @*@Html.DropDownListFor(m => m.Liquidacion.ProveedorTaxiID, new SelectList(Model.ListaProveedor, "ID", "RazonSocial"), new { @class = "form-control input-sm filtro select2", @id = "ddlProveedorTaxi" })*@
+                        <select class="form-control input-sm filtro select2" id="dllMoneda">
+                            <option value="1">PEN</option>
+                            <option value="2">EUR</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" id="divComentario">
+                    <label class="control-label col-sm-4" id="lblComentario" >Comentarios: </label>
+                    <div class="col-sm-8">
+                        <textarea rows="2" cols="60" class="form-control" id="txtComentario">
+                            </textarea>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Aprobador: </label>
+                    <div class="col-sm-8" id="content-ListaUsuarioCentroCosto">
+                        @Html.Partial("_ListaUsuarioCentroCosto")
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Lugar de destino: </label>
+                    <div class="col-sm-8">
+                        @*@Html.DropDownListFor(m => m.Liquidacion.ProveedorTaxiID, new SelectList(Model.ListaProveedor, "ID", "RazonSocial"), new { @class = "form-control input-sm filtro select2", @id = "ddlProveedorTaxi" })*@
+                        <select class="form-control input-sm filtro select2" id="dllDestinoUsuario">
+                            <option selected="selected" value="">:: Seleccione el destino ::</option>
+                            <option value="14">Arequipa</option>
+                            <option value="5">Cajamarca</option>
+                            <option value="16">Chiclayo</option>
+                            <option value="7">Chimbote</option>
+                            <option value="13">Cusco</option>
+                            <option value="11">Huancayo</option>
+                            <option value="8">Huaraz</option>
+                            <option value="9">Ilo</option>
+                            <option value="3">Iquitos</option>
+                            <option value="10">Lima</option>
+                            <option value="4">Piura</option>
+                            <option value="2">Pucalpa</option>
+                            <option value="17">Tacna</option>
+                            <option value="1">Tarapoto</option>
+                            <option value="6">Trujillo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Motivo Solicitud: </label>
+                    <div class="col-sm-8">
+                        <textarea rows="2" cols="50" class="form-control" id="txtMotivoCreacionSolicitud">
+        
+                            </textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Hasta</label>
+                    <div class="col-sm-6 col-md-6">
+                        <div id="fecha-content-fin" class="input-group input-group-sm date" data-date-format="dd/mm/yyyy" data-date-viewmode="years">
+                            @Html.TextBoxFor(m => m.FechaFinStr,
+                                                                                 new
+                                                                                 {
+                                                                                     @class = "form-control input-sm",
+                                                                                     @placeholder = "FECHA FIN"
+                                                                                 })
+                            <div class="input-group-addon close-button">
+                                <span class="fa fa-calendar"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-horizontal" id="divImporte">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4" id="lblImporte" >Importe: </label>
+                        <div class="col-sm-5">
+                            <input type="text" value="" class="form-control input-sm" id="txtImporte" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="form-horizontal">
+                 <div class="form-group">
+                    <label class="control-label col-sm-4">Órden de servicio:</label>
+                    <div class="col-sm-7">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">
+                                <input type="checkbox" id="chkOrdenServicio" />
+                            </span>
+                            <input type="text" id="txtOrdenServicio" class="form-control filtro" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Interior/Exterior: </label>
+                    <div class="col-sm-7">
+                        @*@Html.DropDownListFor(m => m.Liquidacion.ProveedorTaxiID, new SelectList(Model.ListaProveedor, "ID", "RazonSocial"), new { @class = "form-control input-sm filtro select2", @id = "ddlProveedorTaxi" })*@
+                        <select class="form-control input-sm filtro select2">
+                            <option value="0">Interior</option>
+                            <option value="1">Exterior</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Aprobador Cotización </label>
+                    <div class="col-sm-7">
+                        @*@Html.DropDownListFor(m => m.Liquidacion.ProveedorTaxiID, new SelectList(Model.ListaProveedor, "ID", "RazonSocial"), new { @class = "form-control input-sm filtro select2", @id = "ddlProveedorTaxi" })*@
+                        <select class="form-control input-sm filtro select2">
+                            <option value="2042" data-select2-id="25">000372630 - - CAMACARO , JESSICA ALEXANDRA</option>
+                            <option value="24" data-select2-id="26">46012022 - ABAD PALACIOS , ERIKA MILAGROS</option>
+                            <option value="755" data-select2-id="27">31680253 - ABAD ZAPATA , MARCO ANTONIO</option>
+                            <option value="799" data-select2-id="28">40589899 - ABILA VICENTE , GIDDEL FERNANDO</option>
+                            <option value="1326" data-select2-id="29">46795540 - ACERO CHAMBILLA , JOSE CARLOS</option>
+                            <option value="1648" data-select2-id="30">77036479 - ACEVEDO HEREDIA , CARROSIO FRANKLIN</option>
+                            <option value="644" data-select2-id="31">07667740 - ACEVEDO HOLGUIN , JOSE LUIS</option>
+                            <option value="974" data-select2-id="32">47416701 - ACHA CRUZ , JHONATAN JHOEL</option>
+                            <option value="917" data-select2-id="33">44135421 - ACUÑA BARDALES , RONALD SERAFIN</option>
+                            <option value="1787" data-select2-id="34">46966404 - ACUÑA MELGAREJO , RAUL ANGEL</option>
+                            <option value="1298" data-select2-id="35">43415707 - AGUERO RONDAN , ANGELO MARVIN</option>
+                            <option value="599" data-select2-id="36">25803368 - AGUILA MAZA , ENRIQUE WILLIAM</option>
+                            <option value="2081" data-select2-id="37">44725385 - AGUILAR AGUIRRE , DIANA VIRGINIA</option>
+                            <option value="1686" data-select2-id="38">41449485 - AGUILAR CALSIN , ROGER RESARDO</option>
+                            <option value="1533" data-select2-id="39">46514583 - AGUILAR GRIMALDO , GIOVANNI ALEJANDRO</option>
+                            <option value="1100" data-select2-id="40">09716850 - AGUILAR MOGROVEJO , CHRISTIAN HUGO</option>
+                            <option value="1099" data-select2-id="41">44432342 - AGUILAR ONCOY , RAFAEL TOMY</option>
+                            <option value="1050" data-select2-id="42">46790136 - AGUIRRE ALCCA , ANDERSSON</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            
+
+
+
+        </div>
+    </div>
+
+    
+</div>
+    
+}
+
+
+<hr />
+<div class="row">
+    <div class="col-sm-12">
+        <div class="pull-right">
+            <button id="GuardarButton" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+            <a href="@Url.Action("Index", "Solicitud")" class="btn btn-danger btn-sm"><i class="fa fa-times-circle"></i> Cancelar </a>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    var __lat_default = -12.0480505;
+    var __lng_default = -77.10029129999998;
+    var __map;
+    var __directionsService;
+    var __directionsDisplay;
+    var __arrDestinos = [];
+    var __arrBeneficiados = [];
+    var __arrBeneficiadosSelected = [];
+    var __beneficiadoObject = [];
+    var __$div_destinos = $('#div-destinos');
+    var __txt_origen_id = 'OrigenDireccion';
+    var __markers = [];
+    var __objTarifaProveedor = {};
+    var __currentInputMarker;
+    var __currentDestinoIndex = 0;
+    var __currentBeneficiadoIndex = 0;
+    var $origin = '@Url.Content("~/")';
+    var __users_autocomplete = [];
+    var __listaDestino = [];
+    var geocoder;
+    var arraySolicitudProveedor = [];
+    var validaciones = true;
+    var validacionCentroCosto = true;
+    var validacionOrdenServicio = true;
+    var eventDisplay = false;
+    var horaActualMinutos = 0;
+    var horaActual = "";
+    var idUserAprobador = 0;
+    var __countAprobadoresDisponibles = 0;
+    
+
+    var url = {
+        ValidarOrdenServicio: '@Url.Action("ValidarOrdenServicio", "Solicitud")',
+        ValidarCentroCosto: '@Url.Action("ValidarCentroCosto", "Solicitud")',
+        CalificarServicio: '@Url.Action("Calificacion", "Solicitud")',
+        GetListBeneficiado: '@Url.Action("GetListBeneficiado", "Solicitud")',
+        ValidarCalificacion: '@Url.Action("ValidarCalificacion", "Solicitud")',
+        GetListUsers: '@Url.Action("GetListJson", "Users")',
+        PostGuardarSolicitud: '@Url.Action("Guardar", "Solicitud")',
+    };
+
+
+   
+
+    $(document).ready(function () {
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            width: '100%',
+        });
+
+        $('#fecha-content-inicio').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            setDate: new Date()
+        });
+
+        $('#fecha-content-fin').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            setDate: new Date()
+        });
+
+        var Fecha = new Date();
+        Fecha.setDate(Fecha.getDate());
+
+
+        $('.close-button').unbind();
+
+        $('.close-button').click(function () {
+            if ($('.datepicker').is(":visible")) {
+                $(this).parent().datepicker('hide');
+            } else {
+                $(this).parent().datepicker('show');
+            }
+        });
+
+
+        $('#dllBeneficiado-0').select2({ dropdownAutoWidth: true });
+
+        $('#dllTipoSolicitud').change(function () {
+            debugger;
+            var tipsolicitud = $('#dllTipoSolicitud').val();
+            if (tipsolicitud == "2") {
+                $("#divMoneda").css("display", "none");
+                $("#divComentario").css("display", "none");
+                $("#divImporte").css("display", "none");
+            }
+            else {
+                $("#divMoneda").css("display", "block");
+                $("#divComentario").css("display", "block");
+                $("#divImporte").css("display", "block");
+            }
+
+        });
+
+        getUsuarioCentroCosto('');
+
+        $('select#CentroCostoAfectoCodigoSap').change(function () {
+            var ceco = $("#CentroCostoAfectoCodigoSap").val();
+            getUsuarioCentroCosto(ceco);
+        })
+
+
+        $('#btn-save').click(function (e) {
+            e.preventDefault();
+            document.getElementById("btn-save").disabled = true;
+
+            var $frm = $('#frm-sol');
+            var formParsley = $frm.parsley(__defaultParsleyForm());
+            var isValid = formParsley.validate();
+
+            var indicador = true;
+            if (isValid) {
+                var idCentroCosto = $('select[name="CentroCostoAfectoCodigoSap"]').val();
+                if (idCentroCosto == '') {
+                    toastr["warning"]('Debe seleccionar un centro de costo afecto.');
+                    document.getElementById("btn-save").disabled = false;
+                    indicador = false;
+                    return;
+                }
+            }
+            indicador = true;
+            if (isValid) {
+                idUserAprobador = parseInt($('select[name="listaAprobadores"]').val());
+                if (__countAprobadoresDisponibles >= 0 && (idUserAprobador == 0 || idUserAprobador == '' || idUserAprobador == '0')) {
+                    toastr["warning"]('Debe seleccionar un aprobador.');
+                    document.getElementById("btn-save").disabled = false;
+                    indicador = false;
+                    return;
+                }
+            }
+            indicador = true;
+            if (isValid) {
+                $('#div-beneficiados .rowUser').each(function (index, value) {
+                    var idBeneficiado = $(this).find('select option:selected').val();
+                    if (index == 0 && idBeneficiado == '0') {
+                        toastr["warning"]('Debe seleccionar un beneficiado.');
+                        document.getElementById("btn-save").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+                });
+            }
+
+            if (indicador) {
+                GuardarSolicitud(isValid);
+            }
+        });
+
+
+
+
+    });
+
+    var getUsuarioCentroCosto = function (_ceco) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaAprobadores_PV", "Solicitud")',
+            type: 'POST',
+            data: { ceco: _ceco },
+            cache: false,
+            async: true,
+            success: function (data) {
+                //console.log(data);
+                $("#content-ListaUsuarioCentroCosto").html(data);
+                fn_DesbloquearPantalla();
+            }
+            });
+    }
+
+
+    var GuardarSolicitud = function (isValid) {
+        validacionCentroCosto = true;
+        var centroCosto = document.getElementById('CentroCostoAfectoCodigoSap').value; 
+        var ordenServicio = document.getElementById('txtOrdenServicio').value; 
+        if (centroCosto == "") {
+            toastr["error"]("El centro de costo no se encuentra registrado en el Sistema de Komatsu");
+            document.getElementById("btn-save").disabled = true;
+        }
+        else
+        {
+
+           $.ajax({
+            url: url.ValidarCentroCosto,
+            type: 'POST',
+            data: { codigoCentroCosto: centroCosto },
+            dataType: 'JSON',
+            beforeSend: function () {
+                fn_BloquearPantalla();
+            },
+            cache: false,
+            async: true,
+            success: function (data) {
+                if (data.Success) {
+                    document.getElementById("CentroCostoAfectoCodigoSap").disabled = true
+                    document.getElementById("txtOrdenServicio").disabled = false
+                    if (ordenServicio == "") {
+                        validacionCentroCosto = true;
+                        $('#idDesbloquear').prop('checked', true);
+                        toastr["info"]("Debe ingresar una OS");
+                        $('#div-validate-os-status').html('<i class="fa fa-info-circle fa-lg text-primary"></i> <label style="font-size: 11px;" class = "text-primary">Debe ingresar una OS</label>');
+                        setTimeout(function () {
+                            $('#txtOrdenServicio').focus();
+                        }, 100);
+                    } else {
+                        validacionCentroCosto = true;
+                    }
+                } else {
+                    document.getElementById("CentroCostoAfectoCodigoSap").disabled = false
+                    document.getElementById("btn-save").disabled = false
+                    validacionCentroCosto = false;
+                }
+
+                // Continuación del flujo principal
+                if (isValid && validacionCentroCosto) {
+                    var ordenServicio = document.getElementById('txtOrdenServicio').value;
+                    validarOrdenServicio();
+                    if (validacionOrdenServicio) {
+                        fn_BloquearPantalla();
+                        var element = {
+                            EstadoServicio: 'R',
+                            IdUsuarioBeneficiario: $('#dllBeneficiado-0').val(),
+                            IdTipoSolicitud: $('#dllTipoSolicitud').val(),
+                            IdCentroCosto: $('#CentroCostoAfectoCodigoSap').val(),
+                            IdUsuarioAprobador: $('#dllListaAprobadores').val(),
+                            NroOrdenServicio: $('#txtOrdenServicio').val(),
+                            IdSucursalUsuario: $('#dllSucursalUsuario').val(),
+                            IdDestinoUsuario: $('#dllDestinoUsuario').val(),
+                            IdAmbito: $('#dllAmbito').val(),
+                            MotivoCreacionSolicitud: $('#txtMotivoCreacionSolicitud').val(),
+	                        FechaInicioSolicitud: $('#FechaInicioStr').val(),
+                            FechaFinServicio: $('#FechaFinStr').val(),
+                            ComentarioSolicitud: $('#txtComentario').val(),
+                            ImporteServicio: $('#txtImporte').val(),
+                            IdMoneda: $('#dllMoneda').val(),
+                            IdSociedad: $('#hdfCodigoSociedad').val()
+	                    };
+                            $.ajax({
+                                url: '@Url.Action("RegistrarPost", "Solicitud")',
+                                type: 'POST',
+                                data: { element: element, idAprobador: idUserAprobador },
+                                dataType:'JSON',
+                                async: true,
+                                beforeSend: function () {
+                                    fn_BloquearPantalla();
+                                },
+                                success: function (data) {
+                                    if (data.Success) {
+                                        window.location = '@Url.Action("IndexUsuario", "Solicitud")?upd=true';
+                                    } else {
+                                        toastr["error"](data.Message);
+                                        document.getElementById("btn-save").disabled = false
+                                    }
+                                },
+                                complete: function () {
+                                    fn_DesbloquearPantalla();
+                                    document.getElementById("btn-save").disabled = false
+                                }
+                            });
+                       
+                    } else {
+                        document.getElementById("btn-save").disabled = false
+                    }
+                }
+                else {
+                    if (isValid) {
+                        
+                        var element = {
+                            SituacionServicio: 'R',
+                            IdTipoServicio: $('#TipoServicio').val(),
+                            IdTipoDestino: $('#TipoDestino').val(),
+                            TipoServicio: $('select[name="TipoServicio"]').val(),
+                            TipoDestino: $('select[name="TipoDestino"').val(),
+                            FechaServicio: $('input[name="FechaServicio"]').val() + ' ' + $('#txt-hora-servicio').val(),
+                            HoraServicioEnMinutos: $('input[name="HoraServicioEnMinutos"]').val(),
+                            CentroCostoAfectoCodigoSap: $('select[name="CentroCostoAfectoCodigoSap"]').val(),
+                            NroOrdenServicio: $('input[name="NroOrdenServicio"]').val(),
+                            IdMotivoCreacionSolicitud: $('select[name="MotivoCreacionSolicitudID"]').val(),
+                            CantidadHoras: $('input[name="CantidadHoras"]').val(),
+                            CategoriaProductoID: $('select[name="CategoriaProductoID"]').val(),
+                            CantidadProductos: $('input[name="CantidadProductos"]').val(),
+                            OrigenLat: $('input[name="OrigenLat"]').val(),
+                            OrigenLng: $('input[name="OrigenLng"]').val(),
+                            OrigenDireccion: $('#' + __txt_origen_id).val(),
+                            DestinoServicio: __arrDestinos,
+                            //
+                            SolicitudProveedorTaxi: getListaSolicitudProveedor(),
+                            Observaciones: $('textarea[name="Observaciones"]').val(),
+                            Beneficiado: __arrBeneficiados,
+                            TotalServicio: $('#spn-precio').text(),
+                            DistanciaKilometro: $('#spn-km').text()
+                        };
+
+                        
+                            $.ajax({
+                                url: '@Url.Action("RegistrarPost", "Solicitud")',
+                                type: 'POST',
+                                data: { element: element, listaDestino: getListaDestino(), listaTarifa: arraySolicitudProveedor, idAprobador: idUserAprobador },
+                                cache: false,
+                                dataType: 'JSON',
+                                beforeSend: function () {
+                                    fn_BloquearPantalla();
+                                },
+                                async: true,
+                                success: function (data) {
+                                    if (data.Success) {
+                                        window.location = '@Url.Action("IndexUsuario", "Solicitud")?upd=true';
+                                    } else {
+                                        toastr["error"](data.Message);
+                                        document.getElementById("btn-save").disabled = false
+                                    }
+                                },
+                                complete: function () {
+                                    fn_DesbloquearPantalla();
+                                    document.getElementById("btn-save").disabled = false
+                                }
+                            });
+                       
+                    } else {
+                        document.getElementById("btn-save").disabled = false
+                    }
+                }
+            }
+        });
+        }
+    }
+
+
+</script>
+
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+@*<script src="~/Scripts/Liquidacion/Registrar.js"></script>*@
+

@@ -1,0 +1,940 @@
+﻿@model WebApplication.Areas.GASTO.Models.SolicitudViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+    @if (Model.IdSolicitud == default(int))
+    {
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>REGISTRAR SOLICITUD</h3>
+    }
+    else
+    {
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>MODIFICAR SOLICITUD  Nro: @Model.Codigo</h3>
+    }
+
+</div>
+<input type="hidden" id="hdfIdSolicitud_Formulario" value="@Model.IdSolicitud" />
+<input type="hidden" id="hdfFechaRegistro_Formulario" value="@Model.FechaRegistroStr" />
+<input type="hidden" id="hdfIdTipo_Formulario" value="@ViewBag.IdTipo" />
+<input type="hidden" id="hdfCodigoSociedad_Formulario" value="@ViewBag.CodigoSociedad" />
+<input type="hidden" id="hdfIdTipoReembolso_Formulario" value="@ViewBag.IdTipoReembolso" />
+<input type="hidden" id="hdfIdDestino_Formulario" value="@ViewBag.IdDestino" />
+<input type="hidden" id="hdfCodCentroCosto_Formulario" value="@ViewBag.CodCentroCosto" />
+<input type="hidden" id="hdfIdUsuarioAprobador_Formulario" value="@Model.IdUsuarioAprobador" />
+<input type="hidden" id="hdfIdAprobador_Formulario" value="@ViewBag.IdAprobador" />
+<input type="hidden" id="hdfIdUsuario_Formulario" value="@Model.IdUsuario" />
+<input type="hidden" id="hdfCtaBancaria_Formulario" value="@ViewBag.CtaBancaria" />
+<input type="hidden" id="hdfIdSucursalBySociedad_Formulario" value="@ViewBag.IdSucursalBySociedad" />
+
+
+
+<div class="modal-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <ul id="detalleLiquidacion" class="nav nav-tabs responsive-tabs">
+                <li class="nav-item active">
+                    <a class="nav-link nav-link-tab active" data-toggle="tab" href="#info" role="tab" data-index="0">Información</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <br />
+
+
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+
+            @using (Html.BeginForm("Registrar", "Solicitud", FormMethod.Post, new { @id = "frm-guardar-solicitud" }))
+            {
+                <div class="row">
+                    <div id="filtros">
+
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal  rowUser">
+
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Tipo Solicitud: </label>
+                                        <div class="col-sm-8">
+                                            @Html.DropDownListFor(m => m.IdTipo, new SelectList(ViewBag.listaTipoSolicitud, "IdTipo", "Tipo"), new { @class = "form-control select2", @id = "dllTipoSolicitud" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal   rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Sociedad:</label>
+                                        <div class="col-sm-8">
+                                            @Html.DropDownListFor(m => m.IdSociedad, new SelectList(ViewBag.listaSociedad, "CodigoSociedadFI", "NombreCO"), new { @class = "form-control select2", @id = "dllSociedad" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div id="filtros">
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal  rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Empleado: </label>
+                                        <div class="col-sm-8" id="content-ListaBeneficiarios">
+                                            @Html.Partial("_ListaBeneficiario")
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group" id="divCentroCosto">
+                                    <label class="col-sm-4">Centro de Costo: </label>
+                                    <div class="col-sm-8" id="content-ListaCentroCosto">
+                                        @*@{Html.RenderAction("GetDropDown", "CentroCosto", new { @class = "form-control input-sm filtro select2", id = string.Empty, nombre = "CentroCostoAfectoCodigoSap", @default = "-SELECCIONE-" }); }*@
+                                        @Html.Partial("_ListaCentroCosto")
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-4" id="lblFechaInicio">Desde:</label>
+                                    <div class="col-sm-8">
+                                        <div id="fecha-content-inicio" class="input-group input-group-sm date" data-date-format="dd/mm/yyyy" data-date-viewmode="years">
+                                            @Html.TextBoxFor(m => m.FechaInicioStr,
+                                                                                                 new
+                                                                                                 {
+                                                                                                     @class = "form-control input-sm",
+                                                                                                     @placeholder = "FECHA INICIO"
+
+                                                                                                 })
+                                            <div class="input-group-addon close-button">
+                                                <span class="fa fa-calendar"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-4">Sucursal: </label>
+                                    @*<div class="col-sm-8">
+                                            @Html.DropDownListFor(m => m.IdSucursal, new SelectList(ViewBag.ListaSucursales, "IdSucursal", "Nombre"), new { @class = "form-control select2", @id = "dllSucursalUsuario" })
+                                        </div>*@
+                                    <div class="col-sm-8" id="content-ListaSucursalBySociedad">
+                                        @Html.Partial("_ListaSucursalesBySociedad")
+                                    </div>
+                                </div>
+
+
+
+                                <div class="form-group" id="divTipoReembolso" style="display:none;">
+                                    <label class="col-sm-4">Tipo Reembolso: </label>
+                                    <div class="col-sm-8">
+                                        @Html.DropDownListFor(m => m.IdTipoReembolso, new SelectList(ViewBag.listaTipoReembolso, "IdTipoReembolso", "Tipo"), new { @class = "form-control select2", @id = "dllTipoReembolso" })
+                                    </div>
+
+
+                                </div>
+
+                                @*<div class="form-group" id="divMoneda" style="display:none;">
+                                        <label class="col-sm-4" id="lblMoneda">Moneda: </label>
+                                        <div class="col-sm-8">
+                                            @Html.DropDownListFor(m => m.IdMoneda, new SelectList(ViewBag.listaMoneda, "IdMoneda", "Moneda"), new { @class = "form-control select2", @id = "dllMoneda" })
+                                        </div>
+                                    </div>*@
+
+                                <div class="form-group" id="divImporte">
+                                    <label class="col-sm-4" id="lblImporte">Importe: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.ImporteSolicitud,
+                                         new
+                                         {
+                                             @class = "form-control input-sm",
+                                             @id = "txtImporte",
+                                             @autofocus = "autofocus",
+                                             @placeholder = "Importe",
+                                             @onkeypress = "return filterFloat(event,this);",
+                                         })
+                                    </div>
+                                </div>
+                                @*<div class="form-group" id="divComentario">
+                                        <label class="col-sm-4" id="lblComentario">Comentarios: </label>
+                                        <div class="col-sm-8">
+                                            @Html.TextAreaFor(m => m.Comentario, new { @class = "form-control", @rows = 2, @columns = 60, @id = "txtComentario" })
+                                        </div>
+                                    </div>*@
+                                <div class="form-group">
+                                    <label class="col-sm-4">Motivo Solicitud: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextAreaFor(m => m.Motivo, new { @class = "form-control input-sm", @rows = 2, @columns = 60, @id = "txtMotivoCreacionSolicitud" })
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+
+
+                                <div class="form-group" id="divCuentaBancaria" style="display:block;">
+                                    <label class="col-sm-4">Cuenta Bancaria:</label>
+                                    <div class="col-sm-8" id="content-ListaCuentasBancarias">
+                                        @Html.Partial("_ListaCuentasBancarias")
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group" id="divAprobador">
+                                    <label class="col-sm-4">Aprobador: </label>
+                                    <div class="col-sm-8" id="content-ListaUsuarioCentroCosto">
+                                        @Html.Partial("_ListaUsuarioCentroCosto")
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="divAprobadorCaja">
+                                    <label class="col-sm-4">Adm.Caja: </label>
+                                    <div class="col-sm-8" id="content-ListaUsuarioSucursal">
+                                        @Html.Partial("_ListaUsuarioSucursal")
+                                    </div>
+                                </div>
+
+
+                                @*<div class="form-group">
+                                        <label class="col-sm-4">Motivo Solicitud: </label>
+                                        <div class="col-sm-8">
+                                            @Html.TextAreaFor(m => m.Motivo, new { @class = "form-control", @rows = 2, @columns = 60, @id = "txtMotivoCreacionSolicitud" })
+
+                                        </div>
+                                    </div>*@
+
+                                <div class="form-group" id="divFechaFin">
+                                    <label class="col-sm-4">Hasta:</label>
+                                    <div class="col-md-8">
+                                        <div id="fecha-content-fin" class="input-group input-group-sm date" data-date-format="dd/mm/yyyy" data-date-viewmode="years">
+                                            @Html.TextBoxFor(m => m.FechaFinStr,
+                                                                                                 new
+                                                                                                 {
+                                                                                                     @class = "form-control input-sm",
+                                                                                                     @placeholder = "FECHA FIN"
+                                                                                                 })
+                                            <div class="input-group-addon close-button">
+                                                <span class="fa fa-calendar"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="divDestino">
+                                    <label class="col-sm-4">Destino: </label>
+                                    <div class="col-sm-8">
+                                        @Html.DropDownListFor(m => m.IdDestino, new SelectList(ViewBag.listaAmbitoViaje, "IdPais", "Descripcion"), new { @class = "form-control select2", @id = "dllAmbito" })
+
+                                    </div>
+                                </div>
+                                @*<div class="form-group" id="divDestino">
+                                        <label class="col-sm-4">Destino:</label>
+                                        <div class="col-sm-8" id="content-ListaPais">
+                                            @Html.Partial("_ListaPais")
+                                        </div>
+                                    </div>*@
+
+
+
+
+                                <div class="form-group" id="divUpload" style="display:none;">
+                                    <label class="col-sm-4">Archivo:</label>
+                                    <div class="col-md-8">
+                                        @*<input id="archivo-adjunto" name="File" type="file" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,text/plain" multiple class="file-loading form-control input-sm">*@
+                                        <input id="archivo-adjunto" name="File" type="file" accept="image/jpeg,image/png,application/pdf" multiple class="file-loading form-control input-sm">
+                                        <div id="errorBlock-producto" class="help-block"></div>
+                                        <div style="margin-top: 5px;" id="content-attachment">
+                                            @if (Model.IdSolicitud != Decimal.Zero)
+                                            {
+                                                @Html.Partial("_Attachment", Model)
+                                            }
+                                        </div>
+                                        <span style="color:red;margin-top:5px;">Adjuntar Presupuesto de Viaje en formato PDF/JPG/PNG</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="GuardarSolicitudButton" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cancelar</button>
+    </div>
+</div>
+</div> @*FIN MODAL*@
+
+<script>
+
+    $(document).ready(function () {
+        if ($("#hdfCodigoSociedad_Formulario").val() == 'PE04') {
+
+            $('#dllSociedad').find('option:not([value="PE04"])').remove();
+        }
+
+        $("#divAprobadorCaja").css("display", "none");
+
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            width: '100%',
+        });
+
+        $('#fecha-content-inicio').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+        $('#fecha-content-inicio').datepicker('setStartDate', new Date());
+
+
+        $('#fecha-content-fin').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+        $('#fecha-content-fin').datepicker('setStartDate', new Date());
+
+
+
+        $('#FechaInicioStr').change(function (e) {
+            e.preventDefault();
+            var fini = $('#FechaInicioStr').val();
+            var ffin = $('#FechaFinStr').val();
+            var tipsolicitud = parseInt($('#dllTipoSolicitud').val());
+            if (tipsolicitud == 1 || tipsolicitud == 2) {
+                if ((fini != undefined && fini != "") && (ffin != undefined && ffin != "")) {
+                    if (!validate_fechaMayorQue(fini, ffin)) {
+                        alert('La Fecha Desde debe ser menor igual a la fecha Hasta');
+                        $("#FechaInicioStr").focus();
+                    }
+                }
+            }
+
+        });
+
+        $('#FechaFinStr').change(function (e) {
+            e.preventDefault();
+            var fini = $('#FechaInicioStr').val();
+            var ffin = $('#FechaFinStr').val();
+            var tipsolicitud = parseInt($('#dllTipoSolicitud').val());
+            if (tipsolicitud == 1 || tipsolicitud == 2) {
+                if ((fini != undefined && fini != "") && (ffin != undefined && ffin != "")) {
+                    if (!validate_fechaMayorQue(fini, ffin)) {
+                        alert('La Fecha Desde debe ser menor igual a la fecha Hasta');
+                        $("#FechaFinStr").focus();
+                    }
+                }
+            }
+        });
+
+        $('#txtImporte').change(function (e) {
+            //var retorno = 0;
+            //var idtipo = $('#dllTipoSolicitud').val();
+            //if (idtipo == "1") {
+            //    var idsolicitud_validar = $('#hdfIdSolicitud_Formulario').val();
+            //    var importe = $('#txtImporte').val() == '' ? 0 : $('#txtImporte').val();
+            //    retorno=ValidarCreacionAnticipo($('#dllBeneficiado-0').val(), importe, idsolicitud_validar);
+            //    if (retorno == "2") {
+            //            toastr["warning"]('El valor del Anticipo supera el monto permitido.');
+            //            document.getElementById("GuardarSolicitudButton").disabled = false;
+            //            return;
+            //        }
+            //    if (retorno == "3") {
+            //            toastr["warning"]('El Nro de Anticipos creados supera el permitido.');
+            //            document.getElementById("GuardarSolicitudButton").disabled = false;
+            //            return;
+            //        }
+            //}
+        });
+
+        $('#dllTipoSolicitud').change(function () {
+            debugger;
+            var tipsolicitud = $('#dllTipoSolicitud').val();
+            $('#lblFechaInicio').text('Desde:');
+            //$('#lblAprobadorCotizacion').text('Aprobador Cotiz.');
+
+            $('#dllBeneficiado-0').val('0');
+            $('#dllBeneficiado-0').change();
+
+            if (tipsolicitud == "2") {
+
+                $("#divCentroCosto").css("display", "block");
+                $("#divTipoReembolso").css("display", "block");
+
+                $("#divAprobador").css("display", "block");
+                $("#divAprobadorCaja").css("display", "none");
+                $("#divFechaFin").css("display", "block");
+                $("#divDestino").css("display", "block");
+
+                $("#divImporte").css("display", "none");
+                $('#dllTipoReembolso').change();
+                $("#divTipoReembolso").css("display", "block");
+
+            }
+            if (tipsolicitud == "1") {
+
+                $("#divCentroCosto").css("display", "block");
+                $("#divImporte").css("display", "block");
+                $("#divAprobador").css("display", "block");
+                $("#divAprobadorCaja").css("display", "none");
+                $("#divFechaFin").css("display", "block");
+                $("#divDestino").css("display", "block");
+                $("#divImporte").css("display", "block");
+                $('#dllTipoReembolso').val("1");
+                $('#dllTipoReembolso').change();
+                $("#divTipoReembolso").css("display", "none");
+
+            }
+            if (tipsolicitud == "1" || tipsolicitud == "2") {
+                var codigosociedad = $('#hdfCodigoSociedad_Formulario').val();
+                $('#dllSociedad').val(codigosociedad);
+                $('#dllSociedad').change();
+                $('select#dllSociedad').prop('disabled', false);
+
+            } else {
+
+                $('select#dllSociedad').prop('disabled', false);
+                $('#dllSociedad').change();
+            }
+            if (tipsolicitud == "3") {
+                $("#divCentroCosto").css("display", "none");
+                $("#divTipoReembolso").css("display", "none");
+                $("#divImporte").css("display", "none");
+                $("#divAprobador").css("display", "none");
+                $("#divAprobadorCaja").css("display", "block");
+                $("#divFechaFin").css("display", "none");
+                $("#divDestino").css("display", "none");
+                $("#divAmbito").css("display", "block");
+                $('#lblFechaInicio').text('Fec.Rendición:');
+                //$('#lblAprobadorCotizacion').text('Adm. Caja:');
+                $("#divUpload").css("display", "none");
+                var codsoc = $('#hdfCodigoSociedad_Formulario').val();
+                $("#dllSociedad").val(codsoc);
+                $("#dllSociedad").change();
+
+            }
+            if (tipsolicitud == "4") {
+                $("#divCentroCosto").css("display", "block");
+                $("#divTipoReembolso").css("display", "none");
+                $("#divImporte").css("display", "none");
+                $("#divAprobador").css("display", "block");
+                $("#divAprobadorCaja").css("display", "none");
+                $("#divFechaFin").css("display", "none");
+                //$("#divDestino").css("display", "none");
+                $("#divAmbito").css("display", "none");
+                $('#lblFechaInicio').text('Fec.Rendición:');
+                $("#divUpload").css("display", "none");
+            }
+        });
+
+        //$('#dllSucursalUsuario').change(function () {
+        //    var idsociedad = $("#dllSociedad").val();
+        //    var idsucursal = $("#dllSucursalUsuario").val();
+        //    if (cargado == 1) {
+        //        getUsuarioSucursal(idsociedad,idsucursal);
+        //    }
+        //});
+
+
+        $('#dllAmbito').change(function () {
+
+            var ambito = $('#dllAmbito').val();
+            if (ambito == "1") {
+                $("#divAmbito").css("display", "none");
+                $("#divUpload").css("display", "none");
+
+            }
+            else {
+                $("#divAmbito").css("display", "block");
+                $("#divUpload").css("display", "none");
+            }
+        });
+
+
+        $('select#dllSociedad').change(function () {
+            var idsociedad = $("#dllSociedad").val();
+            var idtipo = $('#dllTipoSolicitud').val();;
+            getBeneficiariosBySociedad(idsociedad, idtipo);
+            getSucursalesBySociedad(idsociedad);
+            getCentroCosto(idsociedad);
+            $('#dllBeneficiado-0').val('0');
+            $('#dllBeneficiado-0').change();
+            $('select#dllCentroCostoAfectoCodigoSap').val('0');
+            $('select#dllCentroCostoAfectoCodigoSap').change();
+
+        })
+
+        idUserSociedad = $('#hdfIdUsuario_Formulario').val();
+        $('#dllBeneficiado-0').val(idUserSociedad);
+        $('#dllBeneficiado-0').change();
+
+
+        idUserCuentaBancaria = $('#hdfCtaBancaria_Formulario').val();
+        debugger;
+        if (idUserCuentaBancaria != 0) {
+            $('#dllCuentasBancarias').val(idUserCuentaBancaria);
+            $('#dllCuentasBancarias').change();
+        }
+
+        idUserCentroCostoSolicitud = $('#hdfCodCentroCosto_Formulario').val();
+        $('#dllCentroCostoAfectoCodigoSap').val(idUserCentroCostoSolicitud);
+        $('#dllCentroCostoAfectoCodigoSap').change();
+
+        idUserAprobador = $('#hdfIdAprobador_Formulario').val();
+        $('#dllListaAprobadores').val(idUserAprobador);
+        $('#dllListaAprobadores').change();
+
+        idUserAprobadorCaja = $('#hdfIdAprobador_Formulario').val();
+        $('#dllListaAprobadoresCaja').val(idUserAprobadorCaja);
+        $('#dllListaAprobadoresCaja').change();
+
+        idSucursalBySociedad = $('#hdfIdSucursalBySociedad_Formulario').val();
+        $('#dllSucursalUsuario').val(idSucursalBySociedad);
+        $('#dllSucursalUsuario').change();
+
+
+        $('#GuardarSolicitudButton').click(function (e) {
+            debugger;
+            e.preventDefault();
+            $('#txtImporte').change();
+            var IdSolicitud = $('#hdfIdSolicitud_Formulario').val();
+            var IdUsuario=$('#dllBeneficiado-0').val();
+            var idtipo = $('#dllTipoSolicitud').val();
+            var IdAprobadorSolcitud = $("#dllListaAprobadores").val();
+
+            if (IdUsuario == IdAprobadorSolcitud) {
+                toastr["warning"]('El empleado y el aprobador no pueden ser los mismo.');
+                return;
+            }
+                document.getElementById("GuardarSolicitudButton").disabled = true;
+
+                var $frm = $('#frm-guardar-solicitud');
+                var formParsley = $frm.parsley(__defaultParsleyForm());
+                var isValid = formParsley.validate();
+
+
+                indicador = true;
+                if (isValid && (idtipo == "1" || idtipo == "2" || idtipo == "3" || idtipo == "4")) {
+                        var idBeneficiado = $('#dllBeneficiado-0').val();
+                        if (idBeneficiado == undefined || idBeneficiado == "" || idBeneficiado == "0") {
+                            toastr["warning"]('Debe seleccionar un Empleado beneficiado.');
+                            document.getElementById("GuardarSolicitudButton").disabled = false;
+                            indicador = false;
+                            return;
+                        }
+                }
+
+                indicador = true;
+                if (isValid) {
+                    idUserCuentaBancaria = $('select[name="ListaCuentasBancarias"]').val();
+                    if (__countCuentasBancariasDisponibles >= 0 && (idUserCuentaBancaria == undefined || idUserCuentaBancaria == '' || idUserCuentaBancaria == '0')) {
+                        toastr["warning"]('Debe seleccionar una Cuenta Bancaria.');
+                        document.getElementById("GuardarSolicitudButton").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+                }
+
+
+                var indicador = true;
+                if (isValid && (idtipo == "1" || idtipo == "2" || idtipo == "4")) {
+                    var idCentroCosto = $('select[name="dllCentroCostoAfectoCodigoSap"]').val();
+                    if (idCentroCosto == "0") {
+                        toastr["warning"]('Debe seleccionar un centro de costo afecto.');
+                        document.getElementById("GuardarSolicitudButton").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+                }
+
+
+
+                indicador = true;
+                if (isValid && (idtipo == "1" || idtipo == "2" || idtipo == "4")) {
+                    idUserAprobador = parseInt($('select[name="listaAprobadores"]').val());
+                    if (__countAprobadoresDisponibles >= 0 && (idUserAprobador == 0 || idUserAprobador == '' || idUserAprobador == '0')) {
+                        toastr["warning"]('Debe seleccionar un aprobador.');
+                        document.getElementById("GuardarSolicitudButton").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+                }
+                indicador = true;
+                if (isValid && (idtipo == "3")) {
+                    idUserAprobadorCaja = parseInt($('select[name="listaAprobadoresCaja"]').val());
+                    if (__countAprobadoresCajaDisponibles >= 0 && (idUserAprobadorCaja == 0 || idUserAprobadorCaja == '' || idUserAprobadorCaja == '0')) {
+                        toastr["warning"]('Debe seleccionar un Adm. Caja.');
+                        document.getElementById("GuardarSolicitudButton").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+                }
+
+
+                indicador = true;
+                var fini = $('#FechaInicioStr').val();
+                if (idtipo == "1" || idtipo == "2") {
+                    var ffin = $('#FechaFinStr').val();
+                    if (fini == undefined || fini == "") {
+                        toastr["warning"]('Debe Ingresar fecha Desde');
+                        document.getElementById("GuardarSolicitudButton").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+                    if (ffin == undefined || ffin == "") {
+                        toastr["warning"]('Debe Ingresar fecha Hasta');
+                        document.getElementById("GuardarSolicitudButton").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+                }
+                else {
+                    var ffin = $('#FechaFinStr').val();
+                    if (fini == undefined || fini == "") {
+                        toastr["warning"]('Debe Ingresar Fecha');
+                        document.getElementById("GuardarSolicitudButton").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+                }
+
+
+                var indicador = true;
+                if (idtipo == "1") {
+
+                    var idsolicitud_validar = $('#hdfIdSolicitud_Formulario').val();
+                    var importe = $('#txtImporte').val() == '' ? 0 : $('#txtImporte').val();
+                    var result = ValidarCreacionAnticipo($('#dllBeneficiado-0').val(), importe, idsolicitud_validar);
+                    if (isValid && (result == "2" || result == "3")) {
+                        if (result == "2") {
+                            toastr["warning"]('El valor del Anticipo supera el monto permitido.');
+                            document.getElementById("GuardarSolicitudButton").disabled = false;
+                            indicador = false;
+                            return;
+                        }
+                        if (result == "3") {
+                            toastr["warning"]('El Nro de Anticipos creados supera el permitido.');
+                            document.getElementById("GuardarSolicitudButton").disabled = false;
+                            indicador = false;
+                            return;
+                        }
+                    }
+                }
+
+
+
+                indicador = true;
+                var cta_ = $('#dllCuentasBancarias').val();
+                if (idtipo == "1" || idtipo == "2" ) {
+                    var idambito = $('#dllAmbito').val();
+                    if (isValid) {
+
+                        if (cta_.substr(0, 3) == "USD" && idambito == "1") {
+                            toastr["warning"]('Debe seleccionar un destino diferente a Nacional');
+                            document.getElementById("GuardarSolicitudButton").disabled = false;
+                            indicador = false;
+                            return;
+                        }
+                        if (cta_.substr(0, 3) == "PEN" && idambito != "1") {
+                            toastr["warning"]('Debe seleccionar destino Nacional');
+                            document.getElementById("GuardarSolicitudButton").disabled = false;
+                            indicador = false;
+                            return;
+                        }
+                    }
+                }
+                idmoneda_ = cta_.substr(0, 3) == "USD" ? 1 : 2;
+
+                indicador = true;
+                if (isValid) {
+                    idsucursal = parseInt($('#dllSucursalUsuario').val());
+                    if (idsucursal == 0) {
+                        toastr["warning"]('Debe seleccionar una Sucursal');
+                        document.getElementById("GuardarSolicitudButton").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+                }
+
+                indicador = true;
+                if (idtipo == "1" ) {
+                    var importe = $('#txtImporte').val();
+                    if (importe == undefined || importe == "") {
+                        toastr["warning"]('Debe Ingresar Importe');
+                        document.getElementById("GuardarSolicitudButton").disabled = false;
+                        indicador = false;
+                        return;
+                    }
+                }
+                indicador = true;
+                if (isValid) {
+                    if (idtipo == "1" || idtipo == "2") {
+                        var idambito = $('#dllAmbito').val();
+                        if (cta_.substr(0, 3) == "USD" && idambito == "1") {
+                            toastr["warning"]('Debe seleccionar un destino diferente a Nacional');
+                            document.getElementById("GuardarSolicitudButton").disabled = false;
+                            indicador = false;
+                            return;
+                        }
+                        if (cta_.substr(0, 3) == "PEN" && idambito != "1") {
+                            toastr["warning"]('Debe seleccionar destino Nacional');
+                            document.getElementById("GuardarSolicitudButton").disabled = false;
+                            indicador = false;
+                            return;
+                        }
+                    }
+                }
+
+                indicador = true;
+                if (isValid) {
+                    if (idtipo == "1" || idtipo == "2") {
+                        var fini = $('#FechaInicioStr').val();
+                        var ffin = $('#FechaFinStr').val();
+                        if ((fini != undefined && fini != "") && (ffin != undefined && ffin != "")) {
+                           if (!validate_fechaMayorQue(fini, ffin)) {
+                               toastr["warning"]('La Fecha Desde debe ser menor igual a la fecha Hasta');
+                               document.getElementById("GuardarSolicitudButton").disabled = false;
+                               indicador = false;
+                               return;
+                           }
+                         }
+                    }
+                }
+
+                indicador = true;
+                var idambito = $('#dllAmbito').val();
+                //if (idambito > 1 && (idtipo == 1 || idtipo==2)) {
+                //    var nombreArchivo = $('#itemFileAdjunto').html();
+                //    if (nombreArchivo == undefined || nombreArchivo.trim() == "") {
+                //        toastr["warning"]('Debe seleccionar un Presupuesto de Viaje en formato PDF/Imágen');
+                //        document.getElementById("GuardarSolicitudButton").disabled = false;
+                //        indicador = false;
+                //        return;
+                //    }
+                //}
+
+
+
+            if (indicador) {
+                if (idtipo == "1" && IdSolicitud == "0") {
+                    abrirModalTerminosCondiciones(IdUsuario);
+                } else {
+                    GuardarSolicitud(isValid);
+                }
+            }
+            //}
+        });
+
+
+        //LAGICA PARA CARG CENTROCOSOT Y APROBADOR
+
+        var idsol = $('#hdfIdSolicitud_Formulario').val();
+        var idtipo = $('#hdfIdTipo_Formulario').val();
+        if (idsol != '' && idsol != "0") {
+            debugger;
+            $('#dllTipoSolicitud').prop('disabled', true);
+
+            if (idtipo == "1" || idtipo == "2") {
+                $('select#dllSociedad').prop('disabled', false);
+            } else {
+                $('select#dllSociedad').prop('disabled', false);
+            }
+            if (idtipo == "1") {
+
+                $("#divCentroCosto").css("display", "block");
+                $("#divImporte").css("display", "block");
+                $("#divAprobador").css("display", "block");
+                $("#divAprobadorCaja").css("display", "none");
+                $("#divFechaFin").css("display", "block");
+                $("#divDestino").css("display", "block");
+                $("#divImporte").css("display", "block");
+                $('#dllTipoReembolso').val("1");
+                //$('#dllTipoReembolso').change();
+                $("#divTipoReembolso").css("display", "none");
+
+            }
+            if (idtipo == "2") {
+                $("#divCentroCosto").css("display", "block");
+                $("#divTipoReembolso").css("display", "block");
+                $("#divAprobador").css("display", "block");
+                $("#divAprobadorCaja").css("display", "none");
+                $("#divFechaFin").css("display", "block");
+                $("#divDestino").css("display", "block");
+                $("#divImporte").css("display", "none");
+                $("#divTipoReembolso").css("display", "block");
+            }
+            if (idtipo == "3") {
+                $("#divCentroCosto").css("display", "none");
+                $("#divTipoReembolso").css("display", "none");
+                $("#divImporte").css("display", "none");
+                $("#divAprobador").css("display", "none");
+                $("#divAprobadorCaja").css("display", "block");
+                $("#divFechaFin").css("display", "none");
+                $("#divDestino").css("display", "none");
+                $("#divAmbito").css("display", "block");
+                $('#lblFechaInicio').text('Fec.Rendición:');
+                //$('#lblAprobadorCotizacion').text('Adm. Caja:');
+                $("#divUpload").css("display", "none");
+            }
+            if (idtipo == "4") {
+                $("#divCentroCosto").css("display", "block");
+                $("#divTipoReembolso").css("display", "none");
+                $("#divImporte").css("display", "none");
+                $("#divAprobador").css("display", "block");
+                $("#divAprobadorCaja").css("display", "none");
+                $("#divFechaFin").css("display", "none");
+                //$("#divDestino").css("display", "none");
+                $("#divAmbito").css("display", "none");
+                $('#lblFechaInicio').text('Fec.Rendición:');
+                $("#divUpload").css("display", "none");
+            }
+
+            var ambito = $('#dllAmbito').val();
+            if (ambito == "1") {
+                $("#divAmbito").css("display", "none");
+                $("#divUpload").css("display", "none");
+
+            }
+            else {
+                $("#divAmbito").css("display", "block");
+                $("#divUpload").css("display", "none");
+            }
+        }
+        else {
+
+            $('#dllTipoSolicitud').prop('disabled', false);
+            if (idtipo == "1" || idtipo == "2") {
+                $('select#dllSociedad').prop('disabled', false);
+            } else {
+                $('select#dllSociedad').prop('disabled', false);
+            }
+        }
+        getListaAdjunto(idsol);
+
+        cargado = 1;
+    });
+
+    function ValidarCreacionAnticipo(idbeneficiario, ImporteSolicitud, idsolicitud_validar ) {
+
+        var result = 0;
+        var fecha = $('#hdfFechaRegistro_Formulario').val();
+        if (fecha != "") {
+            var idmoneda = $('#dllCuentasBancarias').val().substr(0, 3) == "USD" ? 1 : 2;
+            fn_BloquearPantalla();
+            $.ajax({
+                url: '@Url.Action("ValidarCreacionAnticipo", "Solicitud")',
+                type: 'POST',
+                data: { idbeneficiario: idbeneficiario, ImporteSolicitud: ImporteSolicitud, IdSolicitud: idsolicitud_validar, fecha: fecha, idmoneda: idmoneda },
+                cache: false,
+                async: false,
+                success: function (data) {
+                    result = data.Valor;
+                    fn_DesbloquearPantalla();
+
+                }
+            });
+        }
+        return result;
+    }
+
+   function ObtenerCuentaBancaria(codsociedad, codusuario, idtipo_solicitud) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ObtenerCuentasBancariasByUser_PV", "Solicitud")',
+            type: 'POST',
+            data: { sociedad: codsociedad, codigo: codusuario, idtipo_solicitud: idtipo_solicitud },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaCuentasBancarias").html(data);
+
+                idUserCuentaBancaria = '0';
+                $('#dllCuentasBancarias').val(idUserCuentaBancaria);
+                $('#dllCuentasBancarias').change();
+                fn_DesbloquearPantalla();
+
+            }
+        });
+    }
+
+    var getUsuarioCentroCosto = function (_ceco) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaAprobadores_PV", "Solicitud")',
+            type: 'POST',
+            data: { ceco: _ceco },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaUsuarioCentroCosto").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+    function getListaAdjunto(_idsolicitud) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaAdjunto_PV", "Solicitud")',
+            type: 'POST',
+            data: { IdSolicitud: _idsolicitud },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-attachment").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+    var getCentroCosto = function (_codsociedad) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaCentrosCostos", "Solicitud")',
+            type: 'POST',
+            data: { codsociedad: _codsociedad },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaCentroCosto").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+    var abrirModalTerminosCondiciones = function (IdUsuario) {
+        fn_BloquearPantalla();
+        $('#modal-solicitud-terminos .modal-content').empty();
+        $('#modal-solicitud-terminos .modal-content').load(url.Terminos, { IdUsuario: IdUsuario }, function () {
+            $("#modal-solicitud-terminos").modal({ show: true, backdrop: 'static', keyboard: true });
+            fn_DesbloquearPantalla();
+        });
+
+    }
+
+</script>
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+<script src="~/Areas/GASTO/Scripts/Solicitud/_Formulario.js"></script>

@@ -1,0 +1,37 @@
+﻿@model WebApplication.Models.SolicitudViewModel
+<table id="tbl-sol-det" class="table table-bordered table-condensed table-hover">
+    <tbody>
+        <tr>
+            <td>Reserva Proveedor</td>
+            <td>@Model.Solicitud.IdServicioProveedor</td>
+        </tr>
+        <tr>
+            <td>Origen</td>
+            <td>@Model.Solicitud.DireccionOrigen</td>
+        </tr>
+        <tr>
+            <td>Destino</td>
+            <td>@Model.Solicitud.DireccionDestino</td>
+        </tr>
+        <tr>
+            <td>Tarifa</td>
+            <td>@string.Format("{0:#,##0.00}", Model.Solicitud.TotalServicio)</td>
+        </tr>
+        <tr>
+            <td>Fecha Servicio</td>
+            <td>@Model.Solicitud.FechaServicioStr</td>
+        </tr>
+        <tr>
+            <td>Estado</td>
+            <td>@Model.Solicitud.SituacionServicio.Nombre</td>
+        </tr>
+        <tr>
+            <td>Aprobador</td>
+            <td>@Model.Solicitud.UsuarioAprobo</td>
+        </tr>
+        <tr>
+            <td>Fecha Aprobación</td>
+            <td>@Model.Solicitud.FechaAprobacionStr</td>
+        </tr>
+    </tbody>
+</table>

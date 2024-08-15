@@ -1,0 +1,141 @@
+﻿<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel">
+        <i class="fa fa-database"></i>
+        <i class="fa fa-chevron-right"></i>
+        SOLICITUDES PARA APROBACION EXTERIOR
+    </h3>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div id="filtros">
+            <div class="col-sm-4">
+                <div class="form-horizontal">
+                    <label>Fecha Solicitud desde</label>
+                    <div id="FechaInicioDatePicker" class="input-group input-group-sm date" data-provide="datepicker">
+                        <input id="FechaInicioTextBox" type="text" class="form-control" />
+                        <div class="input-group-addon close-button">
+                            <span id="inicio" class="fa fa-calendar"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-horizontal">
+                    <label>Fecha Solicitud hasta</label>
+                    <div id="FechaFinDatePicker" class="input-group input-group-sm date" data-provide="datepicker">
+                        <input id="FechaFinTextBox" type="text" class="form-control" />
+                        <div class="input-group-addon close-button">
+                            <span class="fa fa-calendar"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-horizontal">
+                    <br />
+                    <button id="BuscarButton" class="btn btn-sm btn-danger"><i class="fa fa-search"></i> Buscar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<div class="row">
+            <div class="col-sm-12">
+                <div class="form-check">
+                    <label>
+                        <input type="checkbox" name="check" id="chk_marcar_todos"> <span class="label-text">Marcar / Desmarcar todos.</span>
+                    </label>
+                </div>
+            </div>
+        </div>*@
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="div-tbl-solicitudes" class="table-responsive">
+                <table id="tbl-solicitudes" class="table-gys-kom"></table>
+                <div id="jqControls2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="AgregarSolicitudButton" name="Agregar" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Aprobar</button>
+        <button id="SalirModalButton" name="Salir" class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cerrar</button>
+    </div>
+</div>
+
+<script>
+    var url = {
+        GetListModalSolicitudExteriorPaginado: '@Url.Action("GetSolicitudExteriorBuscarPaginado", "AprobacionJefes")',
+
+    }
+
+    
+
+    $(document).ready(function () {
+        $('#FechaInicioDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true
+        });
+
+        $('#FechaFinDatePicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true
+        });
+
+        var FechaInicio = new Date();
+        FechaInicio.setDate(FechaInicio.getDate() - 14);
+        $('#FechaInicioDatePicker').datepicker('setDate', (FechaInicio.getDate()) + '/' +(FechaInicio.getMonth() + 1) + '/' + (FechaInicio.getFullYear()));
+
+        var FechaFin = new Date();
+        FechaFin.setDate(FechaFin.getDate());
+        $('#FechaFinDatePicker').datepicker('setDate', (FechaFin.getDate()) + '/' + (FechaFin.getMonth() + 1) + '/' + (FechaFin.getFullYear()));
+
+        $('.close-button').unbind();
+
+        $('.close-button').click(function () {
+            if ($('.datepicker').is(":visible")) {
+                $(this).parent().datepicker('hide');
+            } else {
+                $(this).parent().datepicker('show');
+            }
+        });
+
+
+        $('#AgregarSolicitudButton').click(function (e) {
+            e.preventDefault();
+            document.getElementById("AgregarSolicitudButton").disabled = true;
+            var indicador = true;
+
+            var grid = $("#tbl-solicitudes");
+            var rowKey = grid.getGridParam("selrow");
+
+            if (!rowKey)
+                alert("Porfar seleccione los registros para su aprobación");
+            else {
+                var selectedIDs = grid.getGridParam("selarrrow");
+                var result = "";
+                for (var i = 0; i < selectedIDs.length; i++) {
+
+                    alert(selectedIDs[i]);
+
+                    result += selectedIDs[i] + ",";
+                }
+                if (result != "") {
+                    result = result.substring(0, result.length - 1);
+                    AprobarSolicitud(result);
+                }
+            }
+        });
+
+
+
+
+    });
+</script>
+
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+<script src="~/Areas/GASTO/Scripts/AprobacionJefes/_BuscarSolicitudExteriorModal.js"></script>

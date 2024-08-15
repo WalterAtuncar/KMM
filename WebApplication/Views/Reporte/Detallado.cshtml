@@ -1,0 +1,70 @@
+﻿@model WebApplication.Models.ReporteViewModel
+@{
+    ViewBag.Title = "Detallado";
+}
+<input hidden id="InputListBeneficiado" value="@Model.ListaBeneficiado" />
+<input hidden id="InputListCentroCosto" value="@Model.ListaCentroCosto" />
+<input hidden id="ListaUsuario"/>
+<input hidden id="ListaCentroCosto" />
+<h3 class="text-left text-primary">
+    <i class="fa fa fa-pie-chart" style="color: #ee3224;"></i>
+    <i class="fa fa-chevron-right" style="color: #ee3224;"></i> DETALLADO
+</h3>
+<br />
+<div class="row">
+    <div id="filtros">
+        <div class="col-sm-5">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4"> Sociedad:</label>
+                    <div class="col-sm-8">
+                        @{Html.RenderAction("GetDropDown", "Sociedad", new { @default = "-- SELECCIONE SOCIEDAD --" }); }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Beneficiado:</label>
+                    <div class="col-sm-8">
+                        <select id="BeneficiadoDropDown" multiple="multiple" class="form-control filtro select2"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Ceco:</label>
+                    <div class="col-sm-8">
+                        <select id="CentroCostoDropDown" multiple="multiple" class="form-control filtro select2"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <button id="btnBuscarReporteDetallado" class="btn btn-danger btn-sm"><i class="fa fa-search"></i> Buscar</button>
+        </div>
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-sm-offset-10 col-sm-2">
+        @Html.ActionLink("Descargar Excel", "ExportarExcel", new { formato = "EXCEL", listaUsuario = "", listaCentroCosto = "" }, new { @id = "exportarExcel", @class = "btn btn-primary btn-sm pull-right", @type = "button", @Style = "padding-left:20px;" })
+    </div>
+    <br />
+    <br />
+    <div class="col-sm-12">
+        <div id="div-tbl-solicitudes" class="table-responsive">
+        </div>
+    </div>
+</div>
+<script>
+    var url = {
+        GetReporteDetallado: '@Url.Action("GetReporteDetallado", "Reporte")',
+        GetDropDown: '@Url.Action("GetDropDown", "Reporte")'
+    }
+    $(document).ready(function () {
+        var listaBeneficiado = $('#InputListBeneficiado').val();
+        $('#add-list-beneficiado').html(listaBeneficiado);
+        $('.select2').select2({ dropdownAutoWidth: true, width: '100%' });
+    });
+</script>
+<script src="~/Scripts/Reporte/Index.js?version=1.1"></script>

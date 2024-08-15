@@ -1,0 +1,625 @@
+﻿@*@model WebApplication.Areas.GASTO.Models.SolicitudViewModel*@
+<style>
+    .datepicker {
+        z-index: 6000 !important;
+    }
+
+    /*[class="select2"] {
+        width: 100%;
+    }*/
+    #txtTipoSD {
+        width:200px;
+    }
+
+    #dll_EstadosPorTipoSD {
+        width: 200px;
+    }
+
+
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel">
+        <i class="fa fa-list"></i>
+        <i class="fa fa-chevron-right"></i>
+        DETALLE RENDICION DE GASTO
+    </h3>
+</div>
+<div class="modal-body" id="modalSolicitudesDelegadas">
+    @*<div class="row">
+            <div id="filtros">
+                <div style="padding-left:45%;">
+                    <button id="btnAprobarSolicitudDelegada" class="btn btn-primary btn-sm" style="width:150px;"><i class="fa fa-check"></i> Aprobar</button>
+                </div>
+            </div>
+        </div>*@
+    <div class="row">
+        <div id="filtros">
+            @*<div class="col-sm-4">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4">DNI - Nombre:</label>
+                            <div class="col-sm-8">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">
+                                        <input type="checkbox" id="chkDni" />
+                                    </span>
+                                    @Html.DropDownList("listaBeneficiado", new SelectList(ViewBag.ListaBeneficiado, "ID", "Nombres"), new { @id = "txtDni", @class = "form-control select2" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+            <div class="col-sm-3">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Tipo:</label>
+                        <div class="col-sm-8">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">
+                                    <input type="checkbox" id="chkTipoSD" />
+                                </span>
+                                @Html.DropDownList("txtTipoSD_", new SelectList(ViewBag.listaTipoSolicitud, "IdTipo", "Tipo"), new { @class = "form-control select2", @id = "txtTipoSD"})
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Estado: </label>
+                        <div class="col-sm-8">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">
+                                    <input id="chkEstadoPorTipoSD" type="checkbox" />
+                                </span>
+                                <div id="content-ListaEstdosPorTipoSD">
+                                    @Html.Partial("_ListaEstadosPorTipoSD")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">F. Reg. desde:</label>
+                        <div class="col-sm-6">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon filtro">
+                                    <input type="checkbox" id="chkFechaDesdeSD" />
+                                </span>
+                                <div id="FechaInicioSolicitudDatePickerSD" style="width: 100%;" class="input-group input-group-sm date filtro" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                    <input class="form-control filtro" id="fechaDesdeSD" />
+                                    <div class="input-group-addon filtro close-button">
+                                        <span class="fa fa-calendar"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">F. Reg. hasta:</label>
+                        <div class="col-sm-6">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">
+                                    <input type="checkbox" id="chkFechaHastaSD" />
+                                </span>
+                                <div id="FechaFinSolicitudDatePickerSD" style="width: 100%;" class="input-group input-group-sm date" data-provide="datepicker" data-date-format="dd/mm/yyyy">
+                                    <input type="text" class="form-control filtro" id="fechaHastaSD" />
+                                    <div class="input-group-addon close-button">
+                                        <span class="fa fa-calendar"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <button id="btnBuscarSolicitudesDelegadas" class="btn btn-danger btn-sm" style="width:130px;margin-bottom:5px;"><i class="fa fa-search"></i> Buscar</button>
+                <br />
+                <button id="btnAprobarSolicitudDelegada" class="btn btn-primary btn-sm" style="width:130px;margin-bottom:5px;"><i class="fa fa-check"></i> Aprobar</button>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!--findddddd-->
+    <div class="row">
+        <div class="col-sm-12">
+            <div id="div-tbl-solicitudes-delegadas" class="table-responsive">
+                <table id="jqGridSolicitudesDelegadas" class="table-gys-kom"></table>
+                <div id="jqControlsSolicitudesDelegadas">
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+
+
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cerrar</button>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            //width: '100px',
+        });
+        $('.filtro').attr('disabled', true);
+        $('select#dll_EstadosPorTipoSD').prop('disabled', true);
+        $('#txtTipoSD').prop('disabled', true);
+        $('#chkFechaDesdeSD').change(function () { checkFechaDesdeSD(this) });
+        $('#chkFechaHastaSD').change(function () { checkFechaHastaSD(this) });
+        $('#chkTipoSD').change(function () { checkTipoSD(this) });
+        $('#chkEstadoPorTipoSD').change(function () { checkEstadosPorTipoSD(this) });
+
+        $('#txtTipoSD').change(function () {
+            var _idtipo = $("#txtTipoSD").val();
+            getListaEstadosPorTipoSD(_idtipo);
+        })
+
+        $('#btnBuscarSolicitudesDelegadas').click(function () {
+            $('#jqGridSolicitudesDelegadas').jqGrid('setGridParam', {
+                page: 1,
+                url: getURLGetSolicitudesDelegadas(),
+                ajaxGridOptions: {
+                    beforeSend: function (xhr) {
+                        fn_BloquearPantalla();
+                    },
+                    complete: function (xhr) {
+
+
+                        fn_DesbloquearPantalla();
+
+                    },
+                }
+            }).trigger('reloadGrid');
+        });
+
+        $('body').on('click', "#btn-detalle-solicitudSD", function (e) {
+            e.preventDefault();
+            var IdSolicitud = $(this).attr('data-id');
+            abrirModalDetalleSD(IdSolicitud);
+        });
+
+
+        $('body').on('click', '#btn-cancelar-solicitudSD', function (e) {
+            e.preventDefault();
+            var pid = $(this).attr('data-id');
+            var cod = $(this).attr('data-cod');
+            abrirConfirmaRechazoSD(pid, cod);
+        });
+
+        $('body').on('click', '#btn-bitacora-solicitudSD', function (e) {
+            e.preventDefault();
+            var pid = $(this).attr('data-id');
+            abrirSolicitudHistorialSD(pid);
+        });
+
+        $('body').on('click', '#btn-detalle-rendir-gastoSD', function (e) {
+            e.preventDefault();
+            var pid = $(this).attr('data-id');
+            Id_Solicitud = pid;
+            abrirRendirGastosSD(pid);
+        });
+
+        $('.close-button').unbind();
+        $('.close-button').click(function () {
+            if ($('.datepicker').is(":visible")) {
+                $(this).parent().datepicker('hide');
+            } else {
+                $(this).parent().datepicker('show');
+            }
+        });
+
+        $('#FechaInicioSolicitudDatePickerSD').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+
+
+        $('#FechaFinSolicitudDatePickerSD').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+
+        
+
+
+        paginadosolicitudesdelegadas();
+        var anchoventana = parseInt($(window).width());
+        var anchomodal = (anchoventana - parseInt(anchoventana * 0.1)) - 20;
+        $("#jqGridSolicitudesDelegadas").setGridWidth(anchomodal);
+
+
+    });
+
+    var checkTipoSD = function (element) {
+        if (element.checked) {
+            $('#txtTipoSD').prop('disabled', false);
+
+        } else {
+            $("#chkEstadoPorTipoSD").prop('checked', false);
+            $('#txtTipoSD').prop('disabled', true);
+            $('#txtTipoSD').val('0');
+            $('#txtTipoSD').trigger('change')
+        }
+    }
+    var checkFechaDesdeSD = function (element) {
+        if (element.checked) {
+            $('#fechaDesdeSD').prop('disabled', false);
+        } else {
+            $('#fechaDesdeSD').prop('disabled', true);
+            $('#fechaDesdeSD').val('');
+        }
+    }
+    var checkEstadosPorTipoSD = function (element) {
+        if (element.checked) {
+            if ($("#chkTipoSD").is(':checked')) {
+                var idtipo = parseInt($("#txtTipoSD").val());
+                if (idtipo > 0) {
+                    $('select#dll_EstadosPorTipoSD').prop('disabled', false);
+                    $('select#dll_EstadosPorTipoSD').focus();
+                } else {
+                    $("#chkEstadoPorTipoSD").prop('checked', false);
+                    toastr["warning"]('Debe selecciona primero un tipo');
+
+                }
+            } else {
+                $("#chkEstadoPorTipoSD").prop('checked', false);
+                toastr["warning"]('Debe selecciona primero un tipo');
+            }
+        } else {
+            $('select#dll_EstadosPorTipoSD').prop('disabled', true);
+            $('select#dll_EstadosPorTipoSD').val(0);
+            $('select#dll_EstadosPorTipoSD').trigger('change')
+        }
+    }
+    var checkFechaHastaSD = function (element) {
+        if (element.checked) {
+            $('#fechaHastaSD').prop('disabled', false);
+        } else {
+            $('#fechaHastaSD').prop('disabled', true);
+            $('#fechaHastaSD').val('');
+        }
+    }
+
+
+    $('#btnAprobarSolicitudDelegada').click(function (e) {
+        e.preventDefault();
+        abrirModalSD();
+    });
+
+
+    function paginadosolicitudesdelegadas() {
+        $("#jqGridSolicitudesDelegadas").jqGrid({
+            url: url.GetListSolicitudDelegadasAprobacion,
+            datatype: 'JSON',
+            mtype: 'GET',
+            colNames: ['Opciones', 'Sociedad', 'Tipo', 'Codigo', 'DNI', 'Nombre', 'CECO', 'Fec.Des', 'Fec.Hasta', 'Mon', 'Importe', 'Gasto.T', 'Fec.Registro', 'Motivo', 'Estado', 'Rendir'],
+            colModel: [
+                {
+                    key: true,
+                    name: 'Codigo',
+                    index: 'Codigo',
+                    align: 'center',
+                    width: '60px',
+                    fixed: true,
+                    formatter: formatoOpcionesSD,
+                    formatoptions: { Keys: false }
+                },
+                { key: false, name: 'NombreCO', index: 'NombreCO', width: "70", align: 'center' },
+                { key: false, name: 'NombreTipoServicio', index: 'NombreTipoServicio', width: "20", align: 'center' },
+                { key: false, name: 'Codigo2', index: 'Codigo2', width: "42", align: 'center' },
+                { key: false, name: 'DNI', index: 'DNI', width: "54", align: 'center' },
+                { key: false, name: 'Beneficiario', index: 'Beneficiario', width: "100" },
+                { key: false, name: 'CECO', index: 'CECO', width: "70" },
+                { key: false, name: 'FechaDesde', index: 'FechaDesde', width: "45", align: 'center' },
+                { key: false, name: 'FechaHasta', index: 'FechaHasta', width: "45", align: 'center' },
+                { key: false, name: 'Moneda', index: 'Moneda', width: "25", align: 'center' },
+                { key: false, name: 'ImporteSolicitudStr', index: 'ImporteSolicitudStr', width: "60", align: 'right' },
+                { key: false, name: 'GastoRendido', index: 'GastoRendido', width: "40", align: 'right' },
+                {
+                    key: false, name: 'FechaRegistroStr', index: 'FechaRegistroStr', width: "45", align: 'center'
+                },
+                { key: false, name: 'Motivo', index: 'Motivo', width: "130" },
+                {
+                    key: false, name: 'Estado', index: 'Estado', width: "85", align: 'center',
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (rowObject.IdSituacionServicio == 1) {
+                            return '<span style="background-color: #87CEEB; display: block; width: 100%; height: 100%; ">' + cellvalue + '</span>';
+                        }
+                        if (rowObject.IdSituacionServicio == 2) {
+                            return '<span style="background-color: #87CEEB; display: block; width: 100%; height: 100%; ">' + cellvalue + '</span>';
+                        }
+                        if (rowObject.IdSituacionServicio == 3) {
+                            return '<span style="background-color: #FFA500; display: block; width: 100%; height: 100%; ">' + cellvalue + '</span>';
+                        }
+                        if (rowObject.IdSituacionServicio == 4) {
+                            return '<span style="background-color: #98FB98; display: block; width: 100%; height: 100%; ">' + cellvalue + '</span>';
+                        }
+
+                        if (rowObject.IdSituacionServicio == 5) {
+                            return '<span style="background-color: #32CD32; display: block; width: 100%; height: 100%; ">' + cellvalue + '</span>';
+                        }
+                        if (rowObject.IdSituacionServicio == 6) {
+                            return '<span style="background-color: #FF0000; display: block; width: 100%; height: 100%; ">' + cellvalue + '</span>';
+                        }
+
+                        if (rowObject.IdSituacionServicio == 7) {
+                            return '<span style="background-color: #FF0000; display: block; width: 100%; height: 100%; ">' + cellvalue + '</span>';
+                        }
+
+                        if (rowObject.IdSituacionServicio == 8) {
+                            return '<span style="background-color: #87CEEB; display: block; width: 100%; height: 100%; ">' + cellvalue + '</span>';
+                        }
+                        if (rowObject.IdSituacionServicio == 9) {
+                            return '<span style="background-color: #FF7F50; display: block; width: 100%; height: 100%; ">' + cellvalue + '</span>';
+                        }
+                        if (rowObject.IdSituacionServicio == 10) {
+                            return '<span style="background-color: #FFA500; display: block; width: 100%; height: 100%; ">' + cellvalue + '</span>';
+                        }
+                        if (rowObject.IdSituacionServicio == 11) {
+                            return '<span style="background-color: #98FB98; display: block; width: 100%; height: 100%; ">' + cellvalue + '</span>';
+                        }
+
+                    }
+                },
+                {
+                    key: false,
+                    name: 'Codigo',
+                    index: 'Codigo',
+                    align: 'center',
+                    width: '32px',
+                    fixed: true,
+                    formatter: formatoOpciones2SD,
+                    formatoptions: { keys: true, }
+                },
+
+            ],
+            pager: $('#jqControlsSolicitudesDelegadas'),
+            rowNum: 10,
+            rowList: [10, 30, 50, 100],
+            height: '100%',
+            viewrecords: true,
+            jsonReader: {
+                root: "rows",
+                page: "page",
+                total: "total",
+                records: "records",
+                repeatitems: false,
+            },
+            autowidth: true,
+            multiselect: true,
+            rownumbers: false,
+            loadBeforeSend: function () {
+                fn_BloquearPantalla();
+            },
+            gridComplete: function () {
+                //fn_DesbloquearPantalla();
+                //$('[data-toggle="tooltip"]').tooltip({ placement: 'right' });
+            },
+            loadComplete: function (data) {
+                if (data.rows.length > 0) {
+                    for (var i = 0; i < data.rows.length; i++) {
+                        if (data.rows[i].IdTipo == 1) {
+                            if (data.rows[i].IdSituacionServicio == 2 || data.rows[i].IdSituacionServicio == 8) {
+                            } else {
+                                $('#jqg_jqGridSolicitudesDelegadas_' + data.rows[i].Codigo + '').css("display", "none");
+                            }
+                        }
+                        else if (data.rows[i].IdTipo == 2) {
+                            if (data.rows[i].IdSituacionServicio == 2) {
+                            } else {
+                                $('#jqg_jqGridSolicitudesDelegadas_' + data.rows[i].Codigo + '').css("display", "none");
+                            }
+                        }
+                        else {
+
+                            if (data.rows[i].IdSituacionServicio == 2) {
+                            } else {
+                                $('#jqg_jqGridSolicitudesDelegadas_' + data.rows[i].Codigo + '').css("display", "none");
+                            }
+                        }
+                    }
+                };
+                fn_DesbloquearPantalla();
+            },
+        });
+    }
+
+    function formatoOpcionesSD(cellvalue, options, rowObject) {
+        var result = '';
+        if (rowObject.IdTipo == 1) {
+            if (rowObject.IdSituacionServicio < 3) {
+                result += '<a href="javascript(0);" id="btn-cancelar-solicitudSD" data-id ="' + cellvalue + '" data-cod ="' + rowObject.Codigo2 + '" class="fa fa-times-circle" title = "Rechazar"></a>' + '&nbsp;&nbsp;';
+            }
+        } else {
+            if (rowObject.IdSituacionServicio <= 2) {
+                result += '<a href="javascript(0);" id="btn-cancelar-solicitudSD" data-id ="' + cellvalue + '" data-cod ="' + rowObject.Codigo2 + '" class="fa fa-times-circle" title = "Rechazar"></a>' + '&nbsp;&nbsp;';
+            }
+        }
+        result += '<a href="javascript(0);" id="btn-detalle-solicitudSD" data-id="' + cellvalue + '" data-cod ="' + rowObject.Codigo2 + '" class="fa fa-search btn-sol-det" title = "Detalle"></a>' + '&nbsp;';
+        result += '<a href="javascript(0);" id="btn-bitacora-solicitudSD" data-id="' + cellvalue + '" data-cod ="' + rowObject.Codigo2 + '" class="fa fa-bars" title = "Historial"></a>' + '&nbsp;';
+        return result;
+    }
+
+    function formatoOpciones2SD(cellvalue, options, rowObject) {
+        var result = '';
+        if (rowObject.IdTipo == 2 || rowObject.IdTipo == 3 || rowObject.IdTipo == 4) {
+            result += '<a href="javascript(0);" id="btn-detalle-rendir-gastoSD" data-id="' + cellvalue + '" data-cod ="' + rowObject.Codigo2 + '" class="fa fa-check-square-o fa-lg text-danger btn-sol-evaluar" title = "Rendir"></a>' + '&nbsp;';
+        } else {
+            if (rowObject.IdTipo == 1) {
+                //if (rowObject.IdSituacionServicio == 4 || rowObject.IdSituacionServicio == 5) {
+                //if (rowObject.IdSituacionServicio == 5) {
+                result += '<a href="javascript(0);" id="btn-detalle-rendir-gastoSD" data-id="' + cellvalue + '" data-cod ="' + rowObject.Codigo2 + '" class="fa fa-check-square-o fa-lg text-danger btn-sol-evaluar" title = "Rendir"></a>' + '&nbsp;';
+                //}
+            }
+        }
+        return result;
+    }
+
+    function getURLGetSolicitudesDelegadas() {
+        //var idusuario = $('#txtDni').is(':disabled') ? '' : $('#txtDni').val();
+        //var fechaDesde = $('#fechaDesdeSD').is(':disabled') ? '' : $('#fechaDesdeSD').val();
+        //var idcentrocosto = $('#dllListaCentroCosto').is(':disabled') ? '' : $('#dllListaCentroCosto').val();
+        //var fechaHasta = $('#fechaHastaSD').is(':disabled') ? '' : $('#fechaHastaSD').val();
+       
+        var idestado = $('#dll_EstadosPorTipoSD').is(':disabled') ? '' : $('#dll_EstadosPorTipoSD').val();
+        //var idsociedad = $('#dllSociedad').is(':disabled') ? '' : $('#dllSociedad').val();
+        //var idsucursal = $('#dllSucursal').is(':disabled') ? '' : $('#dllSucursal').val();
+        //var txtanioejercicio = '';
+        var idtipo = $('#txtTipoSD').is(':disabled') ? '' : $('#txtTipoSD').val();
+        var idusuario = '';
+        var fechaDesde = $('#fechaDesdeSD').is(':disabled') ? '' : $('#fechaDesdeSD').val();
+        var fechaHasta = $('#fechaHastaSD').is(':disabled') ? '' : $('#fechaHastaSD').val();
+        var idcentrocosto = '';
+        
+        var idsociedad = '';
+        var idsucursal = '';
+        var txtanioejercicio = '';
+       
+        return url.GetListSolicitudDelegadasAprobacion + '?idusuario=' + idusuario + '&idsituacionservicio=' + idestado + '&fechaDesde=' + fechaDesde + '&fechaHasta=' + fechaHasta + '&idcentrocosto=' + idcentrocosto + '&idsociedad=' + idsociedad + '&idsucursal=' + idsucursal + '&anioejercicio=' + txtanioejercicio + '&idtipo=' + idtipo;
+    }
+
+    var abrirModalSD = function () {
+        fn_BloquearPantalla();
+        $('#modal-solicitudes-delegadas-aprobacion .modal-content').empty();
+        $('#modal-solicitudes-delegadas-aprobacion .modal-content').load(url.ConfirmarAprobarSolicitudDelegada, {}, function () {
+            $("#modal-solicitudes-delegadas-aprobacion").modal({ show: true, backdrop: 'static', keyboard: true });
+            fn_DesbloquearPantalla();
+        });
+    }
+
+    var abrirModalDetalleSD = function (IdSolicitud) {
+        fn_BloquearPantalla();
+        $('#modal-solicitud-detalleSD .modal-content').empty();
+        $('#modal-solicitud-detalleSD .modal-content').load(url.DetalleSolicitud, { IdSolicitud: IdSolicitud }, function () {
+            $("#modal-solicitud-detalleSD").modal({ backdrop: 'static', keyboard: true, show: true });
+            fn_DesbloquearPantalla();
+        });
+    }
+    var abrirSolicitudHistorialSD = function (pid) {
+        fn_BloquearPantalla();
+        $('#modal-sol-detalleSD .modal-content').empty();
+        $('#modal-sol-detalleSD .modal-content').load(url.GetHistorialSolicitud, { IdSolicitud: pid }, function () {
+            $("#modal-sol-detalleSD").modal({ backdrop: 'static', keyboard: true, show: true });
+            fn_DesbloquearPantalla();
+        });
+    }
+
+    var abrirRendirGastosSD = function (IdSolicitud) {
+        fn_BloquearPantalla();
+
+        $('#modal-solicitud-detalle-gastoSD .modal-content').empty();
+        $('#modal-solicitud-detalle-gastoSD .modal-content').load(url.DetalleRendirGastosSD, { IdSolicitud: IdSolicitud }, function () {
+            $("#modal-solicitud-detalle-gastoSD").modal({ show: true, backdrop: 'static', keyboard: true });
+            //if (window.jsCharged) {
+            //    $('#tbl-solicitudes').jqGrid('clearGridData');
+            //    $('#tbl-solicitudes').jqGrid('setGridParam', {
+            //        url: getURLGet(),
+            //    }).trigger('reloadGrid');
+            //}
+            fn_DesbloquearPantalla();
+        });
+    }
+    var abrirConfirmaRechazoSD = function (IdSolicitud, cod) {
+        fn_BloquearPantalla();
+        $('#modal-solicitud-rechazo .modal-content').empty();
+        $('#modal-solicitud-rechazo .modal-content').load(url.ConfirmaRechazo, { IdSolicitud: IdSolicitud, cod: cod }, function () {
+            $('#modal-solicitud-rechazo').modal({ show: true, backdrop: 'static', keyboard: true });
+            fn_DesbloquearPantalla();
+        });
+    }
+
+    var RechazarSolicitud = function (idsolicitud) {
+        $.ajax({
+            url: url.RechazarPost,
+            type: 'POST',
+            data: { idsolicitud: idsolicitud },
+            dataType: 'JSON',
+            async: true,
+            beforeSend: function () {
+                fn_BloquearPantalla();
+            },
+            success: function (data) {
+                if (data.Success) {
+                    $('#modal-solicitud-rechazo').modal('hide');
+                    $('#btnBuscarSolicitudesDelegadas').click();
+                } else {
+                    toastr["error"](data.Message);
+                    document.getElementById("RechazarSolicitudButton").disabled = false
+                }
+            },
+            complete: function () {
+                fn_DesbloquearPantalla();
+                document.getElementById("RechazarSolicitudButton").disabled = false
+            }
+        });
+    }
+    var getListaEstadosPorTipoSD = function (_idtipo) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaEstadosPorTipo_PVSD", "Solicitud")',
+            type: 'POST',
+            data: { idtipo: _idtipo },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaEstdosPorTipoSD").html(data);
+                if (!$("#chkEstadoPorTipoSD").is(':checked')) {
+                    $('select#dll_EstadosPorTipoSD').prop('disabled', true);
+                }
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+    var AprobarSolicitudSD = function (lista) {
+        $.ajax({
+            url: url.AprobarPost,
+            type: 'POST',
+            data: { lista: lista, _iddestino: 0 },
+            dataType: 'JSON',
+            async: true,
+            beforeSend: function () {
+                fn_BloquearPantalla();
+            },
+            success: function (data) {
+                if (data.Success) {
+                    $('#modal-solicitudes-delegadas-aprobacion').modal('hide');
+                    $('#btnBuscarSolicitudesDelegadas').click();
+                    document.getElementById("btnAprobarSolicitudDelegada").disabled = true;
+                } else {
+                    toastr["error"](data.Message);
+                    document.getElementById("btnAprobarSolicitudDelegada").disabled = false;
+                }
+            },
+            complete: function () {
+                fn_DesbloquearPantalla();
+                document.getElementById("btnAprobarSolicitudDelegada").disabled = false;
+            }
+        });
+    }
+</script>
+<link href="~/Content/plugins/jqGrid/css/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/plugins/jqGrid/css/ui.jqgrid.css" rel="stylesheet" />
+<script src="~/Content/plugins/jqGrid/js/grid.locale-en.js"></script>
+<script src="~/Content/plugins/jqGrid/js/jquery.jqGrid.min.js"></script>
+
+

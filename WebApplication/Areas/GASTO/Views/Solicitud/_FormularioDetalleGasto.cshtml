@@ -1,0 +1,2279 @@
+﻿@model WebApplication.Areas.GASTO.Models.DetalleSolicitudViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+    @if (Model.DetRendicionSolicitud.IdRendicionSolicitud == default(int))
+    {
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>REGISTRO DETALLE GASTO</h3>
+    }
+    else
+    {
+        <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>MODIFICAR DETALLE GASTO</h3>
+    }
+
+</div>
+<input type="hidden" id="hdfIdDetRendicionSolicitud" value="@Model.DetRendicionSolicitud.IdDetRendicionSolicitud" />
+<input type="hidden" id="hdfIdRendicionSolicitud" value="@Model.IdSolicitud" />
+<input type="hidden" id="hdfIdImpuesto" value="@Model.DetRendicionSolicitud.IdImpuesto" />
+<input type="hidden" id="hdfIdCentroCostoAfectoCodigoSap" value="@Model.DetRendicionSolicitud.CentroCostoAfectoCodigoSap" />
+<input type="hidden" id="hdfExterno" value="@ViewBag.IsExterno" />
+<input type="hidden" id="hdfCodigoSAPProveedor" value="@Model.DetRendicionSolicitud.CodigoSAPProveedor" />
+<input type="hidden" id="hdfTipoCambio" value="@Model.DetRendicionSolicitud.TipoCambio" />
+<input type="hidden" id="hdfCodigoDuplicado" value=""/>
+@*<input type="hidden" id="hdfNroComprobante" value="@Model.DetRendicionSolicitud.NroComprobante" />*@
+<div class="modal-body">
+    <div class="row">
+        <div class="col-sm-12">
+            <ul id="detalleLiquidacion" class="nav nav-tabs responsive-tabs">
+                <li class="nav-item active">
+                    <a class="nav-link nav-link-tab active" data-toggle="tab" href="#info" role="tab" data-index="0">Detalle de Gasto Solicitud</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <br />
+
+
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+
+            @using (Html.BeginForm("RegistroDetalleGastoSolicitud", "Solicitud", FormMethod.Post, new { @id = "frm-guardar-detalle-gasto-solicitud" }))
+            {
+                @Html.HiddenFor(m => m.DetRendicionSolicitud.IdDetRendicionSolicitud, new { @id = "IdDetRendicionSolicitud" })
+                <div class="row">
+                    <div id="filtros">
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal  rowUser">
+                                    <div class="form-group">
+
+                                        <div class="col-sm-4">
+                                            @if (@Model.DetRendicionSolicitud.Tipo && Model.DetRendicionSolicitud.IdDetRendicionSolicitud != 0)
+                                            {
+                                                @Html.RadioButtonFor(m => m.DetRendicionSolicitud.Tipo, "1", new { @id = "optTipoCC", @checked = "checked" })
+                                            }
+                                            else
+                                            {
+                                                @Html.RadioButtonFor(m => m.DetRendicionSolicitud.Tipo, "1", new { @id = "optTipoCC" })
+                                            }
+                                            <span>Centro Costo:</span>
+                                        </div>
+
+                                        <div class="col-sm-4">
+                                            @if (!@Model.DetRendicionSolicitud.Tipo && Model.DetRendicionSolicitud.IdDetRendicionSolicitud != 0)
+                                            {
+                                                @Html.RadioButtonFor(m => m.DetRendicionSolicitud.Tipo, "0", new { @id = "optTipoOS", @checked = "checked" })
+                                            }
+                                            else
+                                            {
+                                                @Html.RadioButtonFor(m => m.DetRendicionSolicitud.Tipo, "0", new { @id = "optTipoOS" })
+                                            }
+                                            <span>Orden Servicio:</span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row" id="divCECO" style="display:none;">
+                    <div id="filtros">
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-sm-4"></label>
+                                    <div class="col-sm-8" id="content-ListaCentroCosto">
+                                        @*@{Html.RenderAction("GetDropDown", "CentroCosto", new { @class = "form-control input-sm filtro select2", id = string.Empty, nombre = "CentroCostoAfectoCodigoSap", @default = "-SELECCIONE-" }); }*@
+                                        @Html.Partial("_ListaCentroCostoRendicion")
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row" id="divOS" style="display:none;">
+                    <div id="filtros">
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-sm-4"></label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.DetRendicionSolicitud.OrdenServicio, new { @class = "form-control input-sm", @id = "txtOrdenServicio" })
+                                    </div>
+                                </div>
+                                @*<div class="col-sm-2" style="padding-left:0;">
+                                        <div id="div-validate-os-status">
+                                        </div>
+                                    </div>*@
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                @*<div class="form-group">
+                                        <label class="col-sm-4"></label>
+                                        <div class="col-sm-8">
+                                            @Html.TextBoxFor(m => m.DetRendicionSolicitud.OrdenServicio, new { @class = "form-control input-sm", @id = "txtOrdenServicio" })
+                                        </div>
+                                    </div>*@
+                                <div class="col-sm-8" style="padding-left:0;">
+                                    <div id="div-validate-os-status">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="row">
+                    <div id="filtros">
+
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                <div class="form-group" id="divRUC">
+                                    <label class="col-sm-4">RUC: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.DetRendicionSolicitud.RUC, new { @class = "form-control input-sm", @id = "txtRUC", maxlength = 11, @onkeypress = "return validarSoloNumeros(event);" })
+                                    </div>
+                                </div>
+
+
+
+                                <div class="form-group" id="divRUT" style="display:none;">
+                                    <label class="col-sm-4">RUT: </label>
+                                    <div class="col-sm-8">
+                                        @Html.TextBoxFor(m => m.DetRendicionSolicitud.RUT, new { @class = "form-control input-sm", @id = "txtRUT", maxlength = 11 })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="col-sm-4">Moneda: </label>
+                                    <div class="col-sm-8">
+                                        @Html.DropDownListFor(m => m.DetRendicionSolicitud.IdMoneda, new SelectList(ViewBag.listaMoneda, "IdMoneda", "Moneda"), new { @class = "form-control select2", @id = "dllMonedaGastoViaje" })
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="filtros">
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+
+                                <!---asdsdf-->
+
+                                <div id="divProveedor" style="display:block;">
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">Proveedor: </label>
+                                            <div class="col-sm-8">
+                                                @Html.TextBoxFor(m => m.DetRendicionSolicitud.Proveedor, new { @class = "form-control input-sm", @id = "txtProveedor", maxlength = 100 })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="divNombre2" style="display:none;">
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">Apellido Paterno: </label>
+                                            <div class="col-sm-8">
+                                                @Html.TextBoxFor(m => m.DetRendicionSolicitud.Nombre2, new { @class = "form-control input-sm", @id = "txtNombre2", maxlength = 35 })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divNombre3" style="display:none;">
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">Apellido Materno: </label>
+                                            <div class="col-sm-8">
+                                                @Html.TextBoxFor(m => m.DetRendicionSolicitud.Nombre3, new { @class = "form-control input-sm", @id = "txtNombre3", maxlength = 35 })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divNombre4" style="display:none;">
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">Nombres: </label>
+                                            <div class="col-sm-8">
+                                                @Html.TextBoxFor(m => m.DetRendicionSolicitud.Nombre4, new { @class = "form-control input-sm", @id = "txtNombre4", maxlength = 35 })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div id="divNoDomiciliado" style="display:none;">
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">Tratamiento: </label>
+                                            <div class="col-sm-8">
+                                                @Html.DropDownListFor(m => m.DetRendicionSolicitud.Tratamiento, new SelectList(ViewBag.listaTratamiento, "ID", "Denominacion"), new { @class = "form-control select2", @id = "dllTratamiento" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">Proveedor: </label>
+                                            <div class="col-sm-8">
+                                                @Html.TextBoxFor(m => m.DetRendicionSolicitud.Nombre1, new { @class = "form-control input-sm", @id = "txtNombre1" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">Calle: </label>
+                                            <div class="col-sm-8">
+                                                @Html.TextBoxFor(m => m.DetRendicionSolicitud.Calle, new { @class = "form-control input-sm", @id = "txtCalle" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">Población: </label>
+                                            <div class="col-sm-8">
+                                                @Html.TextBoxFor(m => m.DetRendicionSolicitud.Poblacion, new { @class = "form-control input-sm", @id = "txtPoblacion" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">Pais: </label>
+                                            <div class="col-sm-8">
+                                                @Html.DropDownListFor(m => m.DetRendicionSolicitud.Pais, new SelectList(ViewBag.listaPais, "IdPais", "Descripcion"), new { @class = "form-control select2", @id = "dllPais" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!---asdsdf-->
+
+                                <div class="form-horizontal  rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Tipo Documento: </label>
+                                        <div class="col-sm-8">
+                                            @Html.DropDownListFor(m => m.DetRendicionSolicitud.IdTipoDocumento, new SelectList(ViewBag.listaTipoDocumento, "IdTipoDocumento", "Denominacion"), new { @class = "form-control select2", @id = "dllTipoDocumento" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-horizontal  rowUser" id="divNroDocumento" style="display:none;">
+                                    <div class="form-group">
+                                        <label class="col-sm-4"></label>
+                                        <div class="col-sm-2" style="margin-right:0px;padding-right:4px;">
+                                            @Html.TextBoxFor(m => m.DetRendicionSolicitud.NroIzquierda, new { @class = "form-control input-sm", @id = "txtNroIzquierda", @readonly = true })
+                                        </div>
+                                        <div style="position:relative;float:left;margin-right:4px;">-</div>
+
+                                        @*@if (Model.DetRendicionSolicitud.IdTipoDocumento == 3 || Model.DetRendicionSolicitud.IdTipoDocumento == 5)
+                                            {*@
+                                        <div class="col-sm-3" id="divNroCentro" style="margin-left:0px;padding-left:0px;margin-right:0px;padding-right:4px;width:90px;">
+                                            @Html.TextBoxFor(m => m.DetRendicionSolicitud.NroCentro, new { @class = "form-control input-sm", @id = "txtNroCentro" })
+                                        </div>
+                                        <div id="divNroCentroLinea" style="position:relative;float:left;margin-right:4px;">-</div>
+                                        <div class="col-sm-3" id="divNroDerecha" style="margin-left:0px;padding-left:0px;margin-right:0px;padding-right:4px;width:85px;">
+                                            @Html.TextBoxFor(m => m.DetRendicionSolicitud.NroDerecha, new { @class = "form-control input-sm", @id = "txtNroDerecha", @onkeypress = "return validarSoloNumerosCorrelativo(event);" })
+                                        </div>
+                                        @*}*@
+                                    </div>
+                                </div>
+
+                                <div class="form-horizontal  rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Clase Gasto: </label>
+                                        <div class="col-sm-8">
+                                            @Html.DropDownListFor(m => m.DetRendicionSolicitud.IdTipoGastoViaje, new SelectList(ViewBag.listaTipoGastoViaje, "IdTipoGastoViaje", "TipoGastoViaje"), new { @class = "form-control select2", @id = "dllTipoGastoViaje" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--INICIO GASTOS REPRESENTACION-->
+                                <div id="divGRNombreGR" style="display:none;">
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">Personal Cliente: </label>
+                                            <div class="col-sm-8">
+                                                @Html.TextBoxFor(m => m.DetRendicionSolicitud.NombreGR, new { @class = "form-control input-sm", @id = "txtNombreGR", maxlength = 100, @placeholder = "Detallar lista de Participantes" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divRUCGR" style="display:none;">
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">RUC Cliente: </label>
+                                            <div class="col-sm-8">
+                                                @Html.TextBoxFor(m => m.DetRendicionSolicitud.RUCGR, new { @class = "form-control input-sm", @id = "txtRUCGR", maxlength = 11, @placeholder = "RUC de Cliente" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divObjetivoGR" style="display:none;">
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">Objetivo: </label>
+                                            <div class="col-sm-8">
+                                                @Html.TextBoxFor(m => m.DetRendicionSolicitud.ObjetivoGR, new { @class = "form-control input-sm", @id = "txtObjetivoGR", maxlength = 80, @placeholder = "Motivo de Reunión" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="divDetalleGR" style="display:none;">
+                                    <div class="form-horizontal  rowUser">
+                                        <div class="form-group">
+                                            <label class="col-sm-4">Detalle: </label>
+                                            <div class="col-sm-8">
+                                                @Html.TextBoxFor(m => m.DetRendicionSolicitud.DetalleGR, new { @class = "form-control input-sm", @id = "txtDetalleGR", maxlength = 100, @placeholder = "Detalle de Obsequio o Consumo" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--FIN GASTOS REPRESENTACION-->
+                                <div class="form-horizontal  rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Glosa: </label>
+                                        <div class="col-sm-8">
+                                            @Html.TextBoxFor(m => m.DetRendicionSolicitud.GlosaDetalle, new { @class = "form-control input-sm", @id = "txtGlosa", maxlength = 50 })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-horizontal">
+
+
+
+                                <div class="form-group">
+                                    <label class="col-sm-4" id="lblFechaDoc">Fecha Doc.:</label>
+                                    <div class="col-sm-8">
+                                        <div id="fecha-content-inicio" class="input-group input-group-sm date" data-date-format="dd/mm/yyyy" data-date-viewmode="years">
+                                            @Html.TextBoxFor(m => m.DetRendicionSolicitud.FechaStr,
+                                                                                                 new
+                                                                                                 {
+                                                                                                     @class = "form-control input-sm",
+                                                                                                     @placeholder = "FECHA DOCUM"
+
+                                                                                                 })
+                                            <div class="input-group-addon close-button">
+                                                <span class="fa fa-calendar"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-horizontal  rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Importe Total: </label>
+                                        <div class="col-sm-8">
+                                            @Html.TextBoxFor(m => m.DetRendicionSolicitud.Importe,
+                                            new
+                                            {
+                                                @class = "form-control input-sm",
+                                                @id = "txtImporte",
+                                                @autofocus = "autofocus",
+                                                @placeholder = "Importe Total",
+                                                @onkeypress = "return filterFloat(event,this);",
+                                            })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-horizontal  rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Base Inafecta: </label>
+                                        <div class="col-sm-8">
+                                            @Html.TextBoxFor(m => m.DetRendicionSolicitud.BaseInafecta,
+                                           new
+                                           {
+                                               @class = "form-control input-sm",
+                                               @id = "txtBaseInafecta",
+                                               @autofocus = "autofocus",
+                                               @placeholder = "Base Inafecta",
+                                               @onkeypress = "return filterFloat(event,this);",
+                                           })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-horizontal  rowUser">
+                                    <div class="form-group">
+                                        <label class="col-sm-4">Impuesto: </label>
+                                        <div class="col-sm-8">
+                                            <div id="content-ListaImpuestos">
+                                                @Html.Partial("_ListaImpuestos")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="divUploadDG" style="display:none;">
+                                    <label class="col-sm-4">Archivo:</label>
+                                    <div class="col-md-8">
+                                        <input id="archivo-adjuntoDG" name="File" type="file" accept="image/jpeg,image/png,application/pdf" multiple class="file-loading form-control input-sm">
+                                        <div id="errorBlock-productoDG" class="help-block"></div>
+                                        <div style="margin-top: 5px;" id="content-attachmentDG">
+                                            @if (Model.DetRendicionSolicitud.IdDetRendicionSolicitud != Decimal.Zero)
+                                            {
+                                                @Html.Partial("_AttachmentDetalleGasto", Model)
+                                            }
+                                        </div>
+                                        <span style="color:red;margin-top:5px;">Adjuntar Comprobante en formato PDF/JPG/PNG</span>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="btnGuardarRendicionGastoButton" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Cancelar</button>
+    </div>
+</div>
+</div> @*FIN MODAL*@
+
+<script>
+    $(document).ready(function () {
+
+        $("#divNroDocumento").tooltip({});
+        var valoradjunto = $("#configuracionAdjunto").val();
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            width: '100%',
+        });
+
+        $('#fecha-content-inicio').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            setDate: new Date()
+        }).on('changeDate', function (ev) {
+            $(this).datepicker('hide');
+        });
+        $('#fecha-content-inicio').datepicker('setEndDate', new Date());
+
+        //NEY TANGOA 22/09/2020
+
+
+        $("#dllTipoDocumento").change(function () {
+
+            //1: FACTURAS
+            //2: RECIBOS POR HONORARIOS
+            //3: BOLETA DE VENTA
+            //5: BOLETA CIA AVIACION
+            //6: CARTA PORTE AEREO
+            //10 : TIK MAQ REGIS
+            //14 : BOLETO DE VIAJE
+            //23 : NO DOMICLIADO
+
+
+            //alert($(this).val());
+
+            console.log($(this).val());
+
+            $("#txtNroCentro").val("");
+            $("#txtNroDerecha").val("");
+
+
+            var TipoDocumento = $(this).val();
+
+            if (TipoDocumento == 1) {
+
+
+                $('#txtNroCentro').keyup(function() {
+                    if (this.value.match(/[^a-zA-Z0-9]/g)) {
+                         this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                    }
+                });
+
+                   $('#txtNroDerecha').keyup(function() {
+                    if (this.value.match(/[^a-zA-Z0-9]/g)) {
+                         this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                    }
+                });
+
+            }
+
+            if (TipoDocumento == 2 ) {
+
+               $('#txtNroCentro').keyup(function() {
+                    if (this.value.match(/[^a-zA-Z0-9]/g)) {
+                         this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                    }
+                });
+
+                   $('#txtNroDerecha').keyup(function() {
+                    if (this.value.match(/[^a-zA-Z0-9]/g)) {
+                         this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                    }
+                });
+            }
+
+            if (TipoDocumento == 3 ) {
+
+                $('#txtNroCentro').keyup(function() {
+                    if (this.value.match(/[^a-zA-Z0-9]/g)) {
+                         this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                    }
+                });
+
+                   $('#txtNroDerecha').keyup(function() {
+                    if (this.value.match(/[^a-zA-Z0-9]/g)) {
+                         this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                    }
+                });
+            }
+
+            if (TipoDocumento == 5 ) {
+
+               $('#txtNroCentro').keyup(function() {
+                    if (this.value.match(/[^a-zA-Z0-9]/g)) {
+                         this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                    }
+                });
+
+                   $('#txtNroDerecha').keyup(function() {
+                        if (this.value.match(/[^0-9]/g)) {
+                            this.value = this.value.replace(/[^0-9]/g, '');
+                        }
+                    });
+            }
+
+            if (TipoDocumento == 6 ) {
+
+                 $('#txtNroCentro').keyup(function() {
+                    if (this.value.match(/[^a-zA-Z0-9]/g)) {
+                         this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                    }
+                });
+
+                   $('#txtNroDerecha').keyup(function() {
+                        if (this.value.match(/[^0-9]/g)) {
+                            this.value = this.value.replace(/[^0-9]/g, '');
+                        }
+                    });
+            }
+
+            if (TipoDocumento == 10) {
+
+                $('#txtNroCentro').keyup(function() {
+                    if (this.value.match(/[^a-zA-Z0-9]/g)) {
+                         this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                    }
+                });
+
+                $('#txtNroDerecha').keyup(function() {
+                        if (this.value.match(/[^0-9]/g)) {
+                            this.value = this.value.replace(/[^0-9]/g, '');
+                        }
+                 });
+            }
+
+           
+
+            if (TipoDocumento == 14) {
+
+                 $('#txtNroCentro').keyup(function() {
+                    if (this.value.match(/[^a-zA-Z0-9]/g)) {
+                         this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                    }
+                });
+
+                   $('#txtNroDerecha').keyup(function() {
+                        if (this.value.match(/[^0-9]/g)) {
+                            this.value = this.value.replace(/[^0-9]/g, '');
+                        }
+                    });
+            }
+
+            if (TipoDocumento == 23) {
+
+                $('#txtNroCentro').keyup(function() {
+                    if (this.value.match(/[^a-zA-Z0-9]/g)) {
+                         this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                    }
+                });
+
+                   $('#txtNroDerecha').keyup(function() {
+                    if (this.value.match(/[^a-zA-Z0-9]/g)) {
+                         this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                    }
+                });
+            }
+
+     });
+
+        //FIN
+
+        $("#optTipoCC").change(function (e) {
+            if ($("#optTipoCC").is(':checked')) {
+                $('#txtOrdenServicio').val('');
+                $('#txtOrdenServicio').change();
+                $('#divCECO').show();
+                $('#divOS').hide();
+            }
+        });
+
+        $("#optTipoOS").change(function (e) {
+            if ($("#optTipoOS").is(':checked')) {
+                $('#divCECO').hide();
+                $('#divOS').show();
+            }
+        });
+
+        $('#txtOrdenServicio').blur(function (e) {
+            e.preventDefault();
+            if ($("#optTipoOS").is(':checked')) {
+                if ($('#txtOrdenServicio').val() !== "") {
+                    validarOrdenServicio();
+                }
+            }
+        });
+
+        $('#txtOrdenServicio').keyup(function (e) {
+            e.preventDefault();
+            if ($("#optTipoOS").is(':checked')) {
+                if (e.which === 13) {
+                    if ($('#txtOrdenServicio').val() !== "") {
+                        validarOrdenServicio();
+                    }
+                }
+            }
+        });
+
+        $('#txtOrdenServicio').change(function (e) {
+            e.preventDefault();
+            if ($('#txtOrdenServicio').val() == "") {
+                HabilitaControles(false);
+                $('#div-validate-os-status').html('');
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+            }
+        });
+        $('#DetRendicionSolicitud_FechaStr').change(function (e) {
+            e.preventDefault();
+            var fecha = $('#DetRendicionSolicitud_FechaStr').val();
+            var id_moneda = parseInt($('#dllMonedaGastoViaje').val());
+            if (id_moneda == 1) {
+                ObtenerTipoCambio(fecha);
+            }
+        });
+
+        $('#txtImporte').blur(function (e) {
+            debugger;
+            e.preventDefault();
+            var idtipoclasegasto = parseInt($('#dllTipoGastoViaje').val());
+            if (idtipoclasegasto != 18) {
+                if ($('#txtImporte').val() == "") {
+                    $("#divUploadDG").css("display", "none");
+                } else {
+                    var tcambio = parseFloat(FixparteFloat($('#hdfTipoCambio').val()));
+                    var importe = parseFloat(FixparteFloat($('#txtImporte').val()))
+                    var importesoles = importe * tcambio;
+                    //if (importesoles >= 100) {
+                    //cambio NT 11/01/2023
+                    if (importesoles >= parseInt(valoradjunto)) {
+                        $("#divUploadDG").css("display", "block");
+                    } else {
+                        $("#divUploadDG").css("display", "none");
+                    }
+                    if ($('#txtBaseInafecta').val() == "") {
+                        toastr["warning"]('Ingrese Base Inafecta');
+                        return;
+                    }
+                    if (!BaseInafectaValida()) {
+                        return;
+                    }
+                }
+            }
+        });
+        $('#txtBaseInafecta').blur(function (e) {
+            e.preventDefault();
+            if ($('#txtBaseInafecta').val() != "") {
+                if (!BaseInafectaValida()) {
+                    return;
+                }
+            }
+        });
+
+        $('#txtImporte').keyup(function (e) {
+            debugger;
+            e.preventDefault();
+            if (e.which === 13) {
+                var idtipoclasegasto = parseInt($('#dllTipoGastoViaje').val());
+                if (idtipoclasegasto != 18) {
+                    if ($('#txtImporte').val() == "") {
+                        $("#divUploadDG").css("display", "none");
+                    } else {
+                        var tcambio = parseFloat(FixparteFloat($('#hdfTipoCambio').val()));
+                        var importe = parseFloat(FixparteFloat($('#txtImporte').val()))
+                        var importesoles = importe * tcambio;
+                        //if (importesoles >= 100) {
+                        if (importesoles > parseInt(valoradjunto)) {
+                            $("#divUploadDG").css("display", "block");
+                        } else {
+                            $("#divUploadDG").css("display", "none");
+                        }
+                        if ($('#txtBaseInafecta').val() == "") {
+                            toastr["warning"]('Ingrese Base Inafecta');
+                            return;
+                        }
+                        if (!BaseInafectaValida()) {
+                            return;
+                        }
+                    }
+                }
+            }
+        });
+        $('#txtBaseInafecta').keyup(function (e) {
+            e.preventDefault();
+            if (e.which === 13) {
+               if ($('#txtBaseInafecta').val() != "") {
+                  if (!BaseInafectaValida()) {
+                      return;
+                  }
+               }
+            }
+        });
+
+        $('#txtRUC').change(function (e) {
+            debugger;
+            e.preventDefault();
+            var idtipogastoviaje = $('#dllTipoGastoViaje').val();
+            if (idtipogastoviaje != 32 && idtipogastoviaje != 33 && idtipogastoviaje != 52) {
+                var ruc = $('#txtRUC').val();
+                if (ruc != "") {
+                    validarDocumento(ruc);
+                    if ($('#hdfExterno').val() == "1") {
+                        if (ValidarRUC(ruc)) {
+                            RucJuridico(ruc);
+                        }
+                    }
+                } else {
+                    document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                    $("#divNombre2").css("display", "none");
+                    $("#divNombre3").css("display", "none");
+                    $("#divNombre4").css("display", "none");
+                    $("#divProveedor").css("display", "block");
+                    $('#txtProveedor').attr("disabled", false);
+                    $('#txtProveedor').val('');
+                    $('#hdfCodigoSAPProveedor').val('');
+                }
+            } else {
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                $("#divNombre2").css("display", "none");
+                $("#divNombre3").css("display", "none");
+                $("#divNombre4").css("display", "none");
+                $("#divProveedor").css("display", "block");
+                $('#txtProveedor').attr("disabled", false);
+                $('#txtProveedor').val('');
+                $('#hdfCodigoSAPProveedor').val('');
+                var ruc = $('#txtRUC').val();
+                if (ruc != "") {
+                    if (!ValidarRUC2(ruc)) {
+                        validarDocumento(ruc);
+                        if ($('#hdfExterno').val() == "1") {
+                            toastr["warning"]('Debe Ingresar su DNI en la caja RUC');
+                        }
+                    } else {
+                        toastr["warning"]('Debe Ingresar su DNI en la caja RUC');
+                    }
+                }
+            }
+        });
+        $('#txtRUC').keyup(function (e) {
+            e.preventDefault();
+            if (e.which === 13) {
+                var idtipogastoviaje = $('#dllTipoGastoViaje').val();
+                if (idtipogastoviaje != 32 && idtipogastoviaje != 33 && idtipogastoviaje != 52) {
+                    var ruc = $('#txtRUC').val();
+                    if (ruc != "") {
+                        validarDocumento(ruc);
+                        if ($('#hdfExterno').val() == "1") {
+                            if (ValidarRUC(ruc)) {
+                                RucJuridico(ruc);
+                            }
+                        }
+                    } else {
+                        document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                        $("#divNombre2").css("display", "none");
+                        $("#divNombre3").css("display", "none");
+                        $("#divNombre4").css("display", "none");
+                        $("#divProveedor").css("display", "block");
+                        $('#txtProveedor').attr("disabled", false);
+                        $('#txtProveedor').val('');
+                        $('#hdfCodigoSAPProveedor').val('');
+                    }
+                } else {
+                    document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                    $("#divNombre2").css("display", "none");
+                    $("#divNombre3").css("display", "none");
+                    $("#divNombre4").css("display", "none");
+                    $("#divProveedor").css("display", "block");
+                    $('#txtProveedor').attr("disabled", false);
+                    $('#txtProveedor').val('');
+                    $('#hdfCodigoSAPProveedor').val('');
+                    var ruc = $('#txtRUC').val();
+                    if (ruc != "") {
+                        if (!ValidarRUC2(ruc)) {
+                            validarDocumento(ruc);
+                            if ($('#hdfExterno').val() == "1") {
+                                toastr["warning"]('Debe Ingresar su DNI en la caja RUC');
+                            }
+                        } else {
+                            toastr["warning"]('Debe Ingresar su DNI en la caja RUC');
+                        }
+                    }
+                }
+            }
+        });
+
+
+        $('#txtNroCentro').blur(function (e) {
+            e.preventDefault();
+            var value = $('#txtNroCentro').val();
+            value = GetFormatDefaultCentro(value);
+            $('#txtNroCentro').val(value);
+        });
+        $('#txtNroDerecha').blur(function (e) {
+            e.preventDefault();
+            var value = $('#txtNroDerecha').val();
+            value = GetFormatDefaultDerecha(value);
+            $('#txtNroDerecha').val(value);
+        });
+        $('#txtNroCentro').keyup(function (e) {
+            e.preventDefault();
+            var value = $('#txtNroCentro').val();
+            value = value.toUpperCase();
+            $('#txtNroCentro').val(value);
+        });
+
+        $('#btnGuardarRendicionGastoButton').click(function (e) {
+            debugger;
+            e.preventDefault();
+            var IdDetRendicionSolicitud = $('#hdfIdDetRendicionSolicitud').val();
+            var idsolicitud = $('#hdfIdSolicitud').val();
+            document.getElementById("btnGuardarRendicionGastoButton").disabled = true;
+            var $frm = $('#frm-guardar-detalle-gasto-solicitud');
+            var formParsley = $frm.parsley(__defaultParsleyForm());
+            var isValid = formParsley.validate();
+            var idCentroCosto = '';
+            var ordenservicio = '';
+            var tipo = false;
+
+            var Inputruc = $('#txtRUC').val();
+
+             //validarDocumento(Inputruc);
+
+            
+             //validarDocumentoInput(Inputruc);
+                
+            
+
+            // NEY TANGOA 28/09/2020
+
+            if ($("#dllTipoGastoViaje").val() == 37) {
+
+                if ($("#optTipoOS").is(':checked') == true) {
+
+                    toastr["warning"]('La cuenta seleccionada no aplica para orden de servicio.');
+                    document.getElementById("btnGuardarRendicionGastoButton").disabled =false;
+                    return;
+                }
+            }
+
+            
+
+
+           if ($("#dllTipoGastoViaje").val() == 27) {
+
+                if ($("#optTipoOS").is(':checked') == true) {
+
+                    toastr["warning"]('La cuenta seleccionada no aplica para orden de servicio.');
+                    document.getElementById("btnGuardarRendicionGastoButton").disabled =false;
+                    return;
+                }
+            }
+
+            if ($("#dllTipoGastoViaje").val() == 212) {
+
+                if ($("#optTipoOS").is(':checked') == true) {
+
+                    toastr["warning"]('La cuenta seleccionada no aplica para orden de servicio.');
+                    document.getElementById("btnGuardarRendicionGastoButton").disabled =false;
+                    return;
+                }
+            }
+
+            //FIN CAMBIOS
+
+
+            if ($("#optTipoCC").is(':checked')) {
+                tipo = true;
+                idCentroCosto = $('select[name="dllCentroCostoAfectoCodigoSapR"]').val();
+                if (idCentroCosto == '' || idCentroCosto == '0' ) {
+                    toastr["warning"]('Debe seleccionar un centro de costo.');
+                    document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                    return;
+                }
+            }
+            else {
+                tipo = false;
+                ordenservicio = $('#txtOrdenServicio').val();
+                if (ordenservicio == '') {
+                    toastr["warning"]('Debe Ingresar Orden de Servicio.');
+                    document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                    return;
+                }
+                else {
+                    var flag_mensaje = $('#lblOrdenServicio').html();
+                    if (flag_mensaje != undefined && flag_mensaje.trim() != "Liberada") {
+                        toastr["error"](flag_mensaje);
+                        document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                        return;
+                    }
+                }
+            }
+            debugger;
+            var idtipodocumento = parseInt($('#dllTipoDocumento').val());
+
+            var ResultadoTP = ValidarVacioNullTipoDocumento(idtipodocumento);
+
+            if (ResultadoTP == true) {
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            }
+
+            if (idtipodocumento == 0) {
+                toastr["warning"]('Debe seleccinar Tipo de Documento');
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            }
+            if (idtipodocumento != 23 && $('#txtRUC').val() == "") {
+                toastr["warning"]('Debe Ingresar RUC de Proveedor');
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            }
+
+            //if ($("#txtNombreGR").val() == '') {
+            //    toastr["warning"]('Debe ingresar el Personal Cliente');
+            //    document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+            //    return;
+            //}
+
+            var idTipoGastoViaje = parseInt($('#dllTipoGastoViaje').val());
+            if (idtipodocumento != 23 && $('#hdfExterno').val() == "1") {
+                if (idTipoGastoViaje == 32 || idTipoGastoViaje == 33 || idTipoGastoViaje == 52) {
+                    if ($('#txtProveedor').val() == "") {
+                        toastr["warning"]('Debe Ingresar Datos Completos de Proveedor');
+                        document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                        return;
+                    }
+                }
+                else {
+                    var ruc = $('#txtRUC').val();
+                    if (EsJuridico(ruc)) {
+                        if ($('#txtProveedor').val() == "") {
+                            toastr["warning"]('Debe Ingresar Datos Completos de Proveedor');
+                            document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                            return;
+                        }
+                    }
+                    else {
+                        if ($('#txtNombre2').val() == "") {
+                            toastr["warning"]('Debe Ingresar Datos Completos de Proveedor');
+                            document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                            return;
+                        }
+                    }
+                }
+                //if ($('#txtNombre3').val() == "") {
+                //    toastr["warning"]('Debe Ingresar Datos Completos Proveedor');
+                //    document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                //    return;
+                //}
+                //if ($('#txtNombre4').val() == "") {
+                //    toastr["warning"]('Debe Ingresar Datos Completos Proveedor');
+                //    document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                //    return;
+                //}
+            }
+            if (idtipodocumento != 23 && $('#txtProveedor').val() == "" && $('#hdfExterno').val()=="0" ) {
+                toastr["warning"]('Debe Ingresar Proveedor');
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            }
+
+            if (idtipodocumento == 23 && $('#txtRUT').val() == "") {
+                toastr["warning"]('Debe Ingresar RUT');
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            }
+            if (idtipodocumento == 23 && $('#txtNombre1').val() == "") {
+                toastr["warning"]('Debe Ingresar Proveedor');
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            }
+
+            if (idTipoGastoViaje == 0) {
+                toastr["warning"]('Debe seleccinar Clase de Gasto');
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            }
+            else {
+                if (idTipoGastoViaje == 32 || idTipoGastoViaje == 33 || idTipoGastoViaje == 52) {
+                    var ruc = $('#txtRUC').val();
+                    if (ruc != "") {
+                        if (ValidarRUC2(ruc)) {
+                            toastr["warning"]('Debe Ingresar su DNI en la caja RUC');
+                            document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                            return;
+                        }
+                    }
+                }
+            }
+            var fecha_=$('#DetRendicionSolicitud_FechaStr').val();
+            if (fecha_ == "") {
+                toastr["warning"]('Debe Ingresar Fecha');
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            }
+            debugger;
+            //NEY TANGOA  16/07/2020
+
+            if (Number($('#txtImporte').val()) <= 0) {
+                toastr["warning"]('Debe Ingresar Importe de Pago mayor a 0.');
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            }
+
+            //fin cambios
+
+            if ($('#txtImporte').val() == "") {
+                toastr["warning"]('Debe Ingresar Importe de Pago.');
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            } else {
+                var idtipoclasegasto = parseInt($('#dllTipoGastoViaje').val());
+                if (idtipoclasegasto == 32 || idtipoclasegasto == 33 || idtipoclasegasto == 52) {
+                    var ruc = $('#txtRUC').val();
+                    if (ruc != "") {
+                        if (ValidarRUC2(ruc)) {
+                            toastr["warning"]('Debe Ingresar su DNI en la caja RUC');
+                            document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                            return;
+                        }
+                    }
+                }
+                if (idtipoclasegasto != 18) {
+                    var tcambio = parseFloat(FixparteFloat($('#hdfTipoCambio').val()));
+                    var importe = parseFloat(FixparteFloat($('#txtImporte').val()))
+                    var importesoles = importe * tcambio;
+                    if (importesoles > parseInt(valoradjunto)) {
+                        var nombreArchivo = $('#itemFile').html();
+                        if (nombreArchivo == undefined || nombreArchivo.trim() == "") {
+                            toastr["warning"]('Debe seleccionar un Comprobante en formato PDF/Imágen');
+                            document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                            return;
+                        }
+                    }
+                } else {
+                    var nombreArchivo = $('#itemFile').html();
+                    if (nombreArchivo == undefined || nombreArchivo.trim() == "") {
+                        toastr["warning"]('Debe seleccionar un Comprobante en formato PDF/Imágen');
+                        document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                        return;
+                    }
+
+                    if ($("#txtNombreGR").val() == '') {
+                        toastr["warning"]('Debe ingresar el Personal Cliente');
+                        document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                        return;
+                    }
+                    if ($("#txtRUCGR").val() == '') {
+                        toastr["warning"]('Debe ingresar el RUC Cliente');
+                        document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                        return;
+                    }
+                    if ($("#txtObjetivoGR").val() == '') {
+                        toastr["warning"]('Debe ingresar el objetivo');
+                        document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                        return;
+                    }
+                    if ($("#txtDetalleGR").val() == '') {
+                        toastr["warning"]('Debe ingresar el detalle');
+                        document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                        return;
+                    }
+                }
+            }
+            var BaseInafecta = $('#txtBaseInafecta').val();
+            if (BaseInafecta == "") {
+                toastr["warning"]('Debe Ingresar Base Inafecta');
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            }
+            if (!BaseInafectaValida()) {
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            }
+            var Impuesto_ = $('#dllImpuesto').val();
+            if (Impuesto_ == "") {
+                toastr["warning"]('Debe seleccinar Impuesto');
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                return;
+            }
+
+            //Validacion DNI 20/01/2023
+
+            if (idtipodocumento == 1 || idtipodocumento == 2 || idtipodocumento == 3 ||
+                idtipodocumento == 5 || idtipodocumento == 6 || idtipodocumento == 10 ||
+                idtipodocumento == 12 || idtipodocumento == 14) {
+
+                if ($("#txtRUC").val().length == 8) {
+                    toastr["warning"]('Para este tipo de documento no está permitido el registro de DNI');
+                    return;
+                }
+               
+
+            }
+
+            //FIN CAMBIOS
+
+            if (isValid) {
+                var urlAccion = '';
+                if (IdDetRendicionSolicitud == 0) {
+                    urlAccion = url.RegistrarDetRendicionSolicitudPost;
+                } else {
+                    urlAccion = url.ActualizarDetRendicionSolicitudPost;
+                }
+                var idtipodocumento = parseInt($('#dllTipoDocumento').val());
+                var nrodocumento = '';
+                if (idtipodocumento == 11 || idtipodocumento == 27 || idtipodocumento == 28 || idtipodocumento == 29 || idtipodocumento == 30) {
+                    nrodocumento = $('#txtNroIzquierda').val() + '-' + $('#txtNroCentro').val();
+                }
+                else {
+                    nrodocumento = $('#txtNroIzquierda').val() + '-' + $('#txtNroCentro').val() + '-' + $('#txtNroDerecha').val();
+                }
+
+                if (ValidarNumeroComprobanteDuplicado(idtipodocumento != 23 ? $('#txtRUC').val() : $('#txtRUT').val(), idtipodocumento, nrodocumento, IdDetRendicionSolicitud)) {
+                    if ($("#hdfCodigoDuplicado").val() != '') {
+                        toastr["error"]('Nro de Comprobante Duplicado en el codigo ' + $("#hdfCodigoDuplicado").val());
+                        document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                        return;
+                    }
+                    
+                }
+                fn_BloquearPantalla();
+                var idtipoclasegasto = parseInt($('#dllTipoGastoViaje').val());
+                var element = {
+                    IdDetRendicionSolicitud: IdDetRendicionSolicitud,
+                    IdRendicionSolicitud: idsolicitud,
+                    Tipo: tipo,
+                    OrdenServicio: ordenservicio,
+                    CentroCostoAfectoCodigoSap: idCentroCosto,
+                    RUC: $('#txtRUC').val(),
+                    RUT: $('#txtRUT').val(),
+                    IdTipoDocumento: idtipodocumento,
+                    NroComprobante: nrodocumento,
+                    Tratamiento: $('#dllTratamiento').val(),
+                    Nombre1: $('#txtNombre1').val(),
+                    Nombre2: $('#txtNombre2').val(),
+                    Nombre3: $('#txtNombre3').val(),
+                    Nombre4: $('#txtNombre4').val(),
+                    Calle: $('#txtCalle').val(),
+                    Poblacion: $('#txtPoblacion').val(),
+                    TipoCambio: $('#hdfTipoCambio').val(),
+                    Pais: $('#dllPais').val(),
+                    RazonSocial: $('#txtProveedor').val(),
+                    Externo: $('#hdfExterno').val() == "1" ? true : false,
+                    IdTipoGastoViaje: idtipoclasegasto,
+                    Fecha: $('#DetRendicionSolicitud_FechaStr').val(),
+                    GlosaDetalle: $('#txtGlosa').val(),
+                    IdMoneda: $('#dllMonedaGastoViaje').val(),
+                    Importe: parseFloat(FixparteFloat($('#txtImporte').val())),
+                    BaseInafecta: parseFloat(FixparteFloat($('#txtBaseInafecta').val())),
+                    IdImpuesto: $('#dllImpuesto').val(),
+                    CodigoSAPProveedor: $('#hdfCodigoSAPProveedor').val(),
+                    NombreGR: idtipoclasegasto == 18 ? $('#txtNombreGR').val() : "",
+                    RUCGR: idtipoclasegasto == 18 ? $('#txtRUCGR').val() : "",
+                    ObjetivoGR: idtipoclasegasto == 18 ? $('#txtObjetivoGR').val() : "",
+                    DetalleGR: idtipoclasegasto == 18 ? $('#txtDetalleGR').val() : "",
+                };
+                $.ajax({
+                    url: urlAccion,
+                    type: 'POST',
+                    data: { element: element },
+                    dataType: 'JSON',
+                    async: true,
+                    beforeSend: function () {
+                        fn_BloquearPantalla();
+                    },
+                    success: function (data) {
+                        if (data.Success) {
+                            $('#modal-solicitud-detalle-gasto-registro').modal('hide');
+                            fn_BloquearPantalla();
+                            $('#modal-solicitud-detalle-gasto .modal-content').empty();
+                            $('#modal-solicitud-detalle-gasto .modal-content').load(url.DetalleRendirGastos, { IdSolicitud: idsolicitud }, function () {
+                                fn_DesbloquearPantalla();
+                            });
+
+                        } else {
+                            toastr["error"](data.Message);
+                            document.getElementById("btnGuardarRendicionGastoButton").disabled = false
+                        }
+                    },
+                    complete: function () {
+                        fn_DesbloquearPantalla();
+                        document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                    }
+                });
+
+            } //finn
+            else {
+                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+            }
+        });
+
+
+        if ($("#optTipoCC").is(':checked')) {
+            $('#divCECO').show();
+            $('#divOS').hide();
+        }
+        if ($("#optTipoOS").is(':checked')) {
+            $('#divCECO').hide();
+            $('#divOS').show();
+        }
+        $('#dllTipoGastoViaje').change(function (e) {
+            debugger;
+            var idtipoclasegasto = parseInt($('#dllTipoGastoViaje').val());
+            if (idtipoclasegasto == 18) {
+                toastr["warning"]('Debe Adjuntar Comprobante en formato PDF/Imágen.');
+                $("#divUploadDG").css("display", "block");
+                $("#divGRNombreGR").css("display", "block");
+                $("#divRUCGR").css("display", "block");
+                $("#divObjetivoGR").css("display", "block");
+                $("#divDetalleGR").css("display", "block");
+            } else {
+                if (idtipoclasegasto != 32 && idtipoclasegasto != 33 && idtipoclasegasto != 52) {
+                    $("#divGRNombreGR").css("display", "none");
+                    $("#divRUCGR").css("display", "none");
+                    $("#divObjetivoGR").css("display", "none");
+                    $("#divDetalleGR").css("display", "none");
+                    if ($('#txtImporte').val() == "") {
+                        $("#divUploadDG").css("display", "none");
+                    } else {
+                        var tcambio = parseFloat(FixparteFloat($('#hdfTipoCambio').val()));
+                        var importe = parseFloat(FixparteFloat($('#txtImporte').val()))
+                        var importesoles = importe * tcambio;
+                        if (importesoles > parseInt(valoradjunto)) {
+                            $("#divUploadDG").css("display", "block");
+                        } else {
+                            $("#divUploadDG").css("display", "none");
+                        }
+                    }
+                    $('#lblRUC').text("RUC :");
+                } else {
+                    var ruc = $('#txtRUC').val();
+                    if (ruc != "") {
+                        if (ValidarRUC2(ruc)) {
+                            toastr["warning"]('Debe Ingresar su DNI en la caja RUC');
+                            document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                        }
+                    }
+                    $('#lblRUC').text("DNI :");
+                }
+            }
+        });
+
+        $('#dllTipoDocumento').change(function (e) {
+            var idtipodocumento = parseInt($('#dllTipoDocumento').val());
+            if (idtipodocumento == 2) {  // si es RH base inafecta = 0
+                if ($('#txtBaseInafecta').val() == "") {
+                    $('#txtBaseInafecta').val("0");
+                }
+            }
+
+            if (idtipodocumento == 0) {
+                $('#divNroDocumento').hide();
+            } else {
+                $('#divNroDocumento').show();
+                if (idtipodocumento == 23) {
+                    $('#divNombre2').hide();
+                    $('#divNombre3').hide();
+                    $('#divNombre4').hide();
+                    $('#txtRUC').val('');
+
+                    $('#divNoDomiciliado').show();
+                    $('#divRUC').hide();
+                    $('#divProveedor').hide();
+                    $('#divRUT').show();
+                } else {
+                    //$('#divNombre2').hide();
+                    //$('#divNombre3').hide();
+                    //$('#divNombre4').hide();
+
+
+                    if (idtipodocumento == 11 || idtipodocumento == 27 || idtipodocumento == 28 || idtipodocumento == 29 || idtipodocumento == 30) {
+                        $('#divNroCentro').width(180);
+                        $('#divNroCentroLinea').css('display', 'none');
+                        $('#txtNroDerecha').css('display', 'none');
+                    } else if (idtipodocumento==5) {
+                        $('#divNroCentro').width(50);
+                        $('#divNroDerecha').width(118);
+                        $('#divNroCentroLinea').css('display', 'block');
+                        $('#txtNroDerecha').css('display', 'block');
+                    }
+                    else {
+                        $('#divNroCentro').width(90);
+                        $('#divNroDerecha').width(100);
+                        $('#divNroCentroLinea').css('display', 'block');
+                        $('#txtNroDerecha').css('display', 'block');
+                    }
+                    $('#divNoDomiciliado').hide();
+                    $('#divRUT').hide();
+                    $('#divRUC').show();
+                    //$('#divProveedor').show();
+                }
+                ToolTipNroDocumento(idtipodocumento);
+                FormatoNroDocumentoByIdTipoDocumento(idtipodocumento);
+            }
+            getListaImpuestos(idtipodocumento);
+        });
+
+        var idmoneda_ = parseInt($('#hdfIdMoneda').val());
+        if (idmoneda_ != 0) {
+            $('#dllMonedaGastoViaje').val(idmoneda_);
+            $('#dllMonedaGastoViaje').prop('disabled', true);
+        } else {
+            $('#dllMonedaGastoViaje').prop('disabled', false);
+        }
+
+        var CentroCostoAfectoCodigoSap = $('#hdfIdCentroCostoAfectoCodigoSap').val();
+        $('#dllCentroCostoAfectoCodigoSapR').val(CentroCostoAfectoCodigoSap);
+        $('#dllCentroCostoAfectoCodigoSapR').change();
+
+        idUserImpuesto = $('#hdfIdImpuesto').val();
+        $("#dllImpuesto").val(idUserImpuesto)
+        $("#dllImpuesto").change();
+
+
+        var iddetrendicionsolicitud = parseInt($('#hdfIdDetRendicionSolicitud').val());
+        if (iddetrendicionsolicitud != 0) {
+            var idtipodocumento = parseInt($('#dllTipoDocumento').val());
+            if (idtipodocumento == 0) {
+                $('#divNroDocumento').hide();
+            } else {
+                $('#divNroDocumento').show();
+                if (idtipodocumento == 23) {
+                    $('#divNoDomiciliado').show();
+                    $('#divRUC').hide();
+                    $('#divRUT').show();
+                } else {
+                    $('#divNoDomiciliado').hide();
+                    $('#divRUT').hide();
+                    $('#divRUC').show();
+
+                    if (idtipodocumento == 11 || idtipodocumento == 27 || idtipodocumento == 28 || idtipodocumento == 29 || idtipodocumento == 30) {
+                        $('#divNroCentro').width(180);
+                        $('#divNroCentroLinea').css('display', 'none');
+                        $('#txtNroDerecha').css('display', 'none');
+                    } else if (idtipodocumento == 5) {
+                        $('#divNroCentro').width(30);
+                        $('#divNroDerecha').width(140);
+                        $('#divNroCentroLinea').css('display', 'block');
+                        $('#txtNroDerecha').css('display', 'block');
+                    }
+                    else {
+                        $('#divNroCentro').width(90);
+                        $('#divNroCentroLinea').css('display', 'block');
+                        $('#txtNroDerecha').css('display', 'block');
+                    }
+                }
+                FormatoNroDocumentoByIdTipoDocumento(idtipodocumento);
+                var idtipoclasegasto = parseInt($('#dllTipoGastoViaje').val());
+                if (idtipoclasegasto == 18) {
+                    $("#divGRNombreGR").css("display", "block");
+                    $("#divRUCGR").css("display", "block");
+                    $("#divObjetivoGR").css("display", "block");
+                    $("#divDetalleGR").css("display", "block");
+                } else {
+                    $("#divGRNombreGR").css("display", "none");
+                    $("#divRUCGR").css("display", "none");
+                    $("#divObjetivoGR").css("display", "none");
+                    $("#divDetalleGR").css("display", "none");
+                }
+            }
+
+            var idtipoclasegasto = parseInt($('#dllTipoGastoViaje').val());
+            if (idtipoclasegasto != 18) {
+                var tcambio = parseFloat(FixparteFloat($('#hdfTipoCambio').val()));
+                var importe = parseFloat(FixparteFloat($('#txtImporte').val()))
+                var importesoles = importe * tcambio;
+                if (importesoles > parseInt(valoradjunto)) {
+                    getListaAdjuntoDetalleGasto(iddetrendicionsolicitud);
+                    $("#divUploadDG").css("display", "block");
+                } else {
+                    $("#divUploadDG").css("display", "none");
+                }
+            } else {
+                getListaAdjuntoDetalleGasto(iddetrendicionsolicitud);
+                $("#divUploadDG").css("display", "block");
+            }
+
+            if ($('#hdfExterno').val() == "0") {
+                $('#txtProveedor').attr("disabled", true);
+            } else {
+
+                if (idtipodocumento == 23) {
+                    $('#divProveedor').hide();
+                    $('#divNombre2').hide();
+                    $('#divNombre3').hide();
+                    $('#divNombre4').hide();
+                } else {
+                    $('#divProveedor').hide();
+                    $('#divNombre2').show();
+                    $('#divNombre3').show();
+                    $('#divNombre4').show();
+                    RucJuridico($('#txtRUC').val());
+                }
+            }
+        }
+        else {
+            $("#optTipoCC").prop('checked', true);
+            $('#divCECO').show();
+            $('#divOS').hide();
+        }
+    });
+
+
+
+    function BaseInafectaValida() {
+
+        var valida = true;
+        var importe = parseFloat(FixparteFloat($('#txtImporte').val()));
+        var baseinafecta = parseFloat(FixparteFloat($('#txtBaseInafecta').val()));
+        if (baseinafecta >= importe  &&  (baseinafecta>0 && importe>0)) {
+            toastr["warning"]('Base Inafecta debe ser menor a Importe');
+            valida = false;
+        }
+        return valida;
+    }
+
+    function validarSoloNumerosCorrelativo(evt) {
+        debugger;
+        var idtipodocumento = parseInt($('#dllTipoDocumento').val());
+        if (idtipodocumento == 1 || idtipodocumento == 3 || idtipodocumento == 5 || idtipodocumento == 6 || idtipodocumento == 12 || idtipodocumento == 14) {
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+            return true;
+        } else {
+            return true;
+        }
+    }
+    function ToolTipNroDocumento(idtipodocumento) {
+        if (idtipodocumento == 1) {
+            //$('#divNroDocumento').attr('title', 'Ejem: Fac.Fisica: 0001-0000178     Fac.Elect: FE01-0000178');
+            //$('#divNroDocumento').attr('data-original-title', 'Ejem: Fac.Fisica: 0001-0000178     Fac.Elect: FE01-0000178');
+            $('#divNroDocumento').attr('title', 'Ejem: Fac.Fisica: 0001-0000178     Ejem: Fac.Elect: F001-00001785');
+            $('#divNroDocumento').attr('data-original-title', 'Ejem: Fac.Fisica: 0001-0000178     Ejem: Fac.Elect: F001-00001785');
+        } else if (idtipodocumento == 2) {
+            $('#divNroDocumento').attr('title', 'Ejemplos: RH: 0001-0000301   RHE: RE01-0000301');
+            $('#divNroDocumento').attr('data-original-title', 'Ejemplos: RH: 0001-0000301   RHE: RE01-0000301');
+        }
+        else {
+            $('#divNroDocumento').attr('title', '');
+            $('#divNroDocumento').removeAttr('data-original-title');
+        }
+    }
+    function GetFormatDefaultCentro(value) {
+        var valorretorno = "";
+        valorretorno = value;
+        if (valorretorno != "") {
+            var idtipodocumento = parseInt($('#dllTipoDocumento').val());
+            switch (idtipodocumento) {
+                case 1:
+                case 2:
+                case 3:
+                case 6:
+                case 10:
+                case 11:
+                case 12:
+                case 14:
+                case 23:
+                    valorretorno = FillCeroIzquierda(value, 5);
+                    break;
+                case 5:
+                    valorretorno = FillCeroIzquierda(value, 3);
+                    break;
+                case 27:
+                case 28:
+                case 29:
+                case 30:
+                    valorretorno = FillCeroIzquierda(value, 10);
+                    break;
+            }
+        }
+        return valorretorno;
+    }
+    function GetFormatDefaultDerecha(value) {
+        debugger;
+        var valorretorno = "";
+        valorretorno = value;
+        if (valorretorno != "") {
+            var idtipodocumento = parseInt($('#dllTipoDocumento').val());
+            switch (idtipodocumento) {
+                case 1:
+                    //valorretorno = FillCeroIzquierda(value, 7);
+                    //break;
+                case 2:
+                case 3:
+                case 6:
+                case 10:
+                case 11:          
+                case 14:
+                case 23:
+                    valorretorno = FillCeroIzquierda(value, 7);
+                    break;
+                case 5:
+                    valorretorno = FillCeroIzquierda(value, 11);
+                    break;
+                case 27:
+                case 12:
+                    valorretorno = FillCeroIzquierda(value, 11);
+                    break;
+                case 28:
+                case 29:
+                case 30:
+                    valorretorno = FillCeroIzquierda(value, 0);
+                    break;
+            }
+        }
+        return valorretorno;
+    }
+    function FormatoNroDocumentoByIdTipoDocumento(idtipodocumento) {
+        switch (idtipodocumento) {
+            case 1:
+            case 3:
+            case 6:
+                $('#txtNroCentro').attr('maxlength', '5');
+                $('#txtNroDerecha').attr('maxlength', '7');
+                break;
+            case 2:
+                $('#txtNroCentro').attr('maxlength', '5');
+                $('#txtNroDerecha').attr('maxlength', '7');
+                break;
+            case 5:
+                $('#txtNroCentro').attr('maxlength', '3');
+                $('#txtNroDerecha').attr('maxlength', '11');
+                break;
+            case 10:
+            case 11:
+            case 12:
+                $('#txtNroDerecha').attr('maxlength', '11');
+                break;
+            case 14:
+            case 23:
+                $('#txtNroCentro').attr('maxlength', '5');
+                $('#txtNroDerecha').attr('maxlength', '7');
+                break;
+
+            case 27:
+            case 28:
+            case 29:
+            case 30:
+                $('#txtNroCentro').attr('maxlength', '10');
+                $('#txtNroDerecha').val('');
+                break;
+        }
+    }
+
+    function ValidarVacioNullTipoDocumento(idtipodocumento) {
+
+        debugger;
+        var boolResult = false;
+        switch (idtipodocumento) {
+            case 1:
+                if ($('#txtNroCentro').val() == "" || $('#txtNroCentro').val() == "" || $('#txtNroDerecha').val() == "" || $('#txtNroDerecha').val() == null) {
+                    toastr["warning"]('Ingrese por favor un número de factura');
+                    boolResult = true;
+                }
+
+                break;
+            case 3:
+                if ($('#txtNroCentro').val() == "" || $('#txtNroCentro').val() == "" || $('#txtNroDerecha').val() == "" || $('#txtNroDerecha').val() == null) {
+                    toastr["warning"]('Ingrese por favor un número de boleta de venta');
+                    boolResult = true
+                }
+
+                break;
+            case 6:
+                if ($('#txtNroCentro').val() == "" || $('#txtNroCentro').val() == "" || $('#txtNroDerecha').val() == "" || $('#txtNroDerecha').val() == null) {
+                    toastr["warning"]('Ingrese por favor un número de Carta Porte Aereo');
+                    boolResult = true
+                }
+
+                break;
+            case 2:
+                if ($('#txtNroCentro').val() == "" || $('#txtNroCentro').val() == null || $('#txtNroDerecha').val() == "" || $('#txtNroDerecha').val() == null) {
+                    toastr["warning"]('Ingrese por favor un número de recibo');
+                    boolResult = true
+                }
+
+                break;
+            case 5:
+                if ($('#txtNroCentro').val() == "" || $('#txtNroCentro').val() == null || $('#txtNroDerecha').val() == "" || $('#txtNroDerecha').val() == null) {
+                    toastr["warning"]('Ingrese por favor un número de Boleta de avión');
+                    boolResult = true
+                }
+
+                break;
+            case 10:
+                if ($('#txtNroCentro').val() == "" || $('#txtNroCentro').val() == null || $('#txtNroDerecha').val() == "" || $('#txtNroDerecha').val() == null) {
+                    toastr["warning"]('Ingrese por favor un número de Ticket Maq Regist');
+                    boolResult = true
+                }
+
+                break;
+            case 23:
+                if ($('#txtNroCentro').val() == "" || $('#txtNroCentro').val() == null | $('#txtNroDerecha').val() == "" || $('#txtNroDerecha').val() == null) {
+                    toastr["warning"]('Ingrese por favor un número de No Domiliado');
+                    boolResult = true
+                }
+
+                break;
+            case 12:
+            case 14:
+                if ($('#txtNroCentro').val() == "" || $('#txtNroCentro').val() == null || $('#txtNroDerecha').val() == "" || $('#txtNroDerecha').val() == null) {
+                    toastr["warning"]('Ingrese por favor un número de Boleto viaje');
+                    boolResult = true
+                }
+
+                break;
+            case 27:
+                if ($('#txtNroCentro').val() == "" || $('#txtNroCentro').val() == null) {
+                    toastr["warning"]('Ingrese por favor un número de Otros doc por pagar');
+                    boolResult = true
+                }
+
+                break;
+            case 28:
+                if ($('#txtNroCentro').val() == "" || $('#txtNroCentro').val() == null) {
+                    toastr["warning"]('Ingrese por favor un número de Deposito Bancario');
+                    boolResult = true
+                }
+
+                break;
+            case 29:
+                if ($('#txtNroCentro').val() == "" || $('#txtNroCentro').val() == null) {
+                    toastr["warning"]('Ingrese por favor un número de Deposito Tranferencia');
+                    boolResult = true
+                }
+
+                break;
+            case 30:
+                if ($('#txtNroCentro').val() == "" || $('#txtNroCentro').val() == null) {
+                    toastr["warning"]('Ingrese por favor un número de Descuento Planilla');
+                    boolResult = true
+                }
+
+                break;
+        }
+
+        return boolResult;
+    }
+
+    function ExisteNroDocumentoCero(idtipodocumento) {
+        debugger;
+        var existe = false;
+        switch (idtipodocumento) {
+            case 1:
+            case 3:
+            case 6:
+                if ($('#txtNroCentro').val() == "00000" || $('#txtNroDerecha').val() == "0000000" || $('#txtNroCentro').val() == "" || $('#txtNroDerecha').val() == "")
+                    existe = true;
+                break;
+            case 2:
+                if ($('#txtNroCentro').val() == "00000" || $('#txtNroDerecha').val() == "0000000" || $('#txtNroCentro').val() == "" || $('#txtNroDerecha').val() == "")
+                    existe = true;
+                break;
+            case 5:
+                if ($('#txtNroCentro').val() == "000" || $('#txtNroDerecha').val() == "00000000000" || $('#txtNroCentro').val() == "" || $('#txtNroDerecha').val() == "")
+                    existe = true;
+                break;
+            case 10:
+            case 11:
+            case 12:
+            case 14:
+            case 23:
+                if ($('#txtNroCentro').val() == "00000" || $('#txtNroDerecha').val() == "0000000")
+                    existe = true;
+                break;
+            case 27:
+            case 28:
+            case 29:
+            case 30:
+                if ($('#txtNroCentro').val() == "0000000000")
+                    existe = true;
+                break;
+        }
+        return existe;
+    }
+    function validarDocumento(documento) {
+        var validarDocumentoServicio = true;
+        var sociedad = $('#hdfIdSociedad').val();
+        if (document != '') {
+            fn_BloquearPantalla();
+            $.ajax({
+                url: url.ValidarDatosProveedor,
+                type: 'POST',
+                data: { sociedad: sociedad ,documento: documento },
+                cache: false,
+                async: false,
+                success: function (data) {
+                    if (data.length > 0) {
+                        if (data[0].LOEVM == "X") {
+                            toastr["error"]('Proveedor con petición de borrado. Contactarse con Lucila Chuquilin -  lucila.chuquilin@kmmp.com.pe');
+                            $('#txtProveedor').val('');
+                            $('#txtProveedor').attr("disabled", true);
+                            document.getElementById("btnGuardarRendicionGastoButton").disabled = true;
+                            fn_DesbloquearPantalla();
+                            return;
+                        }
+                        if (data[0].SPERR == "X") {
+                            toastr["error"]('Proveedor bloqueado');
+                            $('#txtProveedor').val('');
+                            $('#txtProveedor').attr("disabled", true);
+                            document.getElementById("btnGuardarRendicionGastoButton").disabled = true;
+                            fn_DesbloquearPantalla();
+                            return;
+                        }
+                        validarDocumentoServicio = true;
+                        $("#divNombre2").css("display", "none");
+                        $("#divNombre3").css("display", "none");
+                        $("#divNombre4").css("display", "none");
+                        $("#divProveedor").css("display", "block");
+                        $('#hdfCodigoSAPProveedor').val(data[0].LIFNR);
+                        $('#txtProveedor').val(data[0].NAME1);
+                        $('#txtProveedor').attr("disabled", true);
+                        document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                        $('#hdfExterno').val('0');
+
+
+                        fn_DesbloquearPantalla();
+                    } else {
+                        validarDocumentoExerno(documento);
+                        $('#hdfCodigoSAPProveedor').val('');
+                        if (parseInt($('#hdfIdDetRendicionSolicitud').val()) == 0) {
+                            //$('#txtProveedor').val('');
+                            $('#txtProveedor').attr("disabled", false);
+                            $("#divProveedor").css("display", "none");
+
+                            $("#divNombre2").css("display", "block");
+                            $("#divNombre3").css("display", "block");
+                            $("#divNombre4").css("display", "block");
+                         }
+                        if (documento != '') {
+                            validarDocumentoServicio = false;
+                            toastr["error"]('El proveedor ingresado no existe, puede proceder ha ingresarlo');
+
+                            $('#txtProveedor').attr("disabled", false);
+                            $("#divProveedor").css("display", "none");
+
+                            $("#divNombre2").css("display", "block");
+                            $("#divNombre3").css("display", "block");
+                            $("#divNombre4").css("display", "block");
+                            //$('#txtNombre2').attr("disabled", false);
+                            //$('#txtNombre3').attr("disabled", false);
+                            //$('#txtNombre4').attr("disabled", false);
+                            document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                            $('#hdfExterno').val('1');
+                        }
+                        fn_DesbloquearPantalla();
+                    }
+                }
+            });
+        } else {
+            $('#txtProveedor').val('');
+            $('#hdfCodigoSAPProveedor').val('');
+            $('#txtProveedor').attr("disabled", false);
+            document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+        }
+    }
+
+
+    function validarDocumentoInput(documento) {
+        var validarDocumentoServicio = true;
+        var sociedad = $('#hdfIdSociedad').val();
+        if (document != '') {
+            fn_BloquearPantalla();
+            $.ajax({
+                url: url.ValidarDatosProveedor,
+                type: 'POST',
+                data: { sociedad: sociedad, documento: documento },
+                cache: false,
+                async: false,
+                success: function (data) {
+                    if (data.length > 0) {
+                        if (data[0].LOEVM == "X") {
+                            toastr["error"]('Proveedor con petición de borrado. Contactarse con Lucila Chuquilin -  lucila.chuquilin@kmmp.com.pe');
+                            $('#txtProveedor').val('');
+                            $('#txtProveedor').attr("disabled", true);
+                            document.getElementById("btnGuardarRendicionGastoButton").disabled = true;
+                            fn_DesbloquearPantalla();
+                            return;
+                        }
+                        if (data[0].SPERR == "X") {
+                            toastr["error"]('Proveedor bloqueado');
+                            $('#txtProveedor').val('');
+                            $('#txtProveedor').attr("disabled", true);
+                            document.getElementById("btnGuardarRendicionGastoButton").disabled = true;
+                            fn_DesbloquearPantalla();
+                            return;
+                        }
+                        validarDocumentoServicio = true;
+                        $("#divNombre2").css("display", "none");
+                        $("#divNombre3").css("display", "none");
+                        $("#divNombre4").css("display", "none");
+                        $("#divProveedor").css("display", "block");
+                        $('#hdfCodigoSAPProveedor').val(data[0].LIFNR);
+                        $('#txtProveedor').val(data[0].NAME1);
+                        $('#txtProveedor').attr("disabled", true);
+                        document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                        $('#hdfExterno').val('0');
+
+
+                        fn_DesbloquearPantalla();
+                    } else {
+                        validarDocumentoExerno(documento);
+                        $('#hdfCodigoSAPProveedor').val('');
+                        if (parseInt($('#hdfIdDetRendicionSolicitud').val()) == 0) {
+                            //$('#txtProveedor').val('');
+                            $('#txtProveedor').attr("disabled", false);
+                            $("#divProveedor").css("display", "none");
+
+                            $("#divNombre2").css("display", "block");
+                            $("#divNombre3").css("display", "block");
+                            $("#divNombre4").css("display", "block");
+                        }
+                        if (documento != '') {
+                            validarDocumentoServicio = false;
+
+                            if ($('#txtProveedor').val() != "" ) {
+
+                            } else {
+
+                                toastr["error"]('El proveedor ingresado no existe, puede proceder ha ingresarlo');
+
+                                $('#txtProveedor').attr("disabled", false);
+                                $("#divProveedor").css("display", "none");
+
+                                $("#divNombre2").css("display", "block");
+                                $("#divNombre3").css("display", "block");
+                                $("#divNombre4").css("display", "block");
+                                //$('#txtNombre2').attr("disabled", false);
+                                //$('#txtNombre3').attr("disabled", false);
+                                //$('#txtNombre4').attr("disabled", false);
+                                document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                                $('#hdfExterno').val('1');
+
+                                RucJuridico(documento);
+                            }
+                            
+                           
+                        }
+                        fn_DesbloquearPantalla();
+                    }
+                }
+            });
+        } else {
+            $('#txtProveedor').val('');
+            $('#hdfCodigoSAPProveedor').val('');
+            $('#txtProveedor').attr("disabled", false);
+            document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+        }
+    }
+
+    function validarDocumentoExerno(documento) {
+            fn_BloquearPantalla();
+            $.ajax({
+                url: url.ValidarDatosProveedorExterno,
+                type: 'POST',
+                data: { documento: documento },
+                cache: false,
+                async: false,
+                success: function (data) {
+                    debugger;
+                    if (data.Success) {
+                        $('#txtProveedor').val(data.respuesta.RazonSocial);
+                        $('#txtNombre2').val(data.respuesta.Nombre2);
+                        $('#txtNombre3').val(data.respuesta.Nombre3);
+                        $('#txtNombre4').val(data.respuesta.Nombre4);
+                        fn_DesbloquearPantalla();
+                    } else {
+                        $('#txtProveedor').val('');
+                        $('#txtNombre2').val('');
+                        $('#txtNombre3').val('');
+                        $('#txtNombre4').val('');
+                    }
+                    fn_DesbloquearPantalla();
+                }
+            });
+    }
+
+
+    function ValidarRUC(ruc) {
+        var digitos = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+        ruc = $.trim(ruc);
+        if (ruc.length == 11) {
+            //validamos los primeros dos digitos
+            if (ruc.substring(0, 2) == "10" || ruc.substring(0, 2) == "20" || ruc.substring(0, 2) == "15" || ruc.substring(0, 2) == "17") {
+                // verificamos digito de verificacion
+                var suma = 0;
+                for (var i = 0; i < ruc.length - 1; i++) {
+                    suma += (parseInt(ruc.substring(i, i + 1)) * digitos[i]);
+                }
+                var ultimodigitovalido = parseInt((11 - (suma % 11)) % 10);
+                if (parseInt(ruc.substring(10, 11)) == ultimodigitovalido) {
+                    $('#txtProveedor').show();
+                    $('#txtProveedor').attr("disabled", true);
+                    $('#txtNombre2').attr("disabled", false);
+                    $('#txtNombre3').attr("disabled", false);
+                    $('#txtNombre4').attr("disabled", false);
+                    return true;
+                }
+                else {
+                    $('#txtProveedor').hide();
+                    $('#divNombre2').show();
+                    $('#divNombre3').show();
+                    $('#divNombre4').show();
+
+                    $('#txtNombre2').attr("disabled", true);
+                    $('#txtNombre3').attr("disabled", true);
+                    $('#txtNombre4').attr("disabled", true);
+                    toastr["warning"]('El nùmero de RUC ingresado es incorrecto.');
+                }
+            }
+            else {
+                $('#divProveedor').hide();
+                $('#divNombre2').show();
+                $('#divNombre3').show();
+                $('#divNombre4').show();
+                $('#txtNombre2').attr("disabled", true);
+                $('#txtNombre3').attr("disabled", true);
+                $('#txtNombre4').attr("disabled", true);
+                toastr["warning"]('El número de RUC ingresado es incorrecto.');
+            }
+        }
+        else {
+            $('#divProveedor').hide();
+            $('#divNombre2').show();
+            $('#divNombre3').show();
+            $('#divNombre4').show();
+            $('#txtNombre2').attr("disabled", true);
+            $('#txtNombre3').attr("disabled", true);
+            $('#txtNombre4').attr("disabled", true);
+            toastr["warning"]('El número de RUC ingresado es incorrecto.');
+        }
+        return false;
+    }
+
+    function ValidarRUCInput(ruc) {
+        var digitos = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+        ruc = $.trim(ruc);
+        if (ruc.length == 11) {
+            //validamos los primeros dos digitos
+            if (ruc.substring(0, 2) == "10" || ruc.substring(0, 2) == "20" || ruc.substring(0, 2) == "15" || ruc.substring(0, 2) == "17") {
+                // verificamos digito de verificacion
+                var suma = 0;
+                for (var i = 0; i < ruc.length - 1; i++) {
+                    suma += (parseInt(ruc.substring(i, i + 1)) * digitos[i]);
+                }
+                var ultimodigitovalido = parseInt((11 - (suma % 11)) % 10);
+                if (parseInt(ruc.substring(10, 11)) == ultimodigitovalido) {
+                    $('#txtProveedor').show();
+                    $('#txtProveedor').attr("disabled", true);
+                    $('#txtNombre2').attr("disabled", false);
+                    $('#txtNombre3').attr("disabled", false);
+                    $('#txtNombre4').attr("disabled", false);
+                    return true;
+                }
+                else {
+                    $('#txtProveedor').hide();
+                    $('#divNombre2').show();
+                    $('#divNombre3').show();
+                    $('#divNombre4').show();
+
+                    $('#txtNombre2').attr("disabled", true);
+                    $('#txtNombre3').attr("disabled", true);
+                    $('#txtNombre4').attr("disabled", true);
+                    toastr["warning"]('El nùmero de RUC ingresado es incorrecto.');
+                }
+            }
+            else {
+                $('#divProveedor').hide();
+                $('#divNombre2').show();
+                $('#divNombre3').show();
+                $('#divNombre4').show();
+                $('#txtNombre2').attr("disabled", true);
+                $('#txtNombre3').attr("disabled", true);
+                $('#txtNombre4').attr("disabled", true);
+                toastr["warning"]('El número de RUC ingresado es incorrecto.');
+            }
+        }
+        else {
+            $('#divProveedor').hide();
+            $('#divNombre2').show();
+            $('#divNombre3').show();
+            $('#divNombre4').show();
+            $('#txtNombre2').attr("disabled", true);
+            $('#txtNombre3').attr("disabled", true);
+            $('#txtNombre4').attr("disabled", true);
+            toastr["warning"]('El número de RUC ingresado es incorrecto.');
+        }
+        return false;
+    }
+
+
+    function ValidarRUC2(ruc) {
+        var digitos = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+        ruc = $.trim(ruc);
+        if (ruc.length == 11) {
+            //validamos los primeros dos digitos
+            if (ruc.substring(0, 2) == "10" || ruc.substring(0, 2) == "20" || ruc.substring(0, 2) == "15" || ruc.substring(0, 2) == "17") {
+                // verificamos digito de verificacion
+                var suma = 0;
+                for (var i = 0; i < ruc.length - 1; i++) {
+                    suma += (parseInt(ruc.substring(i, i + 1)) * digitos[i]);
+                }
+                var ultimodigitovalido = parseInt((11 - (suma % 11)) % 10);
+                if (parseInt(ruc.substring(10, 11)) == ultimodigitovalido) {
+
+                    return true;
+                }
+                else {
+                    //$('#txtProveedor').hide();
+                    //$('#divNombre2').show();
+                    //$('#divNombre3').show();
+                    //$('#divNombre4').show();
+
+                    //$('#txtNombre2').attr("disabled", true);
+                    //$('#txtNombre3').attr("disabled", true);
+                    //$('#txtNombre4').attr("disabled", true);
+                    //toastr["warning"]('El nùmero de RUC ingresado es incorrecto.');
+                }
+            }
+            else {
+                //$('#divProveedor').hide();
+                //$('#divNombre2').show();
+                //$('#divNombre3').show();
+                //$('#divNombre4').show();
+                //$('#txtNombre2').attr("disabled", true);
+                //$('#txtNombre3').attr("disabled", true);
+                //$('#txtNombre4').attr("disabled", true);
+                //toastr["warning"]('El número de RUC ingresado es incorrecto.');
+            }
+        }
+        else {
+            //$('#divProveedor').hide();
+            //$('#divNombre2').show();
+            //$('#divNombre3').show();
+            //$('#divNombre4').show();
+            //$('#txtNombre2').attr("disabled", true);
+            //$('#txtNombre3').attr("disabled", true);
+            //$('#txtNombre4').attr("disabled", true);
+            //toastr["warning"]('El número de RUC ingresado es incorrecto.');
+        }
+        return false;
+    }
+    function EsJuridico(ruc) {
+        var valor = false;
+        var dosdigizq = ruc.substr(0, 2);
+        if (dosdigizq == "20") {
+            valor = true;
+        }
+        return valor;
+    }
+
+    function RucJuridico(ruc) {
+        var dosdigizq = ruc.substr(0, 2);
+        if (dosdigizq == "20") {
+            $('#divProveedor').show();
+            $('#txtProveedor').attr("disabled", false);
+            $('#divNombre2').hide();
+            $('#divNombre3').hide();
+            $('#divNombre4').hide();
+            $('#txtNombre2').attr("disabled", true);
+            $('#txtNombre3').attr("disabled", true);
+            $('#txtNombre4').attr("disabled", true);
+        }
+    }
+
+    function RucJuridicoInput(ruc) {
+        var dosdigizq = ruc.substr(0, 2);
+        if (dosdigizq == "20") {
+            $('#divProveedor').show();
+            $('#txtProveedor').attr("disabled", false);
+            $('#divNombre2').hide();
+            $('#divNombre3').hide();
+            $('#divNombre4').hide();
+            $('#txtNombre2').attr("disabled", true);
+            $('#txtNombre3').attr("disabled", true);
+            $('#txtNombre4').attr("disabled", true);
+        }
+    }
+
+    var validarOrdenServicio = function (e) {
+        validacionOrdenServicio = true;
+        fn_BloquearPantalla();
+        var ordenServicio = $('#txtOrdenServicio').val();
+        var sociedad = $('#hdfIdSociedad').val();
+        $.ajax({
+            url: url.ValidarOrdenServicio,
+            type: 'POST',
+            data: { ordenServicio: ordenServicio, sociedad: sociedad },
+            cache: false,
+            async: false,
+            success: function (data) {
+                if (data.Success) {
+                    validacionOrdenServicio = true;
+                    $('#div-validate-os-status').html('<i class="fa fa-check fa-lg text-success"></i><label style="font-size: 11px;" class = "text-success" >' + data.Message + '</label>');
+                    document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                    HabilitaControles(false);
+                    fn_DesbloquearPantalla();
+                } else {
+                    validacionOrdenServicio = false;
+                    toastr["error"](data.Message);
+                    $('#div-validate-os-status').html('<i class="fa fa-times fa-lg text-danger"></i><label id="lblOrdenServicio" style="font-size: 11px;" class = "text-danger">' + data.Message + '</label>');
+                    document.getElementById("btnGuardarRendicionGastoButton").disabled = false;
+                    HabilitaControles(true);
+                    fn_DesbloquearPantalla();
+                }
+            }
+        });
+    }
+    function ObtenerTipoCambio(fecha) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: url.ObtenerTipoCambioRFC,
+            type: 'POST',
+            data: { fecha: fecha },
+            cache: false,
+            async: false,
+            success: function (data) {
+                if (data.Success) {
+                    $('#hdfTipoCambio').val(data.TipoCambio.UKURS);
+                    fn_DesbloquearPantalla();
+                } else {
+                    $('#hdfTipoCambio').val("1");
+                    fn_DesbloquearPantalla();
+                }
+            }
+        });
+    }
+
+    function ValidarNumeroComprobanteDuplicado(ruc, idtipodocumento, numerocomprobante, idrendicion) {
+        debugger;
+        var retorno = false;
+        fn_BloquearPantalla();
+        $.ajax({
+            url: url.ValidarNumeroComprobanteDuplicado,
+            type: 'POST',
+            data: { ruc: ruc, idtipodocumento: idtipodocumento, numerocomprobante: numerocomprobante, idrendicion: idrendicion},
+            cache: false,
+            async: false,
+            success: function (data) {
+
+                if (data.Success) {
+                    retorno = true;
+                    $("#hdfCodigoDuplicado").val(data.Message);
+                }
+                fn_DesbloquearPantalla();
+            }
+        });
+        return retorno;
+    }
+
+    function getListaAdjuntoDetalleGasto(iddetrendicionsolicitud) {
+        fn_BloquearPantalla();
+        $.ajax({
+            url: '@Url.Action("ListaAdjuntoDG_PV", "Solicitud")',
+            type: 'POST',
+            data: { IdDetRendicionSolicitud: iddetrendicionsolicitud },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-attachmentDG").html(data);
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+    function getListaImpuestos(_idtipodocumento) {
+        fn_BloquearPantalla();
+        var idtipo = $('#hdfIdTipo').val();
+        $.ajax({
+            url: '@Url.Action("ListaImpuestos_PV", "Solicitud")',
+            type: 'POST',
+            data: { IdTipoDocumento: _idtipodocumento, idtipo: idtipo },
+            cache: false,
+            async: true,
+            success: function (data) {
+                $("#content-ListaImpuestos").html(data);
+
+                fn_DesbloquearPantalla();
+            }
+        });
+    }
+
+    function HabilitaControles(bool) {
+        $('#txtRUC').attr("disabled", bool);
+        $('#txtProveedor').attr("disabled", bool);
+        $('#dllTipoDocumento').attr("disabled", bool);
+        $('#txtNroCentro').attr("disabled", bool);
+        $('#txtNroDerecha').attr("disabled", bool);
+        $('#dllTipoGastoViaje').attr("disabled", bool);
+        $('#txtGlosa').attr("disabled", bool);
+        $('#DetRendicionSolicitud_FechaStr').attr("disabled", bool);
+        $('#txtImporte').attr("disabled", bool);
+        $('#txtBaseInafecta').attr("disabled", bool);
+        $('#dllImpuesto').attr("disabled", bool);
+        $('#archivo-adjuntoDG').attr("disabled", bool);
+        $('#txtRUT').attr("disabled", bool);
+        $('#dllTratamiento').attr("disabled", bool);
+        $('#txtNombre1').attr("disabled", bool);
+        $('#txtCalle').attr("disabled", bool);
+        $('#txtCalle').attr("disabled", bool);
+        $('#txtPoblacion').attr("disabled", bool);
+        $('#dllPais').attr("disabled", bool);
+        document.getElementById("btnGuardarRendicionGastoButton").disabled = bool;
+    }
+
+
+
+</script>
+<script src="~/Areas/GASTO/Scripts/Solicitud/_FormularioDetallaGasto.js?v=4.0"></script>

@@ -1,0 +1,51 @@
+﻿@model WebApplication.Areas.GASTO.Models.ViewModelMaestros
+    @if (Model.ListaUsuariosAprobador.Count > 0)
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-condensed table-gys-kom" role="grid">
+                @*<thead>
+                    <tr>
+                        <th width="50px;">Acciones</th>
+                        <th width="100px;">Sociedad</th>
+                        <th width="100px;">Aprobador</th>
+                        <th width="100px;">Centros Costos</th>
+                    </tr>
+                </thead>
+                <tbody style="font-size: 11px;">
+                    @foreach (var detalle in Model.ListaUsuariosAprobador)
+                    {
+                    <tr>
+                        <td>
+                            <a href="javascript(0);" id="btn-edit-tabla22" data-pid-22=@detalle.ID class="glyphicon glyphicon-pencil" title="Editar"></a>&nbsp;&nbsp;&nbsp;
+                            <a href="javascript(0);" id="btn-del-tabla22" data-pid-22=@detalle.ID class="glyphicon glyphicon-trash" title="Eliminar"></a>
+                        </td>
+                        <td>@detalle.Sociedad</td>
+                        <td>@detalle.Administrador</td>
+                        <td>@detalle.CentrosCostos</td>
+                    </tr>
+                    }
+                </tbody>*@
+            </table>
+        </div>
+
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <p>NO EXISTEN REGISTROS.</p>
+        </div>
+    }
+<script>
+    $(document).ready(function () {
+        
+    });
+
+    
+
+    
+
+</script>
+
+
+
+

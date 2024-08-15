@@ -1,0 +1,217 @@
+﻿@model WebApplication.Models.ProveedorTaxiModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    @if (Model.Proveedor.ID == default(int))
+    {
+        <h3 class="modal-title" id="myModalLabel">
+            <i class="fa fa-plus-circle"></i>
+            <i class="fa fa-chevron-right"></i>
+            REGISTRO DE PROVEEDOR
+        </h3>
+    }
+    else
+    {
+        <h3 class="modal-title" id="myModalLabel">
+            <i class="fa fa-pencil-square-o"></i>
+            <i class="fa fa-chevron-right"></i>
+            MODIFICAR PROVEEDOR
+        </h3>
+    }
+</div>
+
+@using (Html.BeginForm("Registrar", "Proveedor", FormMethod.Post, new { @id = "frm-add-proveedor", @class = "form-horizontal", @style = "padding-left: 10px;" }))
+{
+    <div class="modal-body">
+        @Html.HiddenFor(m => m.Proveedor.ID, new { @id = "IdProveedorTaxi" })
+
+        <div class="form-group">
+            <label class="col-sm-4">Código SAP</label>
+            <div class="col-sm-7">
+                @Html.TextBoxFor(m => m.Proveedor.CodigoSAP,
+                                         new
+                                         {
+                                             @class = "form-control input-sm",
+                                             @id = "txtCodigoSAP",
+                                             @autofocus = "autofocus",
+                                             @placeholder = "CodigoSAP",
+                                             @onkeypress = "return validarSoloNumeros(event)",
+                                         })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-4">RUC</label>
+            <div class="col-sm-7">
+                @Html.TextBoxFor(m => m.Proveedor.RUC,
+                                         new
+                                         {
+                                             @class = "form-control input-sm",
+                                             @id = "txtRUC",
+                                             @maxlength = "11",
+                                             @autofocus = "autofocus",
+                                             @placeholder = "RUC",
+                                             @onkeypress = "return validarSoloNumeros(event)"
+                                         })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-4">Tiempo Espera</label>
+            <div class="col-sm-7">
+                @Html.TextBoxFor(m => m.Proveedor.TiempoEspera,
+                                         new
+                                         {
+                                             @class = "form-control input-sm",
+                                             @id = "txtTiempoEspera",
+                                             @autofocus = "autofocus",
+                                             @placeholder = "TiempoEspera"
+                                         })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-4">Tiempo Reserva</label>
+            <div class="col-sm-7">
+                @Html.TextBoxFor(m => m.Proveedor.TiempoReserva,
+                                             new
+                                             {
+                                                 @class = "form-control input-sm",
+                                                 @id = "txtTiempoReserva",
+                                                 @autofocus = "autofocus",
+                                                 @placeholder = "TiempoReserva"
+                                             })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-4">Razón Social</label>
+            <div class="col-sm-7">
+                @Html.TextBoxFor(m => m.Proveedor.RazonSocial,
+                                         new
+                                         {
+                                             @class = "form-control input-sm",
+                                             @id = "txtRazonSocial",
+                                             @placeholder = "Razon Social"
+                                         })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-4">Contacto</label>
+            <div class="col-sm-7">
+                @Html.TextBoxFor(m => m.Proveedor.Contacto,
+                                         new
+                                         {
+                                             @class = "form-control input-sm",
+                                             @id = "txtContacto",
+                                             @placeholder = "Contacto"
+                                         })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-4">Teléfono</label>
+            <div class="col-sm-7">
+                @Html.TextBoxFor(m => m.Proveedor.Telefono,
+                                         new
+                                         {
+                                             @class = "form-control input-sm",
+                                             @id = "txtTelefono",
+                                             @placeholder = "Teléfono",
+                                             @onkeypress = "return validarSoloNumeros(event)",
+                                             @maxLength = 9
+                                         })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-4">Email</label>
+            <div class="col-sm-7">
+                @Html.TextBoxFor(m => m.Proveedor.Email,
+                                         new
+                                         {
+                                             @class = "form-control input-sm",
+                                             @id = "txtEmail",
+                                             @placeholder = "Email"
+                                         })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-4">Dirección</label>
+            <div class="col-sm-7">
+                @Html.TextBoxFor(m => m.Proveedor.Direccion,
+                                         new
+                                         {
+                                             @class = "form-control input-sm",
+                                             @id = "txtDireccion",
+                                             @placeholder = "Dirección"
+                                         })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-4">Estado</label>
+            <div class="col-sm-7">
+                @Html.DropDownListFor(m => m.Proveedor.IdEstado,
+                                         new SelectList(Model.ListaEstadoProveedor, "ID", "Nombre"),
+                                         new
+                                         {
+                                             @id = "ddlEstado",
+                                             @class = "form-control select2",
+                                             @style = "width:100%;"
+                                         })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-4">Indicador Factura</label>
+            <div class="col-sm-7">
+                @Html.DropDownListFor(m => m.Proveedor.IdIndicadorIGVFactura,
+                                         new SelectList(Model.ListaIndicadorIGVFactura, "ID", "NombreCompleto"),
+                                         new
+                                         {
+                                             @id = "ddlIndicadorFactura",
+                                             @class = "form-control select2",
+                                             @style = "width:100%;"
+                                         })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-4">Indicador Provision</label>
+            <div class="col-sm-7">
+                @Html.DropDownListFor(m => m.Proveedor.IdIndicadorIGVProvision,
+                                    new SelectList(Model.ListaIndicadorIGVProvision, "ID", "NombreCompleto"),
+                                    new
+                                    {
+                                        @id = "ddlIndicadorProvision",
+                                        @class = "form-control select2",
+                                        @style = "width:100%;"
+                                    })
+            </div>
+        </div>
+
+    </div>
+
+
+
+}
+
+<div class="modal-footer">
+    <div style="float: right">
+        <button id="btn-save" class="btn btn-primary btn-sm"><i class="fa fa-floppy-o"></i> Guardar</button>
+        <button class="btn btn-default btn-sm" data-dismiss="modal"><i class="fa fa-share-square-o"></i> Salir</button>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            width: 'auto'
+        });
+    });
+</script>

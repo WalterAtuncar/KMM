@@ -1,0 +1,106 @@
+﻿@model WebApplication.Areas.GASTO.Models.SolicitudCambioEstado
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h3 class="modal-title" id="myModalLabel"><i class="fa fa-eur"></i><i class="fa fa-chevron-right"></i>MODIFICAR ESTADO SOLICITUD</h3>
+</div>
+<div class="modal-body">
+    <input type="hidden" id="hdfIdSolicitud_CambioEstado" value="@Model.IdSolicitud " />
+    <input type="hidden" id="hdfIdTipo_CambioEstado" value="@Model.IdTipo" />
+    <input type="hidden" id="hdfCodigo_CambioEstado" value="@Model.Codigo" />
+    <input type="hidden" id="hdfIdSituacionServicio_CambioEstado" value="@Model.IdSituacionServicio" />
+    <br />
+    <div id="nav-tab-content" class="tab-content">
+        <div class="tab-pane active" id="info" role="tabpanel">
+            @*<label class="col-sm-12">Está seguro de eliminar la Solicitud Nº @ViewBag.hdfIdSolicitudEliminar Seleccionada</label>*@
+
+
+
+
+
+            <!--incio-->
+
+            @using (Html.BeginForm("CambiarEstadoSolicitudPost", "ContabilidadSolicitudes", FormMethod.Post, new { @id = "frm-cambiar-estado-solicitud" }))
+            {
+                <div class="row">
+                    <div id="filtros">
+                        <div class="col-sm-8">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal  rowUser">
+
+                                    <div class="form-group">
+                                        <label class="col-sm-12">Codigo Solicitud:  <span style="font-weight:bold;">@Model.Codigo</span>   </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="filtros">
+                        <div class="col-sm-12">
+                            <div class="form-horizontal">
+                                <div class="form-horizontal  rowUser">
+
+                                    <div class="form-group">
+                                        <label class="col-sm-2">Estado: </label>
+                                        <div class="col-sm-8">
+                                            @Html.DropDownListFor(m => m.IdSituacionServicio, new SelectList(ViewBag.listaEstados, "IdEstado", "Estado"), new { @class = "form-control select2", @id = "dllEstados_CambioEstado" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <br />
+</div>
+<div class="modal-footer">
+    <div class="row">
+        <div class="col-lg-4 col-sm-4 text-center">
+            <button id="btnCambiarEstaddoSol" class="btn btn-primary" style="width:170px;"><i class="fa fa-floppy-o"></i>Cambiar Estado</button>
+        </div>
+        <div class="col-lg-4 col-sm-4 text-center">
+            <button id="btnCambiarEstadoRechazoTotal" class="btn btn-danger" style="width:170px;"><i class="fa fa-times-circle"></i>Rechazo Total</button>
+        </div>
+        <div class="col-lg-4 col-sm-4 text-center">
+            <button class="btn btn-primary" data-dismiss="modal" style="width:170px;"><i class="fa fa-share-square-o"></i> Cancelar</button>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.select2').select2({
+            dropdownAutoWidth: true,
+            width: '100%',
+        });
+
+        $('#btnCambiarEstaddoSol').click(function (e) {
+            debugger;
+            e.preventDefault();
+            document.getElementById("btnCambiarEstaddoSol").disabled = true;
+            var id = $('#hdfIdSolicitud_CambioEstado').val();
+            var idestado = $('#dllEstados_CambioEstado').val();
+            CambiarEstadoSolicitud(id, idestado);
+        });
+
+        $('#btnCambiarEstadoRechazoTotal').click(function (e) {
+            debugger;
+            e.preventDefault();
+            document.getElementById("btnCambiarEstadoRechazoTotal").disabled = true;
+            var id = $('#hdfIdSolicitud_CambioEstado').val();
+            var idestado = 7;
+            CambiarEstadoSolicitudRechazoTotal(id, idestado);
+        });
+
+    });
+</script>
+
+
+
+
+
+

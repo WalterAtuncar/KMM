@@ -1,0 +1,21 @@
+﻿
+<div>
+    @Html.DropDownList("listaAmbitoViaje",
+                       new SelectList(ViewBag.listaAmbitoViaje, "IdPais", "Descripcion"),
+                       new { @id = "dllAmbito",
+                           @class = "form-control select2" }
+                      )
+</div>
+
+<script>
+    $(function () {
+        @{int count = new SelectList(ViewBag.listaAmbitoViaje).Count();}
+        __countPaisesDisponibles = @count;
+        $('select[name="listaAmbitoViaje"]').select2({
+            dropdownAutoWidth: true,
+            width: '100%'
+        });
+        $("#dllAmbito").val(idUserPais)
+        $("#dllAmbito").trigger('change')
+    })
+</script>
